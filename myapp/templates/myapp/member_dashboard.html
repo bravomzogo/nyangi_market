@@ -1,0 +1,85 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5; /* Light gray background */
+        margin: 0;
+        padding: 0;
+    }
+
+    .content-container {
+        max-width: 800px;
+        margin: 50px auto; /* Center the container */
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    }
+
+    h2 {
+        font-size: 2rem;
+        text-align: center;
+        color: #4CAF50; /* Green to match the brand */
+        margin-bottom: 20px;
+    }
+
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20px;
+        align-items: center;
+    }
+
+    .button-container a {
+        display: inline-block;
+        text-decoration: none;
+        color: white;
+        background-color: #4CAF50; /* Green buttons */
+        padding: 10px 20px;
+        font-size: 1.2rem;
+        border-radius: 5px;
+        transition: all 0.3s;
+    }
+
+    .button-container a:hover {
+        background-color: #45a049; /* Darker green on hover */
+        transform: scale(1.05); /* Slight zoom effect */
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 30px;
+        color: #777;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="content-container">
+    <h2>Staff Only</h2>
+    <p style="text-align: center; color: #555; font-size: 1.1rem;">
+        Welcome to the staff area. Please choose one of the options below to proceed.
+    </p>
+    <div class="button-container">
+        <!-- Display Add Product link for authenticated sellers -->
+        {% if request.user.is_authenticated and request.user.seller %}
+            <a href="{% url 'add_product' %}">Add Product</a>
+        {% else %}
+            <a href="{% url 'seller_register' %}">Register as Seller</a>
+        {% endif %}
+
+        <!-- Display Login/Logout based on user authentication status -->
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'seller_login' %}">Login</a>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}

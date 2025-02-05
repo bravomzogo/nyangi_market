@@ -1,0 +1,74 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="mb-0">Add a Product</h2>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group mb-4">
+                            <label for="product_name" class="font-weight-bold text-secondary">Product Name</label>
+                            <input 
+                                type="text" 
+                                name="name" 
+                                class="form-control py-2" 
+                                placeholder="Enter product name" 
+                                value="{{ form.name.value|default:'' }}" 
+                                id="product_name">
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="product_description" class="font-weight-bold text-secondary">Description</label>
+                            <textarea 
+                                name="description" 
+                                class="form-control py-2" 
+                                placeholder="Enter product description" 
+                                id="product_description" 
+                                rows="4">{{ form.description.value|default:'' }}</textarea>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="product_price" class="font-weight-bold text-secondary">Price (Tsh)</label>
+                            <input 
+                                type="number" 
+                                name="price" 
+                                class="form-control py-2" 
+                                placeholder="Enter product price" 
+                                value="{{ form.price.value|default:'' }}" 
+                                id="product_price">
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="product_category" class="font-weight-bold text-secondary">Category</label>
+                            <select name="category" class="form-control py-2" id="product_category">
+                                <option disabled selected>Choose a category</option>
+                                {% for category in form.category.field.queryset %}
+                                    <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="product_image" class="font-weight-bold text-secondary">Product Image</label>
+                            <input type="file" name="image" class="form-control-file" id="product_image">
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">Add Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
