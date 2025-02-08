@@ -3,19 +3,105 @@
 {% block content %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
+<h2 class="text-primary mb-4" style="padding-left: 120px; background-color: black; padding: 15px; border-radius: 10px;">{{ product.name }}</h2>
 <div class="container my-5">
     <div class="row">
-        <div class="col-md-6">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow">
+        <!-- Product Image Section -->
+        <div class="col-md-6 mb-4">
+            <div class="product-image-container text-center">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow-lg" style="max-height: 400px; object-fit: cover;">
+            </div>
         </div>
+
+        <!-- Product Details Section -->
         <div class="col-md-6">
-            <h2 class="text-primary">{{ product.name }}</h2>
-            <p class="text-muted">Description:<br> {{ product.description }}</p>
-            <p class="font-weight-bold">Price: {{ product.price }} Tsh</p>
-            <p class="font-weight-bold">Category: {{ product.category.name }}</p>
-            <p class="font-weight-bold">Seller: {{ product.seller.shop_name }}</p>
-            <a href="{% url 'home' %}" class="btn btn-success mt-3">Back to Home</a>
+           
+
+            <!-- Product Info Table -->
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-4">Product Details</h5>
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <td><strong>Description</strong></td>
+                                <td class="text-muted">{{ product.description }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Price</strong></td>
+                                <td class="text-success font-weight-bold">{{ product.price }} Tsh</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Category</strong></td>
+                                <td class="text-dark">{{ product.category.name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Seller</strong></td>
+                                <td class="text-dark">{{ product.seller.shop_name }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- Back to Home Button -->
+                    <a href="{% url 'home' %}" class="btn btn-success btn-lg mt-4 w-100">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Add FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Custom CSS for subtle enhancements -->
+<style>
+    .product-image-container {
+        overflow: hidden;
+        border-radius: 10px;
+        
+    }
+
+    .shadow-lg {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+        padding: 15px;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .table-bordered td, .table-bordered th {
+        border: 1px solid #dee2e6;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .text-secondary {
+        color: #6c757d !important;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+</style>
+
 {% endblock %}
