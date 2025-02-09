@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Seller, Product
 
+
 class SellerRegistrationForm(forms.ModelForm):
     username = forms.CharField(max_length=150)
     password = forms.CharField(widget=forms.PasswordInput)
@@ -24,4 +25,8 @@ class SellerRegistrationForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price',  'image','category']
+        fields = ['name', 'description', 'price', 'image', 'category', 'location']
+
+
+    # Add location dropdown
+

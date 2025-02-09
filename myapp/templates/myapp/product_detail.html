@@ -1,51 +1,107 @@
 {% extends 'myapp/base.html' %}
+{% load static %}
+{% load humanize %}  <!-- Load the humanize filter -->
 
 {% block content %}
-{% load static %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
-<h2 class="text-primary mb-4" style="padding-left: 120px; background-color: black; padding: 15px; border-radius: 10px;">{{ product.name }}</h2>
+
 <div class="container my-5">
     <div class="row">
         <!-- Product Image Section -->
-        <div class="col-md-6 mb-4">
-            <div class="product-image-container text-center">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow-lg" style="max-height: 400px; object-fit: cover;">
+        <div class="col-md-6 text-center">
+            <div class="product-image-container shadow-lg rounded p-3 bg-white">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded" style="max-height: 500px; object-fit: cover; width: 100%;">
             </div>
         </div>
 
         <!-- Product Details Section -->
         <div class="col-md-6">
-           
+            <div class="card shadow-lg p-4 border-0">
+                <!-- Product Details Table -->
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                        <tr>
+                            <th>Product</th>
+                            <td>{{ product.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Price (Tsh)</th>
+                            <td>{{ product.price|intcomma }}</td> <!-- Using the intcomma filter -->
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td>{{ product.description }}</td>
+                        </tr>
+                        <tr>
+                            <th>Location</th>
+                            <td>{{ product.location }}</td>
+                        </tr>
 
-            <!-- Product Info Table -->
-            <div class="card shadow-lg">
-                <div class="card-body">
-                    <h5 class="card-title text-center mb-4">Product Details</h5>
-                    <table class="table table-bordered table-striped">
-                        <tbody>
-                            <tr>
-                                <td><strong>Description</strong></td>
-                                <td class="text-muted">{{ product.description }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Price</strong></td>
-                                <td class="text-success font-weight-bold">{{ product.price }} Tsh</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Category</strong></td>
-                                <td class="text-dark">{{ product.category.name }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Seller</strong></td>
-                                <td class="text-dark">{{ product.seller.shop_name }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <!-- Back to Home Button -->
-                    <a href="{% url 'home' %}" class="btn btn-success btn-lg mt-4 w-100">
-                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
-                    </a>
+                        <tr>
+                            <th>Stock</th>
+                            <td>In Stock</td>
+                        </tr>
+                        <tr>
+                            <th>Seller</th>
+                            <td>{{ product.seller }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-4 d-flex flex-wrap gap-2 justify-content-between">
+                    <a href="{% url 'home' %}" class="btn btn-secondary btn-lg flex-fill"><i class="fas fa-arrow-left"></i> Back to Home</a>
+                    <a href="tel:{{ product.seller.phone }}" class="btn btn-warning btn-lg flex-fill text-white"><i class="fas fa-phone"></i> Contact Seller</a>
+                    <a href="https://wa.me/{{ product.seller.phone }}" class="btn btn-success btn-lg flex-fill"><i class="fab fa-whatsapp"></i> Chat Now</a>
                 </div>
+                <div class="mt-4">
+                    <button class="btn btn-primary btn-lg w-100"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                    <button class="btn btn-danger btn-lg w-100 mt-2"><i class="fas fa-bolt"></i> Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Details Section -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="card shadow-lg p-4 border-0">
+                <h4 class="mb-3">Technical Details  (Not working for  now, in development...)</h4>
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                        <tr>
+                            <th>Condition</th>
+                            <td>{{ product.condition }}</td>
+                        </tr>
+                        <tr>
+                            <th>Dimensions</th>
+                            <td>{{ product.dimensions }}</td>
+                        </tr>
+                        <tr>
+                            <th>Material</th>
+                            <td>{{ product.material }}</td>
+                        </tr>
+                        <tr>
+                            <th>Color</th>
+                            <td>{{ product.color }}</td>
+                        </tr>
+                        <tr>
+                            <th>Warranty</th>
+                            <td>{{ product.warranty }}</td>
+                        </tr>
+                        <tr>
+                            <th>Model</th>
+                            <td>{{ product.model }}</td>
+                        </tr>
+                        <tr>
+                            <th>Year of Release</th>
+                            <td>{{ product.release_year }}</td>
+                        </tr>
+                        <tr>
+                            <th>Generation</th>
+                            <td>{{ product.generation }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -54,53 +110,51 @@
 <!-- Add FontAwesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-<!-- Custom CSS for subtle enhancements -->
+<!-- Custom CSS -->
 <style>
     .product-image-container {
         overflow: hidden;
         border-radius: 10px;
-        
+        border: 1px solid #ddd;
     }
-
     .shadow-lg {
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
-
-    .btn-success {
-        background-color: #28a745;
+    .btn-warning {
+        background-color: #ff9900;
         border: none;
-        transition: background-color 0.3s ease;
     }
-
-    .btn-success:hover {
-        background-color: #218838;
+    .btn-warning:hover {
+        background-color: #e68a00;
     }
-
+    .btn-primary {
+        background-color: #ff5722;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #e64a19;
+    }
+    .btn-danger {
+        background-color: #d32f2f;
+        border: none;
+    }
+    .btn-danger:hover {
+        background-color: #b71c1c;
+    }
     .table th, .table td {
-        vertical-align: middle;
-        padding: 15px;
+        padding: 10px 15px;
     }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: #f9f9f9;
+    .table-bordered {
+        border: 1px solid #ddd;
     }
-
-    .table-bordered td, .table-bordered th {
-        border: 1px solid #dee2e6;
+    .d-flex.flex-wrap.gap-2 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
     }
-
-    .card-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .text-secondary {
-        color: #6c757d !important;
-    }
-
-    .text-muted {
-        color: #6c757d !important;
+    .flex-fill {
+        flex: 1;
+        min-width: 150px;
     }
 </style>
 

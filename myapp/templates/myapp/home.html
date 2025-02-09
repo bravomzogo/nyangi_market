@@ -45,5 +45,12 @@
         {% endfor %}
     </div>
 </div>
-
+<script>
+    function scrollToProducts() {
+        const element = document.getElementById("products");
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+        }
+    }
+</script>
 {% endblock %}

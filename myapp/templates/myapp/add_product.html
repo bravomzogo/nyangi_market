@@ -13,41 +13,46 @@
                 <div class="card-body p-5">
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
+                        
+                        <!-- Product Name -->
                         <div class="form-group mb-4">
                             <label for="product_name" class="font-weight-bold text-secondary">Product Name</label>
                             <input 
                                 type="text" 
                                 name="name" 
-                                class="form-control py-2" 
+                                class="form-control py-3 px-4 rounded-lg shadow-sm" 
                                 placeholder="Enter product name" 
                                 value="{{ form.name.value|default:'' }}" 
                                 id="product_name">
                         </div>
 
+                        <!-- Product Description -->
                         <div class="form-group mb-4">
                             <label for="product_description" class="font-weight-bold text-secondary">Description</label>
                             <textarea 
                                 name="description" 
-                                class="form-control py-2" 
+                                class="form-control py-3 px-4 rounded-lg shadow-sm" 
                                 placeholder="Enter product description" 
                                 id="product_description" 
                                 rows="4">{{ form.description.value|default:'' }}</textarea>
                         </div>
 
+                        <!-- Product Price -->
                         <div class="form-group mb-4">
                             <label for="product_price" class="font-weight-bold text-secondary">Price (Tsh)</label>
                             <input 
                                 type="number" 
                                 name="price" 
-                                class="form-control py-2" 
+                                class="form-control py-3 px-4 rounded-lg shadow-sm" 
                                 placeholder="Enter product price" 
                                 value="{{ form.price.value|default:'' }}" 
                                 id="product_price">
                         </div>
 
+                        <!-- Product Category -->
                         <div class="form-group mb-4">
                             <label for="product_category" class="font-weight-bold text-secondary">Category</label>
-                            <select name="category" class="form-control py-2" id="product_category">
+                            <select name="category" class="form-control py-3 px-4 rounded-lg shadow-sm" id="product_category">
                                 <option disabled selected>Choose a category</option>
                                 {% for category in form.category.field.queryset %}
                                     <option value="{{ category.id }}" {% if form.category.value == category.id %}selected{% endif %}>
@@ -56,14 +61,24 @@
                                 {% endfor %}
                             </select>
                         </div>
-
+                        
+                        <!-- Location Dropdown -->
                         <div class="form-group mb-4">
-                            <label for="product_image" class="font-weight-bold text-secondary">Product Image</label>
-                            <input type="file" name="image" class="form-control-file" id="product_image">
+                            <label for="id_location" class="font-weight-bold text-secondary">Location</label>
+                            <div class="input-group">
+                                {{ form.location }}  <!-- This will be the dropdown for Tanzanian regions -->
+                            </div>
                         </div>
 
-                        <div class="form-group text-center">
-                            <button type="submit" class="btn btn-primary btn-lg w-100">Add Product</button>
+                        <!-- Product Image -->
+                        <div class="form-group mb-4">
+                            <label for="product_image" class="font-weight-bold text-secondary">Product Image</label>
+                            <input type="file" name="image" class="form-control-file rounded-lg" id="product_image">
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-group text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-lg shadow-sm">Add Product</button>
                         </div>
                     </form>
                 </div>
@@ -71,4 +86,59 @@
         </div>
     </div>
 </div>
+
+<!-- Add some custom styling -->
+<style>
+    .container {
+        max-width: 960px;
+        margin: 0 auto;
+    }
+    .card {
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+        border-radius: 15px 15px 0 0;
+        background-color: #007bff;
+    }
+    .card-body {
+        background-color: #f8f9fa;
+    }
+    .form-control {
+        font-size: 1rem;
+        padding: 1.1rem 1.25rem;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+    .form-control:focus {
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        border-color: #007bff;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .form-group label {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #495057;
+    }
+    .input-group {
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
+    }
+    .input-group .form-control {
+        border-radius: 5px;
+    }
+    .form-control-file {
+        border: 1px solid #ddd;
+        padding: 1rem;
+        border-radius: 10px;
+    }
+</style>
+
 {% endblock %}
