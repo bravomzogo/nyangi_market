@@ -1,0 +1,138 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Product Detail - Nyangi Online Market{% endblock %}
+
+{% block content %}
+{% load static %}
+{% load humanize %}
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Product Image Section -->
+        <div class="col-12 col-md-6 text-center">
+            <div class="product-image-container shadow-lg rounded p-3 bg-white">
+                <!-- Clickable Main Image -->
+                <img id="mainImage" src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded"
+                    style="max-height: 500px; object-fit: cover; width: 100%; cursor: pointer;"
+                    data-bs-toggle="modal" data-bs-target="#imageModal">
+            </div>
+
+            <!-- Additional Images -->
+            <div class="d-flex justify-content-center mt-3">
+                {% if product.image1 %}
+                <img src="{{ product.image1.url }}" class="additional-img img-thumbnail mx-2"
+                    onclick="changeMainImage('{{ product.image1.url }}')"
+                    style="width: 70px; height: 70px; cursor: pointer;">
+                {% endif %}
+                {% if product.image2 %}
+                <img src="{{ product.image2.url }}" class="additional-img img-thumbnail mx-2"
+                    onclick="changeMainImage('{{ product.image2.url }}')"
+                    style="width: 70px; height: 70px; cursor: pointer;">
+                {% endif %}
+                {% if product.image3 %}
+                <img src="{{ product.image3.url }}" class="additional-img img-thumbnail mx-2"
+                    onclick="changeMainImage('{{ product.image3.url }}')"
+                    style="width: 70px; height: 70px; cursor: pointer;">
+                {% endif %}
+                {% if product.image4 %}
+                <img src="{{ product.image4.url }}" class="additional-img img-thumbnail mx-2"
+                    onclick="changeMainImage('{{ product.image4.url }}')"
+                    style="width: 70px; height: 70px; cursor: pointer;">
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Details Section -->
+        <div class="col-12 col-md-6 mt-4 mt-md-0">
+            <div class="card shadow-lg p-4 border-0">
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                        <tr>
+                            <th>Product</th>
+                            <td>{{ product.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Price (Tsh)</th>
+                            <td>{{ product.price|intcomma }}</td>
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td>{{ product.description }}</td>
+                        </tr>
+                        <tr>
+                            <th>Location</th>
+                            <td>{{ product.location }}</td>
+                        </tr>
+                        <tr>
+                            <th>Stock</th>
+                            <td>In Stock</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mt-4 d-flex flex-wrap gap-2 justify-content-between">
+                    <a href="{% url 'index' %}" class="btn btn-secondary btn-lg flex-fill"><i
+                            class="fas fa-arrow-left"></i> Back to Home</a>
+                    <a href="tel:#" class="btn btn-warning btn-lg flex-fill text-white"><i
+                            class="fas fa-phone"></i> Contact Seller</a>
+                    <a href="#" class="btn btn-success btn-lg flex-fill"><i
+                            class="fab fa-whatsapp"></i> Chat Now</a>
+                </div>
+                <div class="mt-4">
+                    <button id="addToCartBtn" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                    <button class="btn btn-danger btn-lg w-100 mt-2" href="#"><i class="fas fa-bolt"></i> Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Full-Size Image -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true" style="z-index: 12000;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">{{ product.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="fullSizeImage" src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- Technical Details Section -->
+  <div class="row mt-5">
+    <div class="col-md-12">
+        <div class="card shadow-lg p-4 border-0">
+            <h4 class="mb-3">Technical Details</h4>
+            <table class="table table-bordered table-striped">
+                <tbody>
+                    {% for field, label in tech.get_technical_details.items %}
+                        {% if field %}
+                            <tr><th>{{ field }}</th><td>{{ label }}</td></tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Image Switching -->
+<script>
+    function changeMainImage(newSrc) {
+        // Update the main image
+        document.getElementById('mainImage').src = newSrc;
+        // Update the full-size image in the modal
+        document.getElementById('fullSizeImage').src = newSrc;
+    }
+</script>
+
+<!-- Include Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+{% endblock %}

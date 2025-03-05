@@ -1,0 +1,437 @@
+{% extends 'myapp/base.html' %}
+
+{% block title %}Add Technical Details - Nyangi Market{% endblock %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <h2 class="mb-0 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-plus-circle mr-2"></i> Add Technical Details
+                    </h2>
+                </div>
+                <div class="card-body p-5 bg-light">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- General technical details -->
+                        <h4 class="text-success font-weight-bold mb-3">General Technical Details</h4>
+                        <div class="form-group">
+                            <label for="{{ form.condition.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-tag mr-2"></i> Condition
+                            </label>
+                            {{ form.condition|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.dimensions.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-ruler-combined mr-2"></i> Dimensions (L x W x H)
+                            </label>
+                            {{ form.dimensions|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.weight.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-weight mr-2"></i> Weight
+                            </label>
+                            {{ form.weight|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.material.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-cube mr-2"></i> Material
+                            </label>
+                            {{ form.material|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.color.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-palette mr-2"></i> Color
+                            </label>
+                            {{ form.color|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.warranty.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-shield-alt mr-2"></i> Warranty Period
+                            </label>
+                            {{ form.warranty|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.model.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-cogs mr-2"></i> Model
+                            </label>
+                            {{ form.model|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.release_year.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-calendar-alt mr-2"></i> Year of Release
+                            </label>
+                            {{ form.release_year|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.generation.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-layer-group mr-2"></i> Generation
+                            </label>
+                            {{ form.generation|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.brand.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-copyright mr-2"></i> Brand Name
+                            </label>
+                            {{ form.brand|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.origin_country.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-globe-americas mr-2"></i> Country of Origin
+                            </label>
+                            {{ form.origin_country|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Electronics & Appliances -->
+                        <h4 class="text-success font-weight-bold mb-3 mt-4">Electronics & Appliances</h4>
+                        <div class="form-group">
+                            <label for="{{ form.power_consumption.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-bolt mr-2"></i> Power Consumption
+                            </label>
+                            {{ form.power_consumption|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.battery_life.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-battery-full mr-2"></i> Battery Life
+                            </label>
+                            {{ form.battery_life|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.charging_time.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-plug mr-2"></i> Charging Time
+                            </label>
+                            {{ form.charging_time|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.connectivity.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-wifi mr-2"></i> Connectivity Options
+                            </label>
+                            {{ form.connectivity|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.processor.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-microchip mr-2"></i> Processor Type
+                            </label>
+                            {{ form.processor|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.storage_capacity.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-hdd mr-2"></i> Storage Capacity
+                            </label>
+                            {{ form.storage_capacity|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.screen_size.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-desktop mr-2"></i> Screen Size (in inches)
+                            </label>
+                            {{ form.screen_size|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.resolution.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-expand-arrows-alt mr-2"></i> Screen Resolution
+                            </label>
+                            {{ form.resolution|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Furniture & Home Decor -->
+                        <h4 class="text-success font-weight-bold mb-3 mt-4">Furniture & Home Decor</h4>
+                        <div class="form-group">
+                            <label for="{{ form.weight_capacity.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-weight mr-2"></i> Weight Capacity
+                            </label>
+                            {{ form.weight_capacity|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.assembly_required.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-tools mr-2"></i> Assembly Required
+                            </label>
+                            {{ form.assembly_required|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.style.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-paint-brush mr-2"></i> Style
+                            </label>
+                            {{ form.style|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.water_resistant.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-tint mr-2"></i> Water Resistant
+                            </label>
+                            {{ form.water_resistant|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.upholstery_material.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-couch mr-2"></i> Upholstery Material
+                            </label>
+                            {{ form.upholstery_material|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Clothing, Shoes & Fashion -->
+                        <h4 class="text-success font-weight-bold mb-3 mt-4">Clothing, Shoes & Fashion</h4>
+                        <div class="form-group">
+                            <label for="{{ form.size.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-tshirt mr-2"></i> Size
+                            </label>
+                            {{ form.size|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.gender.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-genderless mr-2"></i> Gender
+                            </label>
+                            {{ form.gender|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.fabric_type.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-thread mr-2"></i> Fabric Type
+                            </label>
+                            {{ form.fabric_type|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.washing_instructions.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-hand-washing mr-2"></i> Washing Instructions
+                            </label>
+                            {{ form.washing_instructions|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.shoe_type.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-shoe-prints mr-2"></i> Shoe Type
+                            </label>
+                            {{ form.shoe_type|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.closure_type.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-undo mr-2"></i> Closure Type
+                            </label>
+                            {{ form.closure_type|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Automobile & Vehicle Accessories -->
+                        <h4 class="text-success font-weight-bold mb-3 mt-4">Automobile & Vehicle Accessories</h4>
+                        <div class="form-group">
+                            <label for="{{ form.fuel_type.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-gas-pump mr-2"></i> Fuel Type
+                            </label>
+                            {{ form.fuel_type|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.transmission.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-cog mr-2"></i> Transmission
+                            </label>
+                            {{ form.transmission|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.mileage.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-tachometer-alt mr-2"></i> Mileage
+                            </label>
+                            {{ form.mileage|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.engine_capacity.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-engine mr-2"></i> Engine Capacity
+                            </label>
+                            {{ form.engine_capacity|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.top_speed.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-tachometer-alt mr-2"></i> Top Speed
+                            </label>
+                            {{ form.top_speed|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.number_of_seats.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-chair mr-2"></i> Number of Seats
+                            </label>
+                            {{ form.number_of_seats|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Food & Beverages -->
+                        <h4 class="text-success font-weight-bold mb-3 mt-4">Food & Beverages</h4>
+                        <div class="form-group">
+                            <label for="{{ form.expiration_date.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-calendar-times mr-2"></i> Expiration Date
+                            </label>
+                            {{ form.expiration_date|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.ingredients.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-list-ol mr-2"></i> Ingredients
+                            </label>
+                            {{ form.ingredients|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.calories.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-fire mr-2"></i> Calories
+                            </label>
+                            {{ form.calories|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.dietary_info.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-leaf mr-2"></i> Dietary Information
+                            </label>
+                            {{ form.dietary_info|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.package_size.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-box mr-2"></i> Package Size
+                            </label>
+                            {{ form.package_size|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Books, Stationery & Office Supplies -->
+                        <h4 class="text-success font-weight-bold mb-3 mt-4">Books, Stationery & Office Supplies</h4>
+                        <div class="form-group">
+                            <label for="{{ form.author.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-user-edit mr-2"></i> Author
+                            </label>
+                            {{ form.author|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.publisher.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-print mr-2"></i> Publisher
+                            </label>
+                            {{ form.publisher|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.edition.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-book-open mr-2"></i> Edition
+                            </label>
+                            {{ form.edition|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.pages.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-file-alt mr-2"></i> Pages
+                            </label>
+                            {{ form.pages|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.language.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-language mr-2"></i> Language
+                            </label>
+                            {{ form.language|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.paper_type.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-paper-plane mr-2"></i> Paper Type
+                            </label>
+                            {{ form.paper_type|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Toys & Games -->
+                        <h4 class="text-success font-weight-bold mb-3 mt-4">Toys & Games</h4>
+                        <div class="form-group">
+                            <label for="{{ form.recommended_age.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-child mr-2"></i> Recommended Age
+                            </label>
+                            {{ form.recommended_age|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.safety_certifications.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-shield-alt mr-2"></i> Safety Certifications
+                            </label>
+                            {{ form.safety_certifications|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.battery_required.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-battery-half mr-2"></i> Battery Required
+                            </label>
+                            {{ form.battery_required|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.interactive_features.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-gamepad mr-2"></i> Interactive Features
+                            </label>
+                            {{ form.interactive_features|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Health & Beauty -->
+                        <h4 class="text-success font-weight-bold mb-3 mt-4">Health & Beauty</h4>
+                        <div class="form-group">
+                            <label for="{{ form.skin_type.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-spa mr-2"></i> Skin Type
+                            </label>
+                            {{ form.skin_type|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.scent.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-wind mr-2"></i> Scent
+                            </label>
+                            {{ form.scent|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.application_method.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-hand-holding-water mr-2"></i> Application Method
+                            </label>
+                            {{ form.application_method|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.volume.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-weight-hanging mr-2"></i> Volume
+                            </label>
+                            {{ form.volume|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Sports & Outdoor -->
+                        <h4 class="text-success font-weight-bold mb-3 mt-4">Sports & Outdoor</h4>
+                        <div class="form-group">
+                            <label for="{{ form.sport_type.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-running mr-2"></i> Sport Type
+                            </label>
+                            {{ form.sport_type|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.weather_resistant.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-cloud-sun-rain mr-2"></i> Weather Resistant
+                            </label>
+                            {{ form.weather_resistant|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.material_durability.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-shield-alt mr-2"></i> Material Durability
+                            </label>
+                            {{ form.material_durability|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Jewelry & Accessories -->
+                        <h4 class="text-success font-weight-bold mb-3 mt-4">Jewelry & Accessories</h4>
+                        <div class="form-group">
+                            <label for="{{ form.gemstone.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-gem mr-2"></i> Gemstone
+                            </label>
+                            {{ form.gemstone|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.metal_type.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-ring mr-2"></i> Metal Type
+                            </label>
+                            {{ form.metal_type|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.weight.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-weight-hanging mr-2"></i> Weight
+                            </label>
+                            {{ form.weight|add_class:"form-control rounded-3" }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.certification.id_for_label }}" class="font-weight-bold">
+                                <i class="fas fa-certificate mr-2"></i> Certification
+                            </label>
+                            {{ form.certification|add_class:"form-control rounded-3" }}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-success btn-lg rounded-3">Submit</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

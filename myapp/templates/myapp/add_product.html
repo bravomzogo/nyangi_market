@@ -1,0 +1,176 @@
+{% extends 'myapp/base.html' %}  <!-- Assuming you have a base template -->
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="text-center mb-0">Add a New Product</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!-- Product Name -->
+                        <div class="mb-4">
+                            <label for="id_name" class="form-label fw-bold">
+                                <i class="fas fa-tag me-2"></i>Product Name
+                            </label>
+                            {{ form.name }}
+                            <small class="form-text text-muted">Enter the name of the product.</small>
+                        </div>
+                        <!-- Price -->
+                        <div class="mb-4">
+                            <label for="id_price" class="form-label fw-bold">
+                                <i class="fas fa-dollar-sign me-2"></i>Price
+                            </label>
+                            {{ form.price }}
+                            <small class="form-text text-muted">Enter the price of the product.</small>
+                        </div>
+                        <!-- Category -->
+                        <div class="mb-4">
+                            <label for="id_category" class="form-label fw-bold">
+                                <i class="fas fa-list-alt me-2"></i>Category
+                            </label>
+                            {{ form.category }}
+                            <small class="form-text text-muted">Select the category of the product.</small>
+                        </div>
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="id_description" class="form-label fw-bold">
+                                <i class="fas fa-align-left me-2"></i>Description
+                            </label>
+                            {{ form.description }}
+                            <small class="form-text text-muted">Provide a detailed description of the product.</small>
+                        </div>
+                        <!-- Image -->
+                        <div class="mb-4">
+                            <label for="id_image" class="form-label fw-bold">
+                                <i class="fas fa-image me-2"></i>Image
+                            </label>
+                            {{ form.image }}
+                            <small class="form-text text-muted">Upload an image of the product.</small>
+                        </div>
+                         <!-- Image1 -->
+                         <div class="mb-4">
+                            <label for="id_image" class="form-label fw-bold">
+                                <i class="fas fa-image me-2"></i>Image 1
+                            </label>
+                            {{ form.image1 }}
+                            <small class="form-text text-muted">Upload another image (Optional)</small>
+                        </div>
+                         <!-- Image2 -->
+                         <div class="mb-4">
+                            <label for="id_image" class="form-label fw-bold">
+                                <i class="fas fa-image me-2"></i>Image 2
+                            </label>
+                            {{ form.image2 }}
+                            <small class="form-text text-muted">Upload another image (Optional)</small>
+                        </div>
+                         <!-- Image3 -->
+                         <div class="mb-4">
+                            <label for="id_image" class="form-label fw-bold">
+                                <i class="fas fa-image me-2"></i>Image 3
+                            </label>
+                            {{ form.image3 }}
+                            <small class="form-text text-muted">Upload another image (Optional)</small>
+                        </div>
+                         <!-- Image4 -->
+                         <div class="mb-4">
+                            <label for="id_image" class="form-label fw-bold">
+                                <i class="fas fa-image me-2"></i>Image 4
+                            </label>
+                            {{ form.image4 }}
+                            <small class="form-text text-muted">Upload another image (Optional) .</small>
+                        </div>
+                        <!-- Stock -->
+                        <div class="mb-4">
+                            <label for="id_stock" class="form-label fw-bold">
+                                <i class="fas fa-boxes me-2"></i>Stock
+                            </label>
+                            {{ form.stock }}
+                            <small class="form-text text-muted">Enter the available stock quantity.</small>
+                        </div>
+                        <!-- Location -->
+                        <div class="mb-4">
+                            <label for="id_location" class="form-label fw-bold">
+                                <i class="fas fa-map-marker-alt me-2"></i>Location
+                            </label>
+                            {{ form.location }}
+                            <small class="form-text text-muted">Enter the location of the product.</small>
+                        </div>
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus-circle me-2"></i>Add Product
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS to style Django-rendered form fields -->
+<style>
+    /* Style all input fields */
+    #id_name,
+    #id_price,
+    #id_stock,
+    #id_location {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        font-size: 1.25rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ced4da;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    /* Style the select dropdown */
+    #id_category {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        font-size: 1.25rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ced4da;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    /* Style the textarea */
+    #id_description {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        font-size: 1.25rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ced4da;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    /* Style the file input */
+    #id_image {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        font-size: 1.25rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ced4da;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    /* Focus effect for all fields */
+    #id_name:focus,
+    #id_price:focus,
+    #id_stock:focus,
+    #id_location:focus,
+    #id_category:focus,
+    #id_description:focus,
+    #id_image:focus {
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    #id_description {
+    height: 90px; /* Adjust height for textarea */
+}
+</style>
+{% endblock %}
