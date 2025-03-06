@@ -4,6 +4,7 @@
 <head>
     {% load static %}
     {% load widget_tweaks %}
+    {% load custom_filters %}
 
     <meta charset="utf-8">
     <title>{% block title %}Nyangi Online Market{% endblock %}</title>
@@ -37,56 +38,20 @@
 <body>
     <div class="container-xxl bg-white p-0">
         <!-- Spinner Start -->
-         <!-- Spinner Start -->
-<div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-    <div class="spinner-content">
-        <img src="{% static 'img/log.jpeg' %}" alt="Loading..." class="spinner-image" style="width: 100px; height: 100px; border-radius: 50%;"><br><br><br>
-        <div class="bouncing-dots">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-content">
+                <img src="{% static 'img/log.jpeg' %}" alt="Loading..." class="spinner-image" style="width: 100px; height: 100px; border-radius: 50%;"><br><br><br>
+                <div class="bouncing-dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-<!-- Spinner End -->
+        <!-- Spinner End -->
 
         <!-- Navbar Start -->
-        <div class="container-fluid nav-bar bg-transparent">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light py-0 px-4">
-                <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center text-center">
-                    <div>
-                        <img class="img-fluid" src="{% static 'img/log.jpeg' %}" alt="Icon" style="width: 40px; height: 40px; margin-right: 8px; border-radius: 50%;">
-                    </div>
-                    <h1><span class="text-primary"> nyangi</span> market</h1>
-                </a>
-                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto">
-                        <a href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
-                        <a href="#" class="nav-item nav-link">About</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Property</a>
-                            <div class="dropdown-menu rounded-0 m-0">
-                                <a href="#" class="dropdown-item">Property List</a>
-                                <a href="#" class="dropdown-item">Property Type</a>
-                                <a href="#" class="dropdown-item">Property Agent</a>
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                            <div class="dropdown-menu rounded-0 m-0">
-                                <a href="#" class="dropdown-item">Testimonial</a>
-                                <a href="#" class="dropdown-item">404 Error</a>
-                            </div>
-                        </div>
-                        <a href="#" class="nav-item nav-link">Contact</a>
-                    </div>
-                    <a href="" class="btn btn-primary px-3 d-none d-lg-flex">Add Product</a>
-                </div>
-            </nav>
-        </div>
+        {% include 'myapp/includes/navbar.html' %}
         <!-- Navbar End -->
 
         <!-- Content Block -->
@@ -155,9 +120,9 @@
                     <div class="row">
                         <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
                             &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved. 
-							
-							<!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-							Designed By <a class="border-bottom" href="#">unkown</a>
+                            
+                            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                            Designed By <a class="border-bottom" href="#">unkown</a>
                         </div>
                         <div class="col-md-6 text-center text-md-end">
                             <div class="footer-menu">

@@ -1,0 +1,39 @@
+{% extends "myapp/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Your Cart</h1>
+    {% if cart %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart.items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.product.price }}</td>
+                        <td>{{ item.total_price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <p class="h4">Total Cost: {{ cart.total_cost }}</p>
+            <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg">Checkout</a>
+        </div>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            Your cart is empty.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

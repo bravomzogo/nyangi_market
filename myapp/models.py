@@ -1,5 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
+
+class CustomUser(AbstractUser):
+    USER_TYPE_CHOICES = (
+        ('CEO', 'CEO'),
+        ('STAFF', 'Staff'),
+        ('CUSTOMER', 'Customer'),
+    )
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='CUSTOMER')
 
 
 # List of Tanzanian regions
@@ -217,4 +226,3 @@ class Tech(models.Model):
 
 
 
-   
