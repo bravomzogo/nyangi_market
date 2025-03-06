@@ -1,0 +1,90 @@
+{% load static %}
+{% load custom_filters %}
+
+<div class="container-fluid nav-bar bg-transparent">
+    <nav class="navbar navbar-expand-lg bg-white navbar-light py-0 px-4">
+        <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center text-center">
+            <div>
+                <img class="img-fluid" src="{% static 'img/log.jpeg' %}" alt="Icon" style="width: 40px; height: 40px; margin-right: 8px; border-radius: 50%;">
+            </div>
+            <h1><span class="text-primary"> nyangi</span> market</h1>
+        </a>
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto">
+                <a href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
+                <a href="#" class="nav-item nav-link">About</a>
+                <a href="#carr" class="nav-item nav-link">Products</a>
+                <a href="#" class="nav-item nav-link">Contact</a>
+                <a href="#" class="nav-item nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+            </div>
+            {% if user.is_authenticated %}
+                {% if user|in_group:"CEO,STAFF" %}
+                    <a href="{% url 'add_product' %}" class="btn btn-primary px-3 d-none d-lg-flex">Add Product</a>
+                {% endif %}
+                <a href="{% url 'logout_view' %}" class="btn btn-outline-primary px-3 ms-2 d-none d-lg-flex">Logout</a>
+                <div class="nav-item dropdown d-none d-lg-flex align-items-center ms-3">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">
+                        <i class="fas fa-user"></i> Hi, {{ user.username }}
+                    </a>
+                    <div class="dropdown-menu rounded-0 m-0">
+                        <a href="{% url 'profile' %}" class="dropdown-item">Profile</a>
+                        <a href="{% url 'settings' %}" class="dropdown-item">Settings</a>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}?next=#" class="btn btn-outline-primary px-3 ms-2 d-none d-lg-flex">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-primary px-3 ms-2 d-none d-lg-flex">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+</div>
+
+<!-- Add the bounce effect in CSS -->
+<style>
+    @keyframes bounce {
+        0% {
+            transform: translateY(0);
+        }
+        25% {
+            transform: translateY(-10px);
+        }
+        50% {
+            transform: translateY(0);
+        }
+        75% {
+            transform: translateY(-5px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    .bounce {
+        animation: bounce 1s ease forwards;
+    }
+</style>
+
+<!-- Add JavaScript to trigger the bounce animation -->
+<script>
+    window.addEventListener('load', function () {
+        const loginButton = document.querySelector('a[href="{% url "login" %}"]');
+        const registerButton = document.querySelector('a[href="{% url "register" %}"]');
+        
+        if (loginButton) {
+            loginButton.classList.add('bounce');
+        }
+        if (registerButton) {
+            registerButton.classList.add('bounce');
+        }
+
+        setTimeout(function() {
+            loginButton.classList.remove('bounce');
+            registerButton.classList.remove('bounce');
+        }, 3000);
+    });
+</script>

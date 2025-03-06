@@ -1,11 +1,12 @@
 from django import forms
-from .models import Product,Tech
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from .models import Product, Tech, CustomUser
+
 
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'price', 'category', 'description', 'image', 'image1', 'image2', 'image3', 'image4', 'stock','location']
-
 
 
 class TechForm(forms.ModelForm):
@@ -117,3 +118,28 @@ class TechForm(forms.ModelForm):
             'metal_type': "Metal Type",
             'certification': "Certification Type",
         }
+
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'password1', 'password2', 'user_type')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Define the choices for the user_type dropdown
+        self.fields['user_type'].choices = [
+            ('STAFF', 'Staff'),
+            ('CUSTOMER', 'Customer')
+        ]
+        # Add placeholders and classes to form fields
+        self.fields['username'].widget.attrs.update({'placeholder': 'Enter your username'})
+        self.fields['email'].widget.attrs.update({'placeholder': 'Enter your email address'})
+        self.fields['password1'].widget.attrs.update({'placeholder': 'Enter your password'})
+        self.fields['password2'].widget.attrs.update({'placeholder': 'Confirm your password'})
+        self.fields['user_type'].widget.attrs.update({'class': 'form-select'})  # Add Bootstrap class for dropdown
+
+class CustomAuthenticationForm(AuthenticationForm):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'password')

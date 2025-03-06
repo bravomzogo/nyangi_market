@@ -4,10 +4,10 @@ from .forms import TechForm
 from .models import Product , Tech
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from .models import Product, TANZANIA_REGIONS
-
-
-
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from .forms import CustomUserCreationForm, CustomAuthenticationForm
 
 def product_detail(request, id):
     product = get_object_or_404(Product, id=id)
@@ -95,3 +95,43 @@ def add_tech(request):
     else:
         form = TechForm()
     return render(request, 'myapp/add_technical_details.html', {'form': form})
+
+
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('index')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'myapp/register.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = CustomAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('index')
+    else:
+        form = CustomAuthenticationForm()
+    return render(request, 'myapp/login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('index')
+
+@login_required
+def profile_view(request):
+    return render(request, 'myapp/profile.html')
+
+@login_required
+def settings_view(request):
+    return render(request, 'myapp/settings.html')
+
+# @login_required(login_url='login')
+# def cart_view(request):
+#     cart = get_cart_for_user(request.user)  # Example function to get the cart
+#     return render(request, 'myapp/cart.html', {'cart': cart})

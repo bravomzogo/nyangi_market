@@ -1,0 +1,122 @@
+{% extends "myapp/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2>Register</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Username Input -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.username|add_class:"form-control"|attr:"placeholder:Enter your username" }}
+                            </div>
+                            {% if form.username.errors %}
+                                <div class="text-danger">
+                                    {{ form.username.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Email Input -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                {{ form.email|add_class:"form-control"|attr:"placeholder:Enter your email address" }}
+                            </div>
+                            {% if form.email.errors %}
+                                <div class="text-danger">
+                                    {{ form.email.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                {{ form.password1|add_class:"form-control"|attr:"placeholder:Enter your password"|attr:"id:password1" }}
+                                <span class="input-group-text" id="eye1" onclick="togglePassword('password1', 'eye1')">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                            {% if form.password1.errors %}
+                                <div class="text-danger">
+                                    {{ form.password1.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Confirm Password Input -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                {{ form.password2|add_class:"form-control"|attr:"placeholder:Confirm your password"|attr:"id:password2" }}
+                                <span class="input-group-text" id="eye2" onclick="togglePassword('password2', 'eye2')">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                            {% if form.password2.errors %}
+                                <div class="text-danger">
+                                    {{ form.password2.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- User Type Dropdown -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                {{ form.user_type|add_class:"form-select" }}
+                            </div>
+                            {% if form.user_type.errors %}
+                                <div class="text-danger">
+                                    {{ form.user_type.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword(passwordFieldId, eyeIconId) {
+        // Get password field and eye icon element
+        var passwordField = document.getElementById(passwordFieldId);
+        var eyeIcon = document.getElementById(eyeIconId).getElementsByTagName('i')[0];
+        
+        // Toggle the input type between text and password
+        if (passwordField.type === "password") {
+            passwordField.type = "text"; // Show the password
+            eyeIcon.classList.remove("fa-eye"); // Change eye icon to "eye-slash"
+            eyeIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password"; // Hide the password
+            eyeIcon.classList.remove("fa-eye-slash"); // Change back to "eye"
+            eyeIcon.classList.add("fa-eye");
+        }
+    }
+</script>
+
+{% endblock %}

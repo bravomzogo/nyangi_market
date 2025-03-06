@@ -1,0 +1,91 @@
+{% extends "myapp/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Display form-wide errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Username Field -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.username|add_class:"form-control"|attr:"placeholder:Enter your username" }}
+                            </div>
+                            {% if form.username.errors %}
+                                <div class="text-danger mt-2">
+                                    {{ form.username.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                {{ form.password|add_class:"form-control"|attr:"placeholder:Enter your password"|attr:"id:password" }}
+                                <span class="input-group-text" id="eye" onclick="togglePassword('password', 'eye')">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                            {% if form.password.errors %}
+                                <div class="text-danger mt-2">
+                                    {{ form.password.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <p class="mb-0">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword(passwordFieldId, eyeIconId) {
+        // Get password field and eye icon element
+        var passwordField = document.getElementById(passwordFieldId);
+        var eyeIcon = document.getElementById(eyeIconId).getElementsByTagName('i')[0];
+        
+        // Toggle the input type between text and password
+        if (passwordField.type === "password") {
+            passwordField.type = "text"; // Show the password
+            eyeIcon.classList.remove("fa-eye"); // Change eye icon to "eye-slash"
+            eyeIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password"; // Hide the password
+            eyeIcon.classList.remove("fa-eye-slash"); // Change back to "eye"
+            eyeIcon.classList.add("fa-eye");
+        }
+    }
+</script>
+
+{% endblock %}
