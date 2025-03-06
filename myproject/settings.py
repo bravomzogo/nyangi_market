@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-gdj_ja5-ge-8bglz$%va@rx@_g%ykuxq3$*a6j-%b_(!-l7n0^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'nyangi-market.onrender.com']
 
 
 # Application definition
