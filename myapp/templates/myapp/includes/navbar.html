@@ -29,7 +29,7 @@
                 {% endif %}
                 <a href="{% url 'logout_view' %}" class="btn btn-outline-primary px-3 ms-2 d-none d-lg-flex">Logout</a>
                 <div class="nav-item dropdown d-none d-lg-flex align-items-center ms-3">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">{{ user.username }}</a>
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">Hi, {{ user.username }}</a>
                     <div class="dropdown-menu rounded-0 m-0">
                         <a href="{% url 'profile' %}" class="dropdown-item">Profile</a>
                         <a href="{% url 'settings' %}" class="dropdown-item">Settings</a>
