@@ -19,7 +19,7 @@
                
                 <!-- Removed Pages dropdown -->
                 <a href="#" class="nav-item nav-link">Contact</a>
-                <a href="{% url 'cart' %}" class="nav-item nav-link">
+                <a href="#" class="nav-item nav-link">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
             </div>
@@ -36,7 +36,7 @@
                     </div>
                 </div>
             {% else %}
-                <a href="{% url 'login' %}?next={% url 'cart' %}" class="btn btn-outline-primary px-3 ms-2 d-none d-lg-flex">Login</a>
+                <a href="{% url 'login' %}?next=" class="btn btn-outline-primary px-3 ms-2 d-none d-lg-flex">Login</a>
                 <a href="{% url 'register' %}" class="btn btn-outline-primary px-3 ms-2 d-none d-lg-flex">Register</a>
             {% endif %}
         </div>
