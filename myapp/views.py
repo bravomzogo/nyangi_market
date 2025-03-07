@@ -104,7 +104,6 @@ def add_tech(request):
         form = TechForm()
     return render(request, 'myapp/add_technical_details.html', {'form': form})
 
-
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
