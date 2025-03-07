@@ -9,10 +9,17 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 
-def product_detail(request, id):
+def product_detail(request, id):  # Ensure 'id' is the parameter name
+    # Fetch the product
     product = get_object_or_404(Product, id=id)
-    tech = get_object_or_404(Tech, id=id)
-    return render(request, 'myapp/product_detail.html', {'product': product,'tech': tech})
+    
+    # Try to fetch the Tech object, but don't raise a 404 if it doesn't exist
+    try:
+        tech = Tech.objects.get(id=id)
+    except Tech.DoesNotExist:
+        tech = None
+    
+    return render(request, 'myapp/product_detail.html', {'product': product, 'tech': tech})
 
 from django.shortcuts import render
 from django.core.paginator import Paginator
@@ -24,36 +31,37 @@ def index(request):
     regions = TANZANIA_REGIONS
     
     # Get search parameters from the GET request
-    keyword = request.GET.get('keyword', '')  # Default to empty string if no keyword is provided
-    category = request.GET.get('category', '')  # Default to empty string if no category is selected
-    location = request.GET.get('location', '')  # Default to empty string if no location is selected
+    keyword = request.GET.get('keyword', '')
+    category = request.GET.get('category', '')
+    location = request.GET.get('location', '')
     
     # Start with all products
     products = Product.objects.all()
 
     # Apply filters if parameters are provided
     if keyword:
-        products = products.filter(name__icontains=keyword)  # Filter products by name containing keyword
+        products = products.filter(name__icontains=keyword)
 
-    if category and category != 'All Categories':  # Ignore the default 'All Categories' value
+    if category and category != 'All Categories':
         products = products.filter(category=category)
 
-    if location and location != 'Location':  # Ignore the default 'Location' value
+    if location and location != 'Location':
         products = products.filter(location=location)
 
     # Pagination setup
-    paginator = Paginator(products, 9)  # Show 9 products per page
-    page_number = request.GET.get('page', 1)  # Get the page number from the request
+    paginator = Paginator(products, 3)  # Show 9 products per page
+    page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
     # If it's an AJAX request, return JSON data
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         products_data = [
             {
+                'id': product.id,
                 'name': product.name,
                 'image': product.image.url,
-                'category': product.category,
-                'location': product.location,
+                'category': product.get_category_display(),
+                'location': product.get_location_display(),
                 'price': product.price,
                 'description': product.description,
                 'stock': product.stock,
