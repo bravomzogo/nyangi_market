@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'myproject.urls'
@@ -122,15 +123,16 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-if os.getenv('DJANGO_DEVELOPMENT', 'False') == 'True':  # Check if in development mode
-    STATICFILES_DIRS = [BASE_DIR / 'static']
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-else:  # Production settings
-    STATIC_ROOT = BASE_DIR / 'staticfiles'
-    MEDIA_ROOT = BASE_DIR / 'mediafiles'
+# if os.getenv('DJANGO_DEVELOPMENT', 'False') == 'True':  # Check if in development mode
+#     STATICFILES_DIRS = [BASE_DIR / 'static']
+#     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# else:  # Production settings
+#     STATIC_ROOT = BASE_DIR / 'staticfiles'
+#     MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -138,6 +140,8 @@ else:  # Production settings
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'myapp.CustomUser'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 
