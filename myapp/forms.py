@@ -10,9 +10,10 @@ class ProductForm(forms.ModelForm):
 
 
 class TechForm(forms.ModelForm):
-    class Meta:
-        model = Tech
-        fields = [
+  class Meta:
+    model = Tech
+    
+    fields = [
             'condition', 'dimensions', 'weight', 'material', 'color', 'warranty', 'model', 'release_year',
             'generation', 'brand', 'origin_country', 'power_consumption', 'battery_life', 'charging_time',
             'connectivity', 'processor', 'storage_capacity', 'screen_size', 'resolution', 'weight_capacity',
@@ -26,6 +27,7 @@ class TechForm(forms.ModelForm):
         ]
 
     widgets = {
+         
             'condition': forms.Select(choices=[("New", "New"), ("Used", "Used"), ("Refurbished", "Refurbished")]),
             'dimensions': forms.TextInput(attrs={'placeholder': 'L x W x H'}),
             'weight': forms.TextInput(attrs={'placeholder': 'e.g., 1.5kg, 500g'}),
@@ -73,6 +75,7 @@ class TechForm(forms.ModelForm):
         }
 
     labels = {
+        
             'condition': "Condition",
             'dimensions': "Dimensions (L x W x H)",
             'weight': "Weight",
@@ -124,11 +127,17 @@ class CustomUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Define the choices for the user_type dropdown
         self.fields['user_type'].choices = [
             ('STAFF', 'Staff'),
             ('CUSTOMER', 'Customer')
         ]
-
+        # Add placeholders and classes to form fields
+        self.fields['username'].widget.attrs.update({'placeholder': 'Enter your username'})
+        self.fields['email'].widget.attrs.update({'placeholder': 'Enter your email address'})
+        self.fields['password1'].widget.attrs.update({'placeholder': 'Enter your password'})
+        self.fields['password2'].widget.attrs.update({'placeholder': 'Confirm your password'})
+        self.fields['user_type'].widget.attrs.update({'class': 'form-select'})  # Add Bootstrap class for dropdown
 
 class CustomAuthenticationForm(AuthenticationForm):
     class Meta:
