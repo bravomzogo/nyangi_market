@@ -2,6 +2,42 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import Product, Tech, CustomUser  # Ensure CustomUser is defined in models.py
 
+
+
+# CustomUserCreationForm: Fixed Meta class and ensured user_type is handled
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'password1', 'password2', 'user_type')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Define choices for user_type (assuming it's a CharField with choices in the model)
+        self.fields['user_type'].choices = [
+            ('STAFF', 'Staff'),
+            ('CUSTOMER', 'Customer'),
+        ]
+        # Add placeholders and classes
+        self.fields['username'].widget.attrs.update({'placeholder': 'Enter your username'})
+        self.fields['email'].widget.attrs.update({'placeholder': 'Enter your email address'})
+        self.fields['password1'].widget.attrs.update({'placeholder': 'Enter your password'})
+        self.fields['password2'].widget.attrs.update({'placeholder': 'Confirm your password'})
+        self.fields['user_type'].widget.attrs.update({'class': 'form-select'})
+
+# CustomAuthenticationForm: Removed unnecessary Meta class
+class CustomAuthenticationForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({'placeholder': 'Enter your username'})
+        self.fields['password'].widget.attrs.update({'placeholder': 'Enter your password'})
+
+
+
+
+
+
+
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -119,30 +155,3 @@ class TechForm(forms.ModelForm):
             'certification': "Certification Type",
         }
 
-
-# CustomUserCreationForm: Fixed Meta class and ensured user_type is handled
-class CustomUserCreationForm(UserCreationForm):
-    class Meta:
-        model = CustomUser
-        fields = ('username', 'email', 'password1', 'password2', 'user_type')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Define choices for user_type (assuming it's a CharField with choices in the model)
-        self.fields['user_type'].choices = [
-            ('STAFF', 'Staff'),
-            ('CUSTOMER', 'Customer'),
-        ]
-        # Add placeholders and classes
-        self.fields['username'].widget.attrs.update({'placeholder': 'Enter your username'})
-        self.fields['email'].widget.attrs.update({'placeholder': 'Enter your email address'})
-        self.fields['password1'].widget.attrs.update({'placeholder': 'Enter your password'})
-        self.fields['password2'].widget.attrs.update({'placeholder': 'Confirm your password'})
-        self.fields['user_type'].widget.attrs.update({'class': 'form-select'})
-
-# CustomAuthenticationForm: Removed unnecessary Meta class
-class CustomAuthenticationForm(AuthenticationForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs.update({'placeholder': 'Enter your username'})
-        self.fields['password'].widget.attrs.update({'placeholder': 'Enter your password'})
