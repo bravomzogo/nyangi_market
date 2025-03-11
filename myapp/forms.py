@@ -154,4 +154,3 @@ class TechForm(forms.ModelForm):
             'metal_type': "Metal Type",
             'certification': "Certification Type",
         }
-
