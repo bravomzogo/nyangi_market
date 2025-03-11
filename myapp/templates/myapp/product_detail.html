@@ -109,18 +109,25 @@
     <div class="col-md-12">
         <div class="card shadow-lg p-4 border-0">
             <h4 class="mb-3">Technical Details</h4>
-            <table class="table table-bordered table-striped">
-                <tbody>
-                    {% for field, label in tech.get_technical_details.items %}
-                        {% if field %}
-                            <tr><th>{{ field }}</th><td>{{ label }}</td></tr>
-                        {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
+            
+            {% if tech %}
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                        {% for field, label in tech.get_technical_details.items %}
+                            {% if field %}
+                                <tr><th>{{ field }}</th><td>{{ label }}</td></tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No technical details available for this product.</p>
+            {% endif %}
+            
         </div>
     </div>
 </div>
+
 
 <!-- JavaScript for Image Switching -->
 <script>
