@@ -9,6 +9,57 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 
+
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('index')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'myapp/register.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = CustomAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('index')
+    else:
+        form = CustomAuthenticationForm()
+    return render(request, 'myapp/login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('index')
+
+@login_required
+def profile_view(request):
+    return render(request, 'myapp/profile.html')
+
+@login_required
+def settings_view(request):
+    return render(request, 'myapp/settings.html')
+
+# @login_required(login_url='login')
+# def cart_view(request):
+#     cart = get_cart_for_user(request.user)  # Example function to get the cart
+#     return render(request, 'myapp/cart.html', {'cart': cart})
+
+
+
+
+
+
+
+
+
+
+
+
 def product_detail(request, id):  # Ensure 'id' is the parameter name
     # Fetch the product
     product = get_object_or_404(Product, id=id)
@@ -20,6 +71,7 @@ def product_detail(request, id):  # Ensure 'id' is the parameter name
         tech = None
     
     return render(request, 'myapp/product_detail.html', {'product': product, 'tech': tech})
+
 
 from django.shortcuts import render
 from django.core.paginator import Paginator
@@ -95,51 +147,16 @@ def add_product(request):
         form = ProductForm()
     return render(request, 'myapp/add_product.html', {'form': form})
 
-def add_tech(request):
+def add_tech(request, product_id=None):
     if request.method == 'POST':
-        form = TechForm(request.POST, request.FILES)
+        form = TechForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('index')  # Redirect to the product list page after adding
+            tech = form.save()
+            if product_id:
+                product = get_object_or_404(Product, id=product_id)
+                product.tech = tech
+                product.save()
+            return redirect('index')  # Or redirect to product_detail
     else:
         form = TechForm()
     return render(request, 'myapp/add_technical_details.html', {'form': form})
-
-def register(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('index')
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'myapp/register.html', {'form': form})
-
-def login_view(request):
-    if request.method == 'POST':
-        form = CustomAuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('index')
-    else:
-        form = CustomAuthenticationForm()
-    return render(request, 'myapp/login.html', {'form': form})
-
-def logout_view(request):
-    logout(request)
-    return redirect('index')
-
-@login_required
-def profile_view(request):
-    return render(request, 'myapp/profile.html')
-
-@login_required
-def settings_view(request):
-    return render(request, 'myapp/settings.html')
-
-# @login_required(login_url='login')
-# def cart_view(request):
-#     cart = get_cart_for_user(request.user)  # Example function to get the cart
-#     return render(request, 'myapp/cart.html', {'cart': cart})
