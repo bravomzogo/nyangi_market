@@ -66,7 +66,7 @@ class Product(models.Model):
 
 class Tech(models.Model):
     # General technical details
-    condition = models.CharField(max_length=100, default="New", blank=True)
+    condition = models.CharField(max_length=100, default="", blank=True)
     dimensions = models.CharField(max_length=100, blank=True)
     weight = models.CharField(max_length=50,blank=True)
     material = models.CharField(max_length=100,blank=True)
