@@ -160,3 +160,73 @@ def add_tech(request, product_id=None):
     else:
         form = TechForm()
     return render(request, 'myapp/add_technical_details.html', {'form': form})
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Product, Cart, CartItem
+from django.http import JsonResponse
+
+@login_required
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    
+    cart_item, item_created = CartItem.objects.get_or_create(
+        cart=cart,
+        product=product,
+        defaults={'quantity': 1}
+    )
+    
+    if not item_created:
+        cart_item.quantity += 1
+        cart_item.save()
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'message': f'{product.name} added to cart', 'cart_count': cart.items.count()})
+    
+    return redirect('cart_view')
+
+@login_required
+def cart_view(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart_items = cart.items.all()
+    total_price = sum(item.get_total_price() for item in cart_items)
+    
+    return render(request, 'myapp/cart.html', {
+        'cart_items': cart_items,
+        'total_price': total_price,
+    })
+
+@login_required
+def remove_from_cart(request, item_id):
+    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+    cart_item.delete()
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        cart = cart_item.cart
+        total_price = sum(item.get_total_price() for item in cart.items.all())
+        return JsonResponse({'message': 'Item removed', 'cart_count': cart.items.count(), 'total_price': total_price})
+    
+    return redirect('cart_view')
+
+@login_required
+def update_cart_quantity(request, item_id):
+    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+    quantity = int(request.POST.get('quantity', 1))
+    
+    if quantity > 0:
+        cart_item.quantity = quantity
+        cart_item.save()
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        cart = cart_item.cart
+        total_price = sum(item.get_total_price() for item in cart.items.all())
+        return JsonResponse({
+            'message': 'Quantity updated',
+            'item_total': cart_item.get_total_price(),
+            'total_price': total_price,
+            'cart_count': cart.items.count()
+        })
+    
+    return redirect('cart_view')

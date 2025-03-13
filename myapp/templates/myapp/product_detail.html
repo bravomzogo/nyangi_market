@@ -78,10 +78,18 @@
                     <a href="#" class="btn btn-success btn-lg flex-fill"><i
                             class="fab fa-whatsapp"></i> Chat Now</a>
                 </div>
+
                 <div class="mt-4">
-                    <button id="addToCartBtn" class="btn btn-primary btn-lg w-100">
-                        <i class="fas fa-cart-plus"></i> Add to Cart
-                    </button>
+                    {% if request.user.is_authenticated %}
+                        <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </form>
+                    {% else %}
+                        <p class="text-center">Please <a href="{% url 'login' %}">log in</a> to add items to your cart.</p>
+                    {% endif %}
                     <button class="btn btn-danger btn-lg w-100 mt-2" href="#"><i class="fas fa-bolt"></i> Buy Now</button>
                 </div>
             </div>
@@ -104,7 +112,7 @@
     </div>
 </div>
 
-  <!-- Technical Details Section -->
+<!-- Technical Details Section -->
 <div class="row mt-5">
     <div class="col-md-12">
         <div class="card shadow-lg p-4 border-0">
@@ -123,20 +131,39 @@
             {% else %}
                 <p>No More details available for this product.</p>
             {% endif %}
-            
         </div>
     </div>
 </div>
 
-
-<!-- JavaScript for Image Switching -->
+<!-- JavaScript for Image Switching and Add to Cart -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Inside product_detail.html -->
 <script>
     function changeMainImage(newSrc) {
-        // Update the main image
         document.getElementById('mainImage').src = newSrc;
-        // Update the full-size image in the modal
         document.getElementById('fullSizeImage').src = newSrc;
     }
+
+    $(document).ready(function() {
+        $('.add-to-cart-form').on('submit', function(e) {
+            e.preventDefault();
+            var form = $(this);
+
+            $.ajax({
+                url: form.attr('action'),
+                method: 'POST',
+                data: form.serialize(),
+                success: function(response) {
+                    alert(response.message);
+                    // Trigger custom event to update cart count in base.html
+                    $(document).trigger('cartUpdated', [response.cart_count]);
+                },
+                error: function() {
+                    alert('Error adding item to cart');
+                }
+            });
+        });
+    });
 </script>
 
 <!-- Include Font Awesome -->

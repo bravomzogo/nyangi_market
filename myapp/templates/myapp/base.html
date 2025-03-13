@@ -119,7 +119,7 @@
                 <div class="copyright">
                     <div class="row">
                         <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                            &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved. 
+                            © <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved. 
                             
                             <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
                             Designed By <a class="border-bottom" href="#">unkown</a>
@@ -152,6 +152,21 @@
 
     <!-- Template Javascript -->
     <script src="{% static 'js/main.js' %}"></script>
+
+    <!-- Script to Update Cart Count -->
+    <script>
+        $(document).ready(function() {
+            // Function to update cart count dynamically
+            function updateCartCount(count) {
+                $('#cart-count').text(count);
+            }
+
+            // Example: Update count after adding to cart (triggered from product_detail.html)
+            $(document).on('cartUpdated', function(event, count) {
+                updateCartCount(count);
+            });
+        });
+    </script>
 </body>
 
 </html>
