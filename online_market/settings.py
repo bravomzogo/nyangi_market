@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-ag66=x47=j%u626ymqp9xd*$5)f+x8dq5lwk#f*4=x$#z83uo0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "7811-197-186-2-206.ngrok-free.app",  # Add your ngrok URL here
+]
 
 
 # Application definition
@@ -64,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'myapp.context_processors.cart_item_count',
             ],
         },
     },
@@ -116,14 +121,36 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
+if os.getenv('DJANGO_DEVELOPMENT', 'False') == 'True':  # Check if in development mode
+    STATICFILES_DIRS = [BASE_DIR / 'static']
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+else:  # Production settings
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
+    MEDIA_ROOT = BASE_DIR / 'mediafiles'
+
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+MPESA_CONSUMER_KEY = 'fV9T4HsmyzsX1eduguSw9XOsCGO9FpxhZaxj3VmbyGq931kk'
+MPESA_CONSUMER_SECRET = 'vrmWEF8DUPLcb3ApQhRwZf8yMSRX5Y53nuh2hprm4l421ijlX7vsY1hmC1RA54DH'
+MPESA_SHORTCODE = '174379'
+MPESA_PASSKEY = '4f3d6e7a9b4e5a7396d1b8ed9ba33f80'
+MPESA_CALLBACK_URL = 'https://7811-197-186-2-206.ngrok-free.app/mpesa-callback/'
+
+
+# settings.py
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'home'

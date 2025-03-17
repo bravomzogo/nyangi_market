@@ -1,50 +1,60 @@
 {% extends 'myapp/base.html' %}
 {% load static %}
-{% load humanize %}  <!-- Load the humanize filter -->
+{% load humanize %}
 
 {% block content %}
+<!-- Load CSS -->
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <div class="container my-5">
     <div class="row">
         <!-- Product Image Section -->
         <div class="col-md-6 text-center">
             <div class="product-image-container shadow-lg rounded p-3 bg-white">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded" style="max-height: 500px; object-fit: cover; width: 100%;">
+                <img id="mainImage" src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded"
+                    style="max-height: 500px; object-fit: cover; width: 100%; cursor: pointer;"
+                    data-bs-toggle="modal" data-bs-target="#imageModal">
+            </div>
+
+            <!-- Additional Images -->
+            <div class="d-flex justify-content-center mt-3">
+                {% if product.image1 %}
+                <img src="{{ product.image1.url }}" class="additional-img img-thumbnail mx-2"
+                    onclick="changeMainImage('{{ product.image1.url }}')"
+                    style="width: 100px; height: 100px; cursor: pointer;">
+                {% endif %}
+                {% if product.image2 %}
+                <img src="{{ product.image2.url }}" class="additional-img img-thumbnail mx-2"
+                    onclick="changeMainImage('{{ product.image2.url }}')"
+                    style="width: 100px; height: 100px; cursor: pointer;">
+                {% endif %}
+                {% if product.image3 %}
+                <img src="{{ product.image3.url }}" class="additional-img img-thumbnail mx-2"
+                    onclick="changeMainImage('{{ product.image3.url }}')"
+                    style="width: 100px; height: 100px; cursor: pointer;">
+                {% endif %}
+                {% if product.image4 %}
+                <img src="{{ product.image4.url }}" class="additional-img img-thumbnail mx-2"
+                    onclick="changeMainImage('{{ product.image4.url }}')"
+                    style="width: 100px; height: 100px; cursor: pointer;">
+                {% endif %}
             </div>
         </div>
 
         <!-- Product Details Section -->
         <div class="col-md-6">
             <div class="card shadow-lg p-4 border-0">
-                <!-- Product Details Table -->
                 <table class="table table-bordered table-striped">
                     <tbody>
-                        <tr>
-                            <th>Product</th>
-                            <td>{{ product.name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Price (Tsh)</th>
-                            <td>{{ product.price|intcomma }}</td> <!-- Using the intcomma filter -->
-                        </tr>
-                        <tr>
-                            <th>Description</th>
-                            <td>{{ product.description }}</td>
-                        </tr>
-                        <tr>
-                            <th>Location</th>
-                            <td>{{ product.location }}</td>
-                        </tr>
-
-                        <tr>
-                            <th>Stock</th>
-                            <td>In Stock</td>
-                        </tr>
-                        <tr>
-                            <th>Seller</th>
-                            <td>{{ product.seller }}</td>
-                        </tr>
+                        <tr><th>Product</th><td>{{ product.name }}</td></tr>
+                        <tr><th>Price (Tsh)</th><td>{{ product.price|intcomma }}</td></tr>
+                        <tr><th>Description</th><td>{{ product.description }}</td></tr>
+                        <tr><th>Location</th><td>{{ product.location }}</td></tr>
+                        <tr><th>Stock</th><td>In Stock</td></tr>
+                        <tr><th>Seller</th><td>{{ product.seller }}</td></tr>
                     </tbody>
                 </table>
 
@@ -54,8 +64,33 @@
                     <a href="https://wa.me/{{ product.seller.phone }}" class="btn btn-success btn-lg flex-fill"><i class="fab fa-whatsapp"></i> Chat Now</a>
                 </div>
                 <div class="mt-4">
-                    <button class="btn btn-primary btn-lg w-100"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-                    <button class="btn btn-danger btn-lg w-100 mt-2"><i class="fas fa-bolt"></i> Buy Now</button>
+                    <button id="addToCartBtn" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                    <a href="https://7811-197-186-2-206.ngrok-free.app/buy/" class="btn btn-danger btn-lg w-100 mt-2">
+                        <i class="fas fa-bolt"></i> Buy Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Full-Size Image -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true" style="background-color: black;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="background-color: rgba(48, 70, 104, 0.521);">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">{{ product.name }}</h5>
+                    <button type="button" class="btn-close" style="background-color: white !important;" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center position-relative">
+                    <button id="prevImage" class="btn btn-light position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); z-index: 10;">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <img id="fullSizeImage" src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+                    <button id="nextImage" class="btn btn-light position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%); z-index: 10;">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -65,41 +100,14 @@
     <div class="row mt-5">
         <div class="col-md-12">
             <div class="card shadow-lg p-4 border-0">
-                <h4 class="mb-3">Technical Details  (Not working for now, in development...)</h4>
+                <h4 class="mb-3">Technical Details</h4>
                 <table class="table table-bordered table-striped">
                     <tbody>
-                        <tr>
-                            <th>Condition</th>
-                            <td>{{ product.condition }}</td>
-                        </tr>
-                        <tr>
-                            <th>Dimensions</th>
-                            <td>{{ product.dimensions }}</td>
-                        </tr>
-                        <tr>
-                            <th>Material</th>
-                            <td>{{ product.material }}</td>
-                        </tr>
-                        <tr>
-                            <th>Color</th>
-                            <td>{{ product.color }}</td>
-                        </tr>
-                        <tr>
-                            <th>Warranty</th>
-                            <td>{{ product.warranty }}</td>
-                        </tr>
-                        <tr>
-                            <th>Model</th>
-                            <td>{{ product.model }}</td>
-                        </tr>
-                        <tr>
-                            <th>Year of Release</th>
-                            <td>{{ product.release_year }}</td>
-                        </tr>
-                        <tr>
-                            <th>Generation</th>
-                            <td>{{ product.generation }}</td>
-                        </tr>
+                        {% for field, label in product.get_technical_details.items %}
+                            {% if field %}
+                                <tr><th>{{ field }}</th><td>{{ label }}</td></tr>
+                            {% endif %}
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -107,69 +115,115 @@
     </div>
 </div>
 
-<!-- Add FontAwesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-<!-- Custom CSS -->
+<!-- Custom Styles -->
 <style>
-    .product-image-container {
-        overflow: hidden;
-        border-radius: 10px;
-        border: 1px solid #ddd;
+    .product-image {
+        height: 250px;
+        width: 100%;
+        object-fit: cover;
     }
-    .shadow-lg {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    #fullSizeImage {
+        max-height: 120vh;
+        max-width: 100%;
+        object-fit: cover;
+        border-radius: 0 !important; /* Remove border radius */
     }
-    .btn-warning {
-        background-color: #ff9900;
-        border: none;
+    .modal-lg {
+        max-width: 90%;
+        color: white;
     }
-    .btn-warning:hover {
-        background-color: #e68a00;
+    .modal {
+        z-index: 1055;
     }
-    .btn-primary {
-        background-color: #ff5722;
-        border: none;
+    .modal-body {
+        padding: 0;
     }
-    .btn-primary:hover {
-        background-color: #e64a19;
-    }
-    .btn-danger {
-        background-color: #d32f2f;
-        border: none;
-    }
-    .btn-danger:hover {
-        background-color: #b71c1c;
-    }
-    .table th, .table td {
-        padding: 10px 15px;
-        word-wrap: break-word; /* Ensures long text wraps inside the table cells */
-        max-width: 300px; /* Optionally, set a maximum width to prevent overflowing */
-    }
-    .table-bordered {
-        border: 1px solid #ddd;
-    }
-
-    .table td {
-        white-space: normal; /* Allow text to wrap inside table cells */
-        overflow: hidden;    /* Hide content that exceeds the cell */
-        text-overflow: ellipsis; /* Add ellipsis for overflowed text */
-    }
-
-    .container {
-        max-width: 1200px; /* Optionally, limit the container width */
-        margin: 0 auto;
-    }
-
-    .d-flex.flex-wrap.gap-2 {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .flex-fill {
-        flex: 1;
-        min-width: 150px;
+    .modal-body img {
+        width: 90%;
+        height: 900px;
     }
 </style>
+
+<!-- JavaScript for Image Switching and Modal Navigation -->
+<script>
+    // Define the image array using a JSON-like structure
+    const imageArray = [
+        "{{ product.image.url|escapejs }}",
+        {% if product.image1 %}"{{ product.image1.url|escapejs }}",{% endif %}
+        {% if product.image2 %}"{{ product.image2.url|escapejs }}",{% endif %}
+        {% if product.image3 %}"{{ product.image3.url|escapejs }}",{% endif %}
+        {% if product.image4 %}"{{ product.image4.url|escapejs }}",{% endif %}
+    ].filter(Boolean); // Remove any falsy values
+
+    let currentImageIndex = 0;
+
+    // Function to change main and modal images
+    function changeMainImage(newSrc) {
+        const mainImage = document.getElementById('mainImage');
+        const fullSizeImage = document.getElementById('fullSizeImage');
+        if (mainImage && fullSizeImage) {
+            mainImage.src = newSrc;
+            fullSizeImage.src = newSrc;
+            currentImageIndex = imageArray.indexOf(newSrc);
+        } else {
+            console.error("Image elements not found!");
+        }
+    }
+
+    // Function to update modal image
+    function updateModalImage() {
+        const fullSizeImage = document.getElementById('fullSizeImage');
+        if (fullSizeImage) {
+            fullSizeImage.src = imageArray[currentImageIndex];
+            document.getElementById('mainImage').src = imageArray[currentImageIndex];
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const mainImage = document.getElementById('mainImage');
+        const prevBtn = document.getElementById('prevImage');
+        const nextBtn = document.getElementById('nextImage');
+
+        // Sync modal image when main image is clicked
+        if (mainImage) {
+            mainImage.addEventListener('click', function () {
+                const fullSizeImage = document.getElementById('fullSizeImage');
+                if (fullSizeImage) {
+                    fullSizeImage.src = this.src;
+                    currentImageIndex = imageArray.indexOf(this.src);
+                } else {
+                    console.error("Full-size image element not found!");
+                }
+            });
+        }
+
+        // Previous image button
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function () {
+                currentImageIndex = (currentImageIndex - 1 + imageArray.length) % imageArray.length;
+                updateModalImage();
+            });
+        }
+
+        // Next image button
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function () {
+                currentImageIndex = (currentImageIndex + 1) % imageArray.length;
+                updateModalImage();
+            });
+        }
+
+        // Add to Cart button functionality
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', function () {
+                window.location.href = "{% url 'add_to_cart' product.id %}";
+            });
+        }
+    });
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
 {% endblock %}

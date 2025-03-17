@@ -136,3 +136,18 @@
 .dropdown:hover .dropdown-menu {
     display: block;
 }
+.new-badge {
+    position: relative;
+    top: 10%;
+    left: 0%;
+    background: red;
+    color: white;
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 0%;
+    text-transform: uppercase;
+    z-index: 1000;
+    
+}
+
