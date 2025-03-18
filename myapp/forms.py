@@ -9,7 +9,7 @@ class SellerRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Seller
-        fields = ['shop_name', 'product_types']
+        fields = ['shop_name']
 
     def save(self, commit=True):
         user = User.objects.create_user(

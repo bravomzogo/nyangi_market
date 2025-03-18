@@ -150,9 +150,4 @@
     z-index: 1000;
     
 }
-.product-image {
-    height: 250px; /* Adjust this value as needed */
-    width: 100%; /* Ensures the image takes the full width of its container */
-    object-fit: cover; /* Ensures the image covers the area without distortion */
-}
 

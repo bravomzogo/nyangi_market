@@ -1,5 +1,13 @@
 {% extends 'myapp/base.html' %}
 
+{% block shop_with_us %}
+<!-- Override to hide the "Shop with us" dropdown -->
+{% endblock %}
+
+{% block search_form %}
+<!-- Override to hide the search form -->
+{% endblock %}
+
 {% block content %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
@@ -80,6 +88,5 @@
         {% endif %}
     </div>
 </div>
-
 
 {% endblock %}

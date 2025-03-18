@@ -41,4 +41,437 @@
     border-color: #45a049;
 }
 
+   /* Loader */
+
+   #loader-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+}
+
+#loader {
+    display: block;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #3498db;
+
+    -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+    animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+
+    z-index: 1001;
+}
+
+#loader:before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #e74c3c;
+
+    -webkit-animation: spin 3s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+    animation: spin 3s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+}
+
+#loader:after {
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #f9c922;
+
+    -webkit-animation: spin 1.5s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+    animation: spin 1.5s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+        -ms-transform: rotate(0deg);  /* IE 9 */
+        transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+    }
+    100% {
+        -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+        -ms-transform: rotate(360deg);  /* IE 9 */
+        transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+    }
+}
+
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+        -ms-transform: rotate(0deg);  /* IE 9 */
+        transform: rotate(0deg);  /* Firefox 16+, IE 10+, Opera */
+    }
+    100% {
+        -webkit-transform: rotate(360deg);  /* Chrome, Opera 15+, Safari 3.1+ */
+        -ms-transform: rotate(360deg);  /* IE 9 */
+        transform: rotate(360deg);  /* Firefox 16+, IE 10+, Opera */
+    }
+}
+
+#loader-wrapper .loader-section {
+    position: fixed;
+    top: 0;
+    width: 51%;
+    height: 100%;
+    background: #222222;
+    z-index: 1000;
+    -webkit-transform: translateX(0);  /* Chrome, Opera 15+, Safari 3.1+ */
+    -ms-transform: translateX(0);  /* IE 9 */
+    transform: translateX(0);  /* Firefox 16+, IE 10+, Opera */
+}
+
+#loader-wrapper .loader-section.section-left {
+    left: 0;
+}
+
+#loader-wrapper .loader-section.section-right {
+    right: 0;
+}
+
+/* Loaded */
+.loaded #loader-wrapper .loader-section.section-left {
+    -webkit-transform: translateX(-100%);  /* Chrome, Opera 15+, Safari 3.1+ */
+    -ms-transform: translateX(-100%);  /* IE 9 */
+    transform: translateX(-100%);  /* Firefox 16+, IE 10+, Opera */
+
+    -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+    transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+}
+
+.loaded #loader-wrapper .loader-section.section-right {
+    -webkit-transform: translateX(100%);  /* Chrome, Opera 15+, Safari 3.1+ */
+    -ms-transform: translateX(100%);  /* IE 9 */
+    transform: translateX(100%);  /* Firefox 16+, IE 10+, Opera */
+
+    -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+    transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+}
+
+.loaded #loader {
+    opacity: 0;
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+.loaded #loader-wrapper {
+    visibility: hidden;
+
+    -webkit-transform: translateY(-100%);  /* Chrome, Opera 15+, Safari 3.1+ */
+    -ms-transform: translateY(-100%);  /* IE 9 */
+    transform: translateY(-100%);  /* Firefox 16+, IE 10+, Opera */
+
+    -webkit-transition: all 0.3s 1s ease-out;
+    transition: all 0.3s 1s ease-out;
+}
+
+/* JavaScript Turned Off */
+.no-js #loader-wrapper {
+    display: none;
+}
+
+/* loader ends here */
+
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    background-color: #d3e0ec;
+    font-family: Arial, sans-serif;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+header {
+    background-color: rgb(106, 26, 163);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin: 0;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+nav a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    font-size: 1.2em;
+}
+
+nav a:hover {
+    text-decoration: underline;
+    color: red;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.logo {
+    width: 150px;
+    height: 150px;
+    border-radius: 70%;
+    border: 2px solid white;
+}
+
+.dropdown {
+    text-align: center;
+    margin: none;
+}
+
+.cover {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+}
+
+#background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.cover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+.cover-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+}
+
+.cover-content form {
+    margin-top: none;
+    background-color: rgba(255, 255, 255, 0.582);
+    border-radius: 40px;
+    display: inline-flex;
+    overflow: hidden;
+    width: 300px;
+}
+
+.cover-content input[type="text"] {
+    padding: 10px;
+    font-size: 1.2em;
+    width: 300px;
+    border: none;
+    flex: 1;
+    outline: none;
+}
+
+.cover-content h2 {
+    font-size: 3em;
+    margin: 0;
+}
+
+.cover-content button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.cover-content button:hover {
+    background-color: #45a049;
+}
+
+#products {
+    padding: 30px 10%;
+}
+
+footer {
+    background-color: #2b2b2b;
+    color: white;
+    padding: 50px 10%;
+    text-align: center;
+    position: relative;
+    margin-top: 30px;
+    font-family: Arial, sans-serif;
+    border-top: 2px solid #f44336;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.footer-logo-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.footer-logo h3 {
+    font-size: 1.5em;
+    font-family: 'Georgia', serif;
+    margin: 0;
+}
+
+.footer-links {
+    flex: 2;
+    text-align: left;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin: 10px 0;
+}
+
+.footer-links a {
+    color: #f44336;
+    text-decoration: none;
+    font-size: 1.1em;
+}
+
+.footer-links a:hover {
+    color: #f1f1f1;
+    text-decoration: underline;
+}
+
+.footer-social {
+    flex: 1;
+    text-align: right;
+}
+
+.social-icon {
+    font-size: 2em;
+    color: #f44336;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.social-icon:hover {
+    color: #ffffff;
+}
+
+.footer-text {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #bbb;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212;
+    color: rgb(187, 173, 173);
+}
+
+header.dark-mode {
+    background-color: #1f1f1f;
+    color: white;
+}
+
+footer.dark-mode {
+    background-color: #333;
+    color: white;
+}
+
+/* Dark Mode Toggle Icon */
+#theme-toggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 50%;
+    transition: background 0.3s;
+}
+
+#theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+
+/* Back to Top Button */
+#back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #1b1d1b;
+    color: white;
+    border: none;
+    border-radius: 7%;
+    font-size: 10px;
+    padding: 15px;
+    cursor: pointer;
+    display: none;
+    z-index: 1000;
+}
+
+#back-to-top:hover {
+    background-color: #4f574f;
+}
+
+
+
+
+
+
 

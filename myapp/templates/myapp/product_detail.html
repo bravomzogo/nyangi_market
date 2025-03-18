@@ -2,6 +2,14 @@
 {% load static %}
 {% load humanize %}
 
+{% block shop_with_us %}
+<!-- Override to hide the "Shop with us" dropdown -->
+{% endblock %}
+
+{% block search_form %}
+<!-- Override to hide the search form -->
+{% endblock %}
+
 {% block content %}
 <!-- Load CSS -->
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
@@ -9,65 +17,77 @@
 <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-<div class="container my-5">
-    <div class="row">
+<div class="container my-4 my-md-5">
+    <div class="row g-4">
         <!-- Product Image Section -->
-        <div class="col-md-6 text-center">
+        <div class="col-12 col-md-6">
             <div class="product-image-container shadow-lg rounded p-3 bg-white">
-                <img id="mainImage" src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded"
-                    style="max-height: 500px; object-fit: cover; width: 100%; cursor: pointer;"
-                    data-bs-toggle="modal" data-bs-target="#imageModal">
+                <img id="mainImage" src="{{ product.image.url }}" alt="{{ product.name }}" 
+                     class="img-fluid rounded w-100" 
+                     style="max-height: 500px; object-fit: cover; cursor: pointer;"
+                     data-bs-toggle="modal" data-bs-target="#imageModal">
             </div>
 
             <!-- Additional Images -->
-            <div class="d-flex justify-content-center mt-3">
+            <div class="d-flex flex-wrap justify-content-center mt-3 gap-2">
                 {% if product.image1 %}
-                <img src="{{ product.image1.url }}" class="additional-img img-thumbnail mx-2"
-                    onclick="changeMainImage('{{ product.image1.url }}')"
-                    style="width: 100px; height: 100px; cursor: pointer;">
+                <img src="{{ product.image1.url }}" class="additional-img img-thumbnail"
+                     onclick="changeMainImage('{{ product.image1.url }}')"
+                     style="width: 80px; height: 80px; cursor: pointer; object-fit: cover;">
                 {% endif %}
                 {% if product.image2 %}
-                <img src="{{ product.image2.url }}" class="additional-img img-thumbnail mx-2"
-                    onclick="changeMainImage('{{ product.image2.url }}')"
-                    style="width: 100px; height: 100px; cursor: pointer;">
+                <img src="{{ product.image2.url }}" class="additional-img img-thumbnail"
+                     onclick="changeMainImage('{{ product.image2.url }}')"
+                     style="width: 80px; height: 80px; cursor: pointer; object-fit: cover;">
                 {% endif %}
                 {% if product.image3 %}
-                <img src="{{ product.image3.url }}" class="additional-img img-thumbnail mx-2"
-                    onclick="changeMainImage('{{ product.image3.url }}')"
-                    style="width: 100px; height: 100px; cursor: pointer;">
+                <img src="{{ product.image3.url }}" class="additional-img img-thumbnail"
+                     onclick="changeMainImage('{{ product.image3.url }}')"
+                     style="width: 80px; height: 80px; cursor: pointer; object-fit: cover;">
                 {% endif %}
                 {% if product.image4 %}
-                <img src="{{ product.image4.url }}" class="additional-img img-thumbnail mx-2"
-                    onclick="changeMainImage('{{ product.image4.url }}')"
-                    style="width: 100px; height: 100px; cursor: pointer;">
+                <img src="{{ product.image4.url }}" class="additional-img img-thumbnail"
+                     onclick="changeMainImage('{{ product.image4.url }}')"
+                     style="width: 80px; height: 80px; cursor: pointer; object-fit: cover;">
                 {% endif %}
             </div>
         </div>
 
         <!-- Product Details Section -->
-        <div class="col-md-6">
-            <div class="card shadow-lg p-4 border-0">
-                <table class="table table-bordered table-striped">
-                    <tbody>
-                        <tr><th>Product</th><td>{{ product.name }}</td></tr>
-                        <tr><th>Price (Tsh)</th><td>{{ product.price|intcomma }}</td></tr>
-                        <tr><th>Description</th><td>{{ product.description }}</td></tr>
-                        <tr><th>Location</th><td>{{ product.location }}</td></tr>
-                        <tr><th>Stock</th><td>In Stock</td></tr>
-                        <tr><th>Seller</th><td>{{ product.seller }}</td></tr>
-                    </tbody>
-                </table>
-
-                <div class="mt-4 d-flex flex-wrap gap-2 justify-content-between">
-                    <a href="{% url 'home' %}" class="btn btn-secondary btn-lg flex-fill"><i class="fas fa-arrow-left"></i> Back to Home</a>
-                    <a href="tel:{{ product.seller.phone }}" class="btn btn-warning btn-lg flex-fill text-white"><i class="fas fa-phone"></i> Contact Seller</a>
-                    <a href="https://wa.me/{{ product.seller.phone }}" class="btn btn-success btn-lg flex-fill"><i class="fab fa-whatsapp"></i> Chat Now</a>
+        <div class="col-12 col-md-6">
+            <div class="card shadow-lg p-3 p-md-4 border-0 h-100">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr><th scope="row" class="col-4 col-md-3">Product</th><td>{{ product.name }}</td></tr>
+                            <tr><th scope="row" class="col-4 col-md-3">Price</th><td>{{ product.price|intcomma }} Tsh</td></tr>
+                            <tr>
+                                <th scope="row" class="col-4 col-md-3 align-top">Description</th>
+                                <td class="description-cell" style="word-break: break-word;">{{ product.description }}</td>
+                            </tr>
+                            <tr><th scope="row" class="col-4 col-md-3">Location</th><td>{{ product.location }}</td></tr>
+                            <tr><th scope="row" class="col-4 col-md-3">Stock</th><td>In Stock</td></tr>
+                            <tr><th scope="row" class="col-4 col-md-3">Seller</th><td>{{ product.seller }}</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="mt-4">
-                    <button id="addToCartBtn" class="btn btn-primary btn-lg w-100">
+
+                <div class="mt-3 d-flex flex-column flex-md-row gap-2">
+                    <a href="{% url 'home' %}" class="btn btn-secondary flex-fill">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </a>
+                    <a href="tel:{{ product.seller.phone }}" class="btn btn-warning text-white flex-fill">
+                        <i class="fas fa-phone"></i> Contact Seller
+                    </a>
+                    <a href="https://wa.me/{{ product.seller.phone }}" class="btn btn-success flex-fill">
+                        <i class="fab fa-whatsapp"></i> Chat Now
+                    </a>
+                </div>
+                <div class="mt-3 d-grid gap-2">
+                    <button id="addToCartBtn" class="btn btn-primary">
                         <i class="fas fa-cart-plus"></i> Add to Cart
                     </button>
-                    <a href="https://7811-197-186-2-206.ngrok-free.app/buy/" class="btn btn-danger btn-lg w-100 mt-2">
+                    <a href="https://7811-197-186-2-206.ngrok-free.app/buy/" class="btn btn-danger">
                         <i class="fas fa-bolt"></i> Buy Now
                     </a>
                 </div>
@@ -76,19 +96,22 @@
     </div>
 
     <!-- Modal for Full-Size Image -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true" style="background-color: black;">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content" style="background-color: rgba(48, 70, 104, 0.521);">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel">{{ product.name }}</h5>
-                    <button type="button" class="btn-close" style="background-color: white !important;" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-white" id="imageModalLabel">{{ product.name }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body text-center position-relative">
-                    <button id="prevImage" class="btn btn-light position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); z-index: 10;">
+                <div class="modal-body p-0 text-center position-relative">
+                    <button id="prevImage" class="btn btn-light position-absolute" 
+                            style="left: 10px; top: 50%; transform: translateY(-50%);">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <img id="fullSizeImage" src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
-                    <button id="nextImage" class="btn btn-light position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%); z-index: 10;">
+                    <img id="fullSizeImage" src="{{ product.image.url }}" alt="{{ product.name }}" 
+                         class="img-fluid w-100">
+                    <button id="nextImage" class="btn btn-light position-absolute" 
+                            style="right: 10px; top: 50%; transform: translateY(-50%);">
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
@@ -97,19 +120,24 @@
     </div>
 
     <!-- Technical Details Section -->
-    <div class="row mt-5">
-        <div class="col-md-12">
-            <div class="card shadow-lg p-4 border-0">
+    <div class="row mt-4 mt-md-5">
+        <div class="col-12">
+            <div class="card shadow-lg p-3 p-md-4 border-0">
                 <h4 class="mb-3">More Details</h4>
-                <table class="table table-bordered table-striped">
-                    <tbody>
-                        {% for field, label in product.get_technical_details.items %}
-                            {% if field %}
-                                <tr><th>{{ field }}</th><td>{{ label }}</td></tr>
-                            {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <tbody>
+                            {% for field, label in product.get_technical_details.items %}
+                                {% if field %}
+                                    <tr>
+                                        <th scope="row" class="col-4 col-md-3">{{ field }}</th>
+                                        <td style="word-break: break-word;">{{ label }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -117,47 +145,47 @@
 
 <!-- Custom Styles -->
 <style>
-    .product-image {
-        height: 250px;
-        width: 100%;
-        object-fit: cover;
+    .description-cell {
+        max-width: 0; /* Allows proper word wrapping */
+        white-space: normal; /* Ensures text wraps instead of overflowing */
     }
-    #fullSizeImage {
-        max-height: 120vh;
-        max-width: 100%;
-        object-fit: cover;
-        border-radius: 0 !important; /* Remove border radius */
+    
+    @media (max-width: 767px) {
+        .additional-img {
+            width: 60px !important;
+            height: 60px !important;
+        }
+        .btn {
+            font-size: 0.9rem;
+        }
+        th {
+            font-size: 0.9rem;
+        }
+        td {
+            font-size: 0.9rem;
+        }
     }
-    .modal-lg {
-        max-width: 90%;
-        color: white;
-    }
-    .modal {
-        z-index: 1055;
-    }
-    .modal-body {
-        padding: 0;
-    }
-    .modal-body img {
-        width: 90%;
-        height: 900px;
+
+    @media (max-width: 576px) {
+        .modal-body img {
+            height: auto;
+            max-height: 80vh;
+        }
     }
 </style>
 
-<!-- JavaScript for Image Switching and Modal Navigation -->
+<!-- JavaScript remains the same -->
 <script>
-    // Define the image array using a JSON-like structure
     const imageArray = [
         "{{ product.image.url|escapejs }}",
         {% if product.image1 %}"{{ product.image1.url|escapejs }}",{% endif %}
         {% if product.image2 %}"{{ product.image2.url|escapejs }}",{% endif %}
         {% if product.image3 %}"{{ product.image3.url|escapejs }}",{% endif %}
         {% if product.image4 %}"{{ product.image4.url|escapejs }}",{% endif %}
-    ].filter(Boolean); // Remove any falsy values
+    ].filter(Boolean);
 
     let currentImageIndex = 0;
 
-    // Function to change main and modal images
     function changeMainImage(newSrc) {
         const mainImage = document.getElementById('mainImage');
         const fullSizeImage = document.getElementById('fullSizeImage');
@@ -165,12 +193,9 @@
             mainImage.src = newSrc;
             fullSizeImage.src = newSrc;
             currentImageIndex = imageArray.indexOf(newSrc);
-        } else {
-            console.error("Image elements not found!");
         }
     }
 
-    // Function to update modal image
     function updateModalImage() {
         const fullSizeImage = document.getElementById('fullSizeImage');
         if (fullSizeImage) {
@@ -184,20 +209,16 @@
         const prevBtn = document.getElementById('prevImage');
         const nextBtn = document.getElementById('nextImage');
 
-        // Sync modal image when main image is clicked
         if (mainImage) {
             mainImage.addEventListener('click', function () {
                 const fullSizeImage = document.getElementById('fullSizeImage');
                 if (fullSizeImage) {
                     fullSizeImage.src = this.src;
                     currentImageIndex = imageArray.indexOf(this.src);
-                } else {
-                    console.error("Full-size image element not found!");
                 }
             });
         }
 
-        // Previous image button
         if (prevBtn) {
             prevBtn.addEventListener('click', function () {
                 currentImageIndex = (currentImageIndex - 1 + imageArray.length) % imageArray.length;
@@ -205,7 +226,6 @@
             });
         }
 
-        // Next image button
         if (nextBtn) {
             nextBtn.addEventListener('click', function () {
                 currentImageIndex = (currentImageIndex + 1) % imageArray.length;
@@ -213,7 +233,6 @@
             });
         }
 
-        // Add to Cart button functionality
         const addToCartBtn = document.getElementById('addToCartBtn');
         if (addToCartBtn) {
             addToCartBtn.addEventListener('click', function () {
@@ -223,7 +242,5 @@
     });
 </script>
 
-<!-- Bootstrap JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-
 {% endblock %}

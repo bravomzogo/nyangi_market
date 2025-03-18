@@ -3,45 +3,75 @@
 {% block content %}
 {% load static %}
 {% load humanize %}
-<div class="container">
-    <h2>Your Cart</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
-                <th>Action</th> <!-- New column for the Remove button -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in cart_items %}
-            <tr>
-                <td>{{ item.product.name }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ item.product.price|intcomma }} Tsh</td>
-                <td>{{ item.total_price|intcomma }} Tsh</td> <!-- Corrected total calculation -->
-                <td>
-                    <!-- Remove button -->
-                    <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash"></i> Remove
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <h4>Total Price: {{ total_price|intcomma }} Tsh</h4>
 
-    <!-- Continue Shopping and Buy Now Buttons -->
-    <div class="d-flex justify-content-between mt-4">
-        <a href="{% url 'home' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Continue Shopping
-        </a>
-        <a href="#" class="btn btn-primary">
-            <i class="fas fa-shopping-cart"></i> Buy Now
-        </a>
+{% block shop_with_us %}
+<!-- Override to hide the "Shop with us" dropdown -->
+{% endblock %}
+
+{% block search_form %}
+<!-- Override to hide the search form -->
+{% endblock %}
+
+<div class="container py-4">
+    <h2 class="mb-4">Your Cart</h2>
+    
+    <!-- Cart Table -->
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td class="align-middle">{{ item.product.name }}</td>
+                    <td class="align-middle">{{ item.quantity }}</td>
+                    <td class="align-middle">{{ item.product.price|intcomma }} Tsh</td>
+                    <td class="align-middle">{{ item.total_price|intcomma }} Tsh</td>
+                    <td class="align-middle">
+                        <a href="{% url 'remove_from_cart' item.id %}" 
+                           class="btn btn-danger btn-sm w-100 w-md-auto">
+                            <i class="fas fa-trash"></i> 
+                            <span class="d-none d-md-inline">Remove</span>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4">Your cart is empty</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Total Price -->
+    <div class="row justify-content-end">
+        <div class="col-12 col-md-6 col-lg-4">
+            <h4 class="text-end mt-3">Total Price: {{ total_price|intcomma }} Tsh</h4>
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="row mt-4 g-3">
+        <div class="col-12 col-md-6">
+            <a href="{% url 'home' %}" 
+               class="btn btn-secondary w-100">
+                <i class="fas fa-arrow-left"></i> Continue Shopping
+            </a>
+        </div>
+        <div class="col-12 col-md-6">
+            <a href="#" 
+               class="btn btn-primary w-100">
+                <i class="fas fa-shopping-cart"></i> Buy Now
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}

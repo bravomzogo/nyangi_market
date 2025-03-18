@@ -1,3 +1,4 @@
+<!-- base.html -->
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
@@ -19,299 +20,17 @@
 
     <!-- Custom CSS -->
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
-
-        body {
-            background-color: #d3e0ec;
-            font-family: Arial, sans-serif;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        header {
-            background-color: rgb(106, 26, 163);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 2.5em;
-            margin: 0;
-        }
-
-        nav {
-            margin-top: 10px;
-        }
-
-        nav a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-            font-size: 1.2em;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-            color: red;
-        }
-
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .logo {
-            width: 150px;
-            height: 150px;
-            border-radius: 70%;
-            border: 2px solid white;
-        }
-
-        .dropdown {
-            text-align: center;
-            margin: none;
-        }
-
-        .cover {
-            position: relative;
-            overflow: hidden;
-            min-height: 100vh;
-            height: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: white;
-        }
-
-        #background-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-        }
-
-        .cover-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: -1;
-        }
-
-        .cover-content {
-            position: relative;
-            z-index: 2;
-            color: white;
-        }
-
-        .cover-content form {
-            margin-top: none;
-            background-color: rgba(255, 255, 255, 0.582);
-            border-radius: 40px;
-            display: inline-flex;
-            overflow: hidden;
-            width: 300px;
-        }
-
-        .cover-content input[type="text"] {
-            padding: 10px;
-            font-size: 1.2em;
-            width: 300px;
-            border: none;
-            flex: 1;
-            outline: none;
-        }
-
-        .cover-content h2 {
-            font-size: 3em;
-            margin: 0;
-        }
-
-        .cover-content button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 30px;
-            font-size: 1.1em;
-            cursor: pointer;
-            margin: 10px;
-        }
-
-        .cover-content button:hover {
-            background-color: #45a049;
-        }
-
-        #products {
-            padding: 30px 10%;
-        }
-
-        footer {
-            background-color: #2b2b2b;
-            color: white;
-            padding: 50px 10%;
-            text-align: center;
-            position: relative;
-            margin-top: 30px;
-            font-family: Arial, sans-serif;
-            border-top: 2px solid #f44336;
-        }
-
-        .footer-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            flex: 1;
-        }
-
-        .footer-logo-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-        }
-
-        .footer-logo h3 {
-            font-size: 1.5em;
-            font-family: 'Georgia', serif;
-            margin: 0;
-        }
-
-        .footer-links {
-            flex: 2;
-            text-align: left;
-        }
-
-        .footer-links ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer-links li {
-            margin: 10px 0;
-        }
-
-        .footer-links a {
-            color: #f44336;
-            text-decoration: none;
-            font-size: 1.1em;
-        }
-
-        .footer-links a:hover {
-            color: #f1f1f1;
-            text-decoration: underline;
-        }
-
-        .footer-social {
-            flex: 1;
-            text-align: right;
-        }
-
-        .social-icon {
-            font-size: 2em;
-            color: #f44336;
-            margin: 0 10px;
-            transition: color 0.3s ease;
-        }
-
-        .social-icon:hover {
-            color: #ffffff;
-        }
-
-        .footer-text {
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #bbb;
-        }
-
-        /* Dark Mode Styles */
-        body.dark-mode {
-            background-color: #121212;
-            color: rgb(187, 173, 173);
-        }
-
-        header.dark-mode {
-            background-color: #1f1f1f;
-            color: white;
-        }
-
-        footer.dark-mode {
-            background-color: #333;
-            color: white;
-        }
-
-        /* Dark Mode Toggle Icon */
-        #theme-toggle {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            font-size: 24px;
-            cursor: pointer;
-            background-color: rgba(0, 0, 0, 0.1);
-            padding: 10px;
-            border-radius: 50%;
-            transition: background 0.3s;
-        }
-
-        #theme-toggle:hover {
-            background-color: rgba(0, 0, 0, 0.2);
-        }
-
-
-        /* Back to Top Button */
-        #back-to-top {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #1b1d1b;
-            color: white;
-            border: none;
-            border-radius: 7%;
-            font-size: 10px;
-            padding: 15px;
-            cursor: pointer;
-            display: none;
-            z-index: 1000;
-        }
-
-        #back-to-top:hover {
-            background-color: #4f574f;
-        }
+        
     </style>
 </head>
 
 <body>
-    <!-- Page Loader
-    <div id="loader">
-        <div class="spinner"></div>
-    </div> -->
-     <!-- Loader -->
-     <div id="loader-wrapper">
+    <!-- Loader -->
+    <div id="loader-wrapper">
         <div id="loader"></div>
         <div class="loader-section section-left"></div>
         <div class="loader-section section-right"></div>
     </div>
-
 
     <header>
         <div class="logo-container">
@@ -322,31 +41,33 @@
             <a href="{% url 'home' %}" style="text-decoration: none;">Home</a>
             <a href="#" style="text-decoration: none;">About Us</a>
              <!-- Header Links for Login, Register, and Cart -->
-    <div class="d-flex justify-content-end align-items-center mb-3">
-        {% if user.is_authenticated %}
-            <!-- Display Cart Icon with Item Count -->
-            <a href="{% url 'view_cart' %}" class="btn btn-outline-primary me-2 position-relative" style="background-color:yellow;">
-                <i class="fas fa-shopping-cart"></i>
-                {% if cart_item_count > 0 %}
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {{ cart_item_count }}
-                    </span>
+            <div class="d-flex justify-content-end align-items-center mb-3">
+                {% if user.is_authenticated %}
+                    <!-- Display Cart Icon with Item Count -->
+                    <a href="{% url 'view_cart' %}" class="btn btn-outline-primary me-2 position-relative" style="background-color:yellow;">
+                        <i class="fas fa-shopping-cart"></i>
+                        {% if cart_item_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ cart_item_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+                    <!-- Logout Link -->
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger" style="background-color:rgb(63, 59, 60); color: rgb(126, 114, 114);">Logout</a>
+                {% else %}
+                    <!-- Login and Register Links -->
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary me-2" style="background-color:rgb(17, 0, 255); color: white;">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-success" style="color: white; background-color: #45a049;">Register</a>
                 {% endif %}
-            </a>
-            <!-- Logout Link -->
-            <a href="{% url 'logout' %}" class="btn btn-outline-danger" style="background-color:rgb(63, 59, 60); color: rgb(126, 114, 114);">Logout</a>
-        {% else %}
-            <!-- Login and Register Links -->
-            <a href="{% url 'login' %}" class="btn btn-outline-primary me-2" style="background-color:rgb(17, 0, 255); color: white;">Login</a>
-            <a href="{% url 'register' %}" class="btn btn-outline-success" style="color: white; background-color: #45a049;">Register</a>
-        {% endif %}
-    </div>
+            </div>
         </nav>
     </header>
 
     <!-- Dark Mode Toggle Icon -->
     <i id="theme-toggle" class="fas fa-moon"></i>
 
+    <!-- Block for Shop with Us Dropdown -->
+    {% block shop_with_us %}
     <div class="dropdown">
         <a href="#products" class="dropdown-toggle">Shop with us</a>
         <div class="dropdown-menu">
@@ -359,12 +80,15 @@
             </ul>
         </div>
     </div>
+    {% endblock %}
 
     {% block video %}
     <!-- This block will be filled in home.html -->
     {% endblock %}
 
     <main id="products">
+        <!-- Block for Search Form -->
+        {% block search_form %}
         <div class="cover-content">
             <form id="searchForm" action="{% url 'home' %}" method="GET">
                 <input type="text" name="query" value="{{ query }}" placeholder="Search products..." required style="width: 150px;">
@@ -372,6 +96,7 @@
             </form>
             <p style="color: red; padding: 10px;">{{ message }}</p> <!-- Display the search message if no results -->
         </div>
+        {% endblock %}
 
         {% block content %}
         {% endblock %}
