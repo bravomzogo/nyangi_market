@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "7811-197-186-2-206.ngrok-free.app",  # Add your ngrok URL here
+    "7811-197-186-2-206.ngrok-free.app",'nyangi-market.onrender.com'  # Add your ngrok URL here
 ]
 
 
