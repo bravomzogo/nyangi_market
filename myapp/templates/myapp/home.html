@@ -4,16 +4,149 @@
 
 {% block video %}
 <div class="cover">
-    <video autoplay muted loop id="background-video">
-        <source src="{% static 'images/vid1.mp4' %}" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+    <div class="image-gallery">
+        <img src="{% static 'images/image4.jpg' %}" alt="Image 1" class="img-1">
+        <img src="{% static 'images/image2.jpg' %}" alt="Image 2" class="img-2">
+        <img src="{% static 'images/image3.jpg' %}" alt="Image 3" class="img-3">
+        <img src="{% static 'images/image4.jpg' %}" alt="Image 4" class="img-4">
+        <img src="{% static 'images/image5.jpg' %}" alt="Image 5" class="img-5">
+        <img src="{% static 'images/image6.jpg' %}" alt="Image 6" class="img-6">
+        <img src="{% static 'images/image7.jpg' %}" alt="Image 7" class="img-7">
+        <img src="{% static 'images/image1.jpg' %}" alt="Image 8" class="img-8">
+        <img src="{% static 'images/image3.jpg' %}" alt="Image 9" class="img-9">
+        <img src="{% static 'images/image5.jpg' %}" alt="Image 10" class="img-10">
+    </div>
     <div class="cover-overlay"></div>
     <div class="cover-content">
         <h2>Explore Our Products</h2><br>
         <button onclick="scrollToProducts()">Shop Now</button>
     </div>
 </div>
+
+<style>
+.cover {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background-color: rgba(43, 226, 141, 0.76);
+}
+
+.image-gallery {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.image-gallery img {
+    position: absolute;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.img-1 {
+    width: 25%;
+    height: 35%;
+    top: 5%;
+    left: 5%;
+    transform: rotate(-5deg);
+}
+
+.img-2 {
+    width: 20%;
+    height: 30%;
+    top: 2%;
+    right: 5%;
+    transform: rotate(8deg);
+}
+
+.img-3 {
+    width: 22%;
+    height: 32%;
+    bottom: 10%;
+    left: 10%;
+    transform: rotate(3deg);
+}
+
+.img-4 {
+    width: 28%;
+    height: 38%;
+    bottom: 5%;
+    right: 10%;
+    transform: rotate(-3deg);
+}
+
+.img-5 {
+    width: 18%;
+    height: 28%;
+    top: 30%;
+    left: 35%;
+    transform: rotate(5deg);
+}
+
+.img-6 {
+    width: 23%;
+    height: 33%;
+    top: 15%;
+    right: 25%;
+    transform: rotate(-4deg);
+}
+
+.img-7 {
+    width: 20%;
+    height: 30%;
+    bottom: 20%;
+    left: 25%;
+    transform: rotate(6deg);
+}
+
+.img-8 {
+    width: 25%;
+    height: 35%;
+    top: 10%;
+    left: 20%;
+    transform: rotate(-2deg);
+}
+
+.img-9 {
+    width: 22%;
+    height: 32%;
+    bottom: 15%;
+    right: 20%;
+    transform: rotate(4deg);
+}
+
+.img-10 {
+    width: 18%;
+    height: 28%;
+    top: 25%;
+    right: 15%;
+    transform: rotate(-6deg);
+}
+
+.cover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 2;
+}
+
+.cover-content {
+    position: relative;
+    z-index: 3;
+    color: white;
+    text-align: center;
+    top: 30%;
+    transform: translateY(-50%);
+    padding: 20px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+</style>
 {% endblock %}
 
 {% block content %}

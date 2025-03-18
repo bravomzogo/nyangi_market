@@ -6,6 +6,7 @@ from .models import Product, Category, Seller,Cart
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 
 def buy_page(request):
     return render(request, 'myapp/buy.html')
@@ -271,16 +272,16 @@ def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('home')
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, f"Welcome back, {user.username}!")
+            return redirect(request.GET.get('next', 'home'))  # Redirect to 'next' if available
+        else:
+            messages.error(request, "Invalid username or password.")
     else:
         form = AuthenticationForm()
+    
     return render(request, 'myapp/login.html', {'form': form})
-
 
 def register_view(request):
     if request.method == 'POST':
@@ -288,23 +289,31 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            messages.success(request, "Your account has been created successfully!")
             return redirect('home')
+        else:
+            messages.error(request, "Registration failed. Please correct the errors below.")
     else:
         form = UserCreationForm()
+    
     return render(request, 'myapp/register.html', {'form': form})
 
 def logout_view(request):
     logout(request)
+    messages.info(request, "You have been logged out.")
     return redirect('home')
 
 @login_required
 def view_cart(request):
     cart_items = Cart.objects.filter(user=request.user)
- # Calculate the total price for each item
+    
+    # Calculate total price per item
     for item in cart_items:
         item.total_price = item.product.price * item.quantity
-    # Calculate the overall total price
-    total_price = sum(item.total_price for item in cart_items)    
+    
+    # Calculate overall total price
+    total_price = sum(item.total_price for item in cart_items)
+    
     return render(request, 'myapp/cart.html', {
         'cart_items': cart_items,
         'total_price': total_price,
@@ -314,8 +323,10 @@ def view_cart(request):
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
+    
     if not created:
         cart_item.quantity += 1
         cart_item.save()
-    return redirect('home')
     
+    messages.success(request, f"Added {product.name} to your cart.")
+    return redirect('view_cart')  # Redirect to cart instead of home

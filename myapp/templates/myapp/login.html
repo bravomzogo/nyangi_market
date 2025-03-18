@@ -1,21 +1,126 @@
-<!-- login.html -->
 {% extends 'myapp/base.html' %}
 
 {% block shop_with_us %}
-<!-- Override to hide the "Shop with us" dropdown -->
 {% endblock %}
 
 {% block search_form %}
-<!-- Override to hide the search form -->
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Login</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
+<div class="full-height d-flex justify-content-center align-items-center">
+    <div class="overlay"></div>
+    <div class="col-md-8 col-lg-5">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-3 fw-bold text-dark">Welcome Back 👋</h2>
+                <p class="text-center text-muted">Sign in to continue</p>
+
+                {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                        <strong>Invalid credentials!</strong> Please try again.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label fw-medium">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label fw-medium">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" name="password" id="id_password" class="form-control" placeholder="Enter your password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Sign In</button>
+                </form>
+
+                <div class="text-center text-muted small mt-3">
+                    <p><a href="{% url 'password_reset' %}" class="text-decoration-none fw-medium">Forgot password?</a></p>
+                    <p>Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none fw-medium">Register now</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    body {
+        background: url('https://source.unsplash.com/1600x900/?nature,abstract') no-repeat center center/cover;
+        font-family: 'Poppins', sans-serif;
+        position: relative;
+    }
+
+    .full-height {
+        height: 100vh;
+        position: relative;
+        z-index: 1;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: none;
+        z-index: -1;
+    }
+
+    .card {
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: scale(1.02);
+    }
+
+    .btn-primary {
+        background: #007bff;
+        border: none;
+        font-size: 1rem;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+    }
+
+    .input-group-text {
+        border-right: none;
+        color: #495057;
+    }
+
+    .form-control {
+        border-left: none;
+        padding: 12px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    @media (max-width: 768px) {
+        .col-md-8 {
+            width: 90%;
+        }
+    }
+</style>
+
+<!-- Bootstrap Icons (CDN) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 {% endblock %}
