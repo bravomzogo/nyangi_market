@@ -1,3 +1,0 @@
-*.largefile_extension filter=lfs diff=lfs merge=lfs -text
-*.mp4 filter=lfs diff=lfs merge=lfs -text
-myapp/static/images/vid1.mp4 filter=lfs diff=lfs merge=lfs -text
