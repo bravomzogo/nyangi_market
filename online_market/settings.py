@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'online_market.urls'
@@ -129,12 +130,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-if os.getenv('DJANGO_DEVELOPMENT', 'False') == 'True':  # Check if in development mode
-    STATICFILES_DIRS = [BASE_DIR / 'static']
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-else:  # Production settings
-    STATIC_ROOT = BASE_DIR / 'staticfiles'
-    MEDIA_ROOT = BASE_DIR / 'mediafiles'
+
+# Development mode setup
+if os.getenv("DJANGO_DEVELOPMENT", "False") == "True":
+    STATICFILES_DIRS = [BASE_DIR / "static"]  # Local static files
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+else:  # Production mode setup
+    STATIC_ROOT = BASE_DIR / "staticfiles"  # Static files collected here
+    MEDIA_ROOT = BASE_DIR / "mediafiles"
+
+    # WhiteNoise settings for serving static files in production
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    
 
 
 
