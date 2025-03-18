@@ -277,32 +277,6 @@
             background-color: rgba(0, 0, 0, 0.2);
         }
 
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #loader .spinner {
-            border: 5px solid #f3f3f3; /* Light grey */
-            border-top: 5px solid #3498db; /* Blue */
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 0.5s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
 
         /* Back to Top Button */
         #back-to-top {
@@ -327,10 +301,17 @@
 </head>
 
 <body>
-    <!-- Page Loader -->
+    <!-- Page Loader
     <div id="loader">
         <div class="spinner"></div>
+    </div> -->
+     <!-- Loader -->
+     <div id="loader-wrapper">
+        <div id="loader"></div>
+        <div class="loader-section section-left"></div>
+        <div class="loader-section section-right"></div>
     </div>
+
 
     <header>
         <div class="logo-container">
@@ -474,7 +455,15 @@
 
             document.getElementById('theme-toggle').addEventListener('click', toggleDarkMode);
         };
+        
     </script>
+    <!-- JavaScript Files -->
+    <script>
+        window.onload = function() {
+            document.getElementById('loader-wrapper').style.display = 'none';
+        }
+    </script>
+
 </body>
 
 </html>
