@@ -4,22 +4,10 @@
 
 {% block video %}
 <div class="cover">
-    <div class="image-gallery">
-        <img src="{% static 'images/image4.jpg' %}" alt="Image 1" class="img-1">
-        <img src="{% static 'images/image2.jpg' %}" alt="Image 2" class="img-2">
-        <img src="{% static 'images/image3.jpg' %}" alt="Image 3" class="img-3">
-        <img src="{% static 'images/image4.jpg' %}" alt="Image 4" class="img-4">
-        <img src="{% static 'images/image5.jpg' %}" alt="Image 5" class="img-5">
-        <img src="{% static 'images/image6.jpg' %}" alt="Image 6" class="img-6">
-        <img src="{% static 'images/image7.jpg' %}" alt="Image 7" class="img-7">
-        <img src="{% static 'images/image1.jpg' %}" alt="Image 8" class="img-8">
-        <img src="{% static 'images/image3.jpg' %}" alt="Image 9" class="img-9">
-        <img src="{% static 'images/image5.jpg' %}" alt="Image 10" class="img-10">
-    </div>
     <div class="cover-overlay"></div>
     <div class="cover-content">
         <h2>Explore Our Products</h2><br>
-        <button onclick="scrollToProducts()">Shop Now</button>
+        <button onclick="scrollToProducts()" class="btn btn-outline-light rounded-pill px-4">Shop Now</button>
     </div>
 </div>
 
@@ -29,101 +17,38 @@
     width: 100%;
     height: 100vh;
     overflow: hidden;
-    background-color: rgba(43, 226, 141, 0.76);
 }
 
-.image-gallery {
+.cover::before,
+.cover::after {
+    content: '';
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 1s ease-in-out;
+}
+
+.cover::before {
+    background-image: var(--current-image);
     z-index: 1;
 }
 
-.image-gallery img {
-    position: absolute;
-    object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+.cover::after {
+    background-image: var(--next-image);
+    transform: translateX(100%); /* Start off-screen to the right */
+    z-index: 2;
 }
 
-.img-1 {
-    width: 25%;
-    height: 35%;
-    top: 5%;
-    left: 5%;
-    transform: rotate(-5deg);
+.cover.slide::before {
+    transform: translateX(-100%); /* Slide current image to the left */
 }
 
-.img-2 {
-    width: 20%;
-    height: 30%;
-    top: 2%;
-    right: 5%;
-    transform: rotate(8deg);
-}
-
-.img-3 {
-    width: 22%;
-    height: 32%;
-    bottom: 10%;
-    left: 10%;
-    transform: rotate(3deg);
-}
-
-.img-4 {
-    width: 28%;
-    height: 38%;
-    bottom: 5%;
-    right: 10%;
-    transform: rotate(-3deg);
-}
-
-.img-5 {
-    width: 18%;
-    height: 28%;
-    top: 30%;
-    left: 35%;
-    transform: rotate(5deg);
-}
-
-.img-6 {
-    width: 23%;
-    height: 33%;
-    top: 15%;
-    right: 25%;
-    transform: rotate(-4deg);
-}
-
-.img-7 {
-    width: 20%;
-    height: 30%;
-    bottom: 20%;
-    left: 25%;
-    transform: rotate(6deg);
-}
-
-.img-8 {
-    width: 25%;
-    height: 35%;
-    top: 10%;
-    left: 20%;
-    transform: rotate(-2deg);
-}
-
-.img-9 {
-    width: 22%;
-    height: 32%;
-    bottom: 15%;
-    right: 20%;
-    transform: rotate(4deg);
-}
-
-.img-10 {
-    width: 18%;
-    height: 28%;
-    top: 25%;
-    right: 15%;
-    transform: rotate(-6deg);
+.cover.slide::after {
+    transform: translateX(0); /* Slide next image into view */
 }
 
 .cover-overlay {
@@ -132,13 +57,13 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    z-index: 2;
+    background: rgba(0, 0, 0, 0.4); /* Dark overlay for better text visibility */
+    z-index: 3;
 }
 
 .cover-content {
     position: relative;
-    z-index: 3;
+    z-index: 4;
     color: white;
     text-align: center;
     top: 30%;
@@ -147,25 +72,82 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 </style>
+
+<script>
+    // List of background images
+    const images = [
+        "{% static 'images/image1.jpg' %}",
+        "{% static 'images/image5.jpg' %}",
+        "{% static 'images/image6.jpg' %}",
+        "{% static 'images/image1.jpg' %}",
+        "{% static 'images/image5.jpg' %}",
+        "{% static 'images/image6.jpg' %}",
+        "{% static 'images/image7.jpg' %}",
+        "{% static 'images/image1.jpg' %}",
+        "{% static 'images/image7.jpg' %}",
+        "{% static 'images/image5.jpg' %}"
+    ];
+
+    let currentIndex = 0;
+
+    function changeBackground() {
+        const cover = document.querySelector('.cover');
+
+        // Set the next image in the ::after pseudo-element
+        const nextIndex = (currentIndex + 1) % images.length;
+        cover.style.setProperty('--next-image', `url(${images[nextIndex]})`);
+
+        // Add the slide class to trigger the transition
+        cover.classList.add('slide');
+
+        // After the transition, update the ::before image and reset the ::after image
+        setTimeout(() => {
+            cover.style.setProperty('--current-image', `url(${images[nextIndex]})`);
+            cover.classList.remove('slide');
+            currentIndex = nextIndex;
+        }, 1000); // Match the transition duration (1s)
+    }
+
+    // Start the background image rotation
+    setInterval(changeBackground, 3000); // Change image every 3 seconds
+</script>
 {% endblock %}
 
 {% block content %}
-
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
 <div class="container">
-   
+    <!-- Dark Mode Toggle Button -->
+    <button id="dark-mode-toggle" class="btn btn-dark mb-3">
+        <i class="bi bi-moon"></i> Dark Mode
+    </button>
 
     <!-- Add Product Button for Sellers -->
     {% if user.is_authenticated and user.seller %}
     <a href="{% url 'add_product' %}" class="btn btn-success mb-3">Add Product</a>
     {% endif %}
 
-    <h2>Available Products</h2>
+    <!-- Thinner Search Bar Positioned Here -->
+    <form method="get" class="modern-search-form mb-3" onsubmit="scrollToProducts()">
+        <div class="modern-search-container">
+            <span class="search-icon" onclick="this.parentElement.parentElement.submit()">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" name="query" value="{{ query }}" 
+                   class="modern-search-input" 
+                   placeholder="Search products..." 
+                   aria-label="Search">
+            <button type="submit" class="modern-search-btn">
+                <i class="bi bi-arrow-right"></i>
+            </button>
+        </div>
+    </form>
+
+    <h2 id="products">Available Products</h2>
 
     <div class="row">
         {% for product in products %}
-        <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-4"> <!-- Responsive columns -->
+        <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-4">
             {% if product in recent_products %}
             <span class="badge new-badge">New</span>
             {% endif %}
@@ -178,7 +160,6 @@
                     <h5 class="card-title">{{ product.name }}</h5>
                     <p class="seller"><small>Sold by: {{ product.seller.shop_name }} / <small>{{ product.location }}</small></small></p>
                     <a href="{% url 'product_detail' product.id %}" class="btn btn-primary view-details">View Details</a>
-                    <!-- Add to Cart Button (Visible Only for Logged-In Users) -->
                     {% if user.is_authenticated %}
                         <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success mt-2">Add to Cart</a>
                     {% endif %}
@@ -189,13 +170,131 @@
     </div>
 </div>
 
+<style>
+/* Thinner Search Bar Styles */
+.modern-search-form {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.modern-search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #1e40af;
+    border-radius: 8px;
+    padding: 2px; /* Reduced padding for thinner appearance */
+    border: 1px solid #3b82f6;
+    transition: all 0.3s ease;
+    height: 35px; /* Explicitly set thinner height */
+}
+
+.modern-search-container:hover,
+.modern-search-container:focus-within {
+    background: #1e3a8a;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    transform: scale(1.02);
+}
+
+.search-icon {
+    padding: 0 10px; /* Reduced padding */
+    color: #ffffff;
+    font-size: 1rem; /* Slightly smaller icon */
+    cursor: pointer; /* Indicate clickability */
+}
+
+.modern-search-input {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    padding: 8px 10px; /* Reduced padding for thinner look */
+    color: white;
+    font-size: 1rem; /* Slightly smaller font */
+    outline: none;
+    transition: all 0.3s ease;
+    height: 100%; /* Match container height */
+}
+
+.modern-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+}
+
+.modern-search-btn {
+    background: #3b82f6;
+    border: none;
+    border-radius: 6px;
+    width: 35px; /* Reduced width */
+    height: 29px; /* Reduced height to fit thinner container */
+    color: white;
+    font-size: 1rem; /* Slightly smaller icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2px; /* Reduced margin */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modern-search-btn:hover {
+    background: #2563eb;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-mode .card {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+.dark-mode .modern-search-container {
+    background: #333;
+    border-color: #555;
+}
+
+.dark-mode .modern-search-input {
+    color: #ffffff;
+}
+
+.dark-mode .modern-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.dark-mode .modern-search-btn {
+    background: #555;
+}
+
+.dark-mode .price strong {
+    color: #ffffff !important;
+}
+</style>
+
 <script>
+    // Scroll to Products on Search Submission
     function scrollToProducts() {
         const element = document.getElementById("products");
         if (element) {
             element.scrollIntoView({ behavior: "smooth" });
         }
     }
-</script>
 
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+
+    darkModeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            darkModeToggle.innerHTML = '<i class="bi bi-sun"></i> Light Mode';
+        } else {
+            darkModeToggle.innerHTML = '<i class="bi bi-moon"></i> Dark Mode';
+        }
+    });
+</script>
 {% endblock %}

@@ -37,7 +37,6 @@ TANZANIA_REGIONS = [
 class Seller(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     shop_name = models.CharField(max_length=255)
-    product_types = models.TextField(help_text="List of product categories sold, separated by commas")
     phone = models.CharField(max_length=15, default="N/A")  # NEW FIELD with default
 
     def __str__(self):

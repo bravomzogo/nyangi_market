@@ -7,35 +7,47 @@
 {% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="col-md-6 col-lg-5">
+<div class="full-height d-flex justify-content-center align-items-center">
+    <div class="overlay"></div>
+    <div class="col-md-8 col-lg-5">
         <div class="card shadow-lg border-0 rounded-4">
             <div class="card-body p-5">
                 <h2 class="text-center mb-3 fw-bold text-dark">Create an Account 🚀</h2>
                 <p class="text-center text-muted">Join us and start your shopping adventure today</p>
 
+                {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                        <strong>Error!</strong> Please correct the fields below.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
                 <form method="post">
                     {% csrf_token %}
 
-                    {% for field in form %}
-                        <div class="mb-3">
-                            <label for="{{ field.id_for_label }}" class="form-label fw-medium">{{ field.label }}</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="
-                                    {% if field.name == 'email' %}
-                                        bi bi-envelope-fill
-                                    {% elif field.name == 'password1' or field.name == 'password2' %}
-                                        bi bi-lock-fill
-                                    {% else %}
-                                        bi bi-person-fill
-                                    {% endif %}"></i></span>
-                                {{ field }}
-                            </div>
-                            {% if field.errors %}
-                                <div class="text-danger small">{{ field.errors|first }}</div>
-                            {% endif %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label fw-medium">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required>
                         </div>
-                    {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_password1" class="form-label fw-medium">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Enter your password" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_password2" class="form-label fw-medium">Confirm Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirm your password" required>
+                        </div>
+                    </div>
 
                     <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Register</button>
                 </form>
@@ -50,17 +62,30 @@
 
 <style>
     body {
-        /* background: linear-gradient(135deg, #f5f7fa, #c3cfe2); */
+        background: url('https://source.unsplash.com/1600x900/?nature,abstract') no-repeat center center/cover;
         font-family: 'Poppins', sans-serif;
+        position: relative;
     }
 
-    .container {
+    .full-height {
         height: 100vh;
+        position: relative;
+        z-index: 1;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: none;
+        z-index: -1;
     }
 
     .card {
         border-radius: 15px;
-        background: #fff;
+        background: rgba(255, 255, 255, 0.95);
         box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
         transition: transform 0.3s ease-in-out;
     }
@@ -77,25 +102,31 @@
     }
 
     .btn-primary:hover {
-        background: none;
+        background: #0056b3;
         transform: translateY(-2px);
     }
 
     .input-group {
-        border-radius: 3px;
-        overflow: hidden;
+        height: 46px;
     }
 
     .input-group-text {
-        background: #f8f9fa;
         border-right: none;
-        color: none;
+        color: #495057;
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 4px 0 0 4px;
     }
 
     .form-control {
         border-left: none;
-        padding: 10px;
-        height: 45px;
+        padding: 12px;
+        height: 46px;
+        border-radius: 0 4px 4px 0;
         font-size: 1rem;
     }
 
@@ -105,8 +136,27 @@
     }
 
     @media (max-width: 768px) {
-        .col-md-6 {
+        .col-md-8 {
             width: 90%;
+        }
+        .form-control {
+            font-size: 0.9rem; /* Slightly smaller text on mobile */
+            padding: 8px; /* Adjust padding for better fit */
+        }
+        .input-group-text {
+            padding: 0.4rem 0.6rem; /* Adjust icon padding */
+        }
+        .input-group {
+            height: 40px; /* Slightly smaller height on mobile */
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 2rem; /* Reduce padding on very small screens */
+        }
+        .form-control::placeholder {
+            font-size: 0.85rem; /* Ensure placeholder fits */
         }
     }
 </style>

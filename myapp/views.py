@@ -74,7 +74,7 @@ def seller_register(request):
     return render(request, 'myapp/seller_register.html', {'form': form})
 
 
-def add_product(request):
+def addo_product(request):
     if not request.user.is_authenticated or not hasattr(request.user, 'seller'):
         return redirect('seller_register')
 

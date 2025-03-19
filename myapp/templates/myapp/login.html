@@ -99,14 +99,28 @@
         transform: translateY(-2px);
     }
 
+    .input-group {
+        height: 46px;
+    }
+
     .input-group-text {
         border-right: none;
         color: #495057;
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 4px 0 0 4px;
     }
 
     .form-control {
         border-left: none;
         padding: 12px;
+        height: 46px;
+        border-radius: 0 4px 4px 0;
+        font-size: 1rem;
     }
 
     .form-label {
@@ -117,6 +131,25 @@
     @media (max-width: 768px) {
         .col-md-8 {
             width: 90%;
+        }
+        .form-control {
+            font-size: 0.9rem; /* Slightly smaller text on mobile */
+            padding: 8px; /* Adjust padding for better fit */
+        }
+        .input-group-text {
+            padding: 0.4rem 0.6rem; /* Adjust icon padding */
+        }
+        .input-group {
+            height: 40px; /* Slightly smaller height on mobile */
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 2rem; /* Reduce padding on very small screens */
+        }
+        .form-control::placeholder {
+            font-size: 0.85rem; /* Ensure placeholder fits */
         }
     }
 </style>
