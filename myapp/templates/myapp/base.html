@@ -44,7 +44,7 @@
                 {% if user.is_authenticated %}
                     <!-- Display Cart Icon with Item Count -->
                     <a href="{% url 'view_cart' %}" class="btn btn-outline-primary me-2 position-relative" style="background-color:yellow;">
-                        <i class="fas fa-shopping-cart"></i>
+                        <i class="fas fa-shopping-cart" style="color: blue !important;"></i>
                         {% if cart_item_count > 0 %}
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 {{ cart_item_count }}
@@ -85,16 +85,7 @@
     {% endblock %}
 
     <main id="products">
-        <!-- Block for Search Form -->
-        <!-- {% block search_form %}
-        <div class="cover-content">
-            <form id="searchForm" action="{% url 'home' %}" method="GET">
-                <input type="text" name="query" value="{{ query }}" placeholder="Search products..." required style="width: 150px;">
-                <button type="submit">Search</button>
-            </form>
-            <p style="color: red; padding: 10px;">{{ message }}</p> <!Display the search message if no results -->
-        <!-- </div> --> 
-        <!-- {% endblock %} --> 
+       
 
         {% block content %}
         {% endblock %}

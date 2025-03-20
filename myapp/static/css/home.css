@@ -111,7 +111,7 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     border-radius: 0; /* No rounded corners to align with header */
     overflow: hidden;
-    z-index: 2;
+    z-index: 4;
     top: 100%; /* Positioned directly below the header */
     left: 0;
 }
