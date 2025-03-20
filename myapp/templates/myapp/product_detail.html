@@ -76,12 +76,22 @@
                     <a href="{% url 'home' %}" class="btn btn-secondary flex-fill">
                         <i class="fas fa-arrow-left"></i> Back to Home
                     </a>
-                    <a href="tel:{{ product.seller.phone }}" class="btn btn-warning text-white flex-fill">
-                        <i class="fas fa-phone"></i> Contact Seller
-                    </a>
-                    <a href="https://wa.me/{{ product.seller.phone }}" class="btn btn-success flex-fill">
-                        <i class="fab fa-whatsapp"></i> Chat Now
-                    </a>
+                    {% if user.is_authenticated %}
+                        <a href="tel:{{ product.seller.phone }}" class="btn btn-warning text-white flex-fill">
+                            <i class="fas fa-phone"></i> Contact Seller
+                        </a>
+                        <a href="https://wa.me/{{ product.seller.phone }}" class="btn btn-success flex-fill">
+                            <i class="fab fa-whatsapp"></i> Chat Now
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-warning text-white flex-fill">
+                            <i class="fas fa-phone"></i> Contact Seller (Login Required)
+                        </a>
+                        <a href="{% url 'login' %}" class="btn btn-success flex-fill">
+                            <i class="fab fa-whatsapp"></i> Chat Now (Login Required)
+                        </a>
+                    {% endif %}
+
                 </div>
                 <div class="mt-3 d-grid gap-2">
                     <button id="addToCartBtn" class="btn btn-primary">

@@ -92,8 +92,10 @@ def addo_product(request):
 
 
 def product_detail(request, id):
+    user = request.user
     product = get_object_or_404(Product, id=id)
-    return render(request, 'myapp/product_detail.html', {'product': product})
+    return render(request, 'myapp/product_detail.html', {'product': product,
+                                                        'user': user})
 
 
 def seller_login(request):
