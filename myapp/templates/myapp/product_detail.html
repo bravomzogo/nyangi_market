@@ -106,28 +106,65 @@
     </div>
 
     <!-- Modal for Full-Size Image -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content bg-dark">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title text-white" id="imageModalLabel">{{ product.name }}</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0 text-center position-relative">
-                    <button id="prevImage" class="btn btn-light position-absolute" 
-                            style="left: 10px; top: 50%; transform: translateY(-50%);">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <img id="fullSizeImage" src="{{ product.image.url }}" alt="{{ product.name }}" 
-                         class="img-fluid w-100">
-                    <button id="nextImage" class="btn btn-light position-absolute" 
-                            style="right: 10px; top: 50%; transform: translateY(-50%);">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white" id="imageModalLabel">{{ product.name }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 text-center position-relative">
+                <!-- Previous Button -->
+                <button id="prevImage" class="btn btn-light position-absolute rounded-circle p-2" 
+                        style="left: 10px; top: 50%; transform: translateY(-50%); z-index: 1;">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <!-- Full-Size Image -->
+                <img id="fullSizeImage" src="{{ product.image.url }}" alt="{{ product.name }}" 
+                     class="img-fluid w-100" style="border-radius: 0;">
+                
+                <!-- Next Button -->
+                <button id="nextImage" class="btn btn-light position-absolute rounded-circle p-2" 
+                        style="right: 10px; top: 50%; transform: translateY(-50%); z-index: 1;">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
         </div>
     </div>
+</div>
+<style>
+    /* Custom styles for the modal */
+    #imageModal .modal-content {
+        border: none;
+    }
+
+    #imageModal .modal-body {
+        padding: 0;
+    }
+
+    #imageModal .btn-light {
+        background-color: rgba(255, 255, 255, 0.8);
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    #imageModal .btn-light:hover {
+        background-color: rgba(255, 255, 255, 1);
+    }
+
+    #imageModal .btn-light i {
+        color: #333;
+    }
+
+    #imageModal .modal-header {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    #imageModal .modal-title {
+        font-size: 1.25rem;
+    }
+</style>
 
     <!-- Technical Details Section -->
     <div class="row mt-4 mt-md-5">
