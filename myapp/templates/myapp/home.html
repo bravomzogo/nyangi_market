@@ -5,6 +5,9 @@
 {% block video %}
 <div class="cover">
     <div class="cover-overlay"></div>
+    <video autoplay loop muted playsinline class="cover-video">
+        <source src="{% static 'images/vid.mp4' %}" type="video/mp4">        Your browser does not support the video tag.
+    </video>
     <div class="cover-content">
         <h2>Explore Our Products</h2><br>
         <button onclick="scrollToProducts()" class="btn btn-outline-light rounded-pill px-4">Shop Now</button>
@@ -19,36 +22,14 @@
     overflow: hidden;
 }
 
-.cover::before,
-.cover::after {
-    content: '';
+.cover-video {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-size: cover;
-    background-position: center;
-    transition: transform 1s ease-in-out;
-}
-
-.cover::before {
-    background-image: var(--current-image);
+    object-fit: cover;
     z-index: 1;
-}
-
-.cover::after {
-    background-image: var(--next-image);
-    transform: translateX(100%); /* Start off-screen to the right */
-    z-index: 2;
-}
-
-.cover.slide::before {
-    transform: translateX(-100%); /* Slide current image to the left */
-}
-
-.cover.slide::after {
-    transform: translateX(0); /* Slide next image into view */
 }
 
 .cover-overlay {
@@ -58,59 +39,21 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.4); /* Dark overlay for better text visibility */
-    z-index: 3;
+    z-index: 2;
 }
 
 .cover-content {
-    position: relative;
-    z-index: 4;
+    position: absolute;
+    z-index: 3;
     color: white;
     text-align: center;
-    top: 30%;
-    transform: translateY(-50%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     padding: 20px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 </style>
-
-<script>
-    // List of background images
-    const images = [
-        "{% static 'images/image1.jpg' %}",
-        "{% static 'images/image5.jpg' %}",
-        "{% static 'images/image6.jpg' %}",
-        "{% static 'images/image1.jpg' %}",
-        "{% static 'images/image5.jpg' %}",
-        "{% static 'images/image6.jpg' %}",
-        "{% static 'images/image7.jpg' %}",
-        "{% static 'images/image1.jpg' %}",
-        "{% static 'images/image7.jpg' %}",
-        "{% static 'images/image5.jpg' %}"
-    ];
-
-    let currentIndex = 0;
-
-    function changeBackground() {
-        const cover = document.querySelector('.cover');
-
-        // Set the next image in the ::after pseudo-element
-        const nextIndex = (currentIndex + 1) % images.length;
-        cover.style.setProperty('--next-image', `url(${images[nextIndex]})`);
-
-        // Add the slide class to trigger the transition
-        cover.classList.add('slide');
-
-        // After the transition, update the ::before image and reset the ::after image
-        setTimeout(() => {
-            cover.style.setProperty('--current-image', `url(${images[nextIndex]})`);
-            cover.classList.remove('slide');
-            currentIndex = nextIndex;
-        }, 1000); // Match the transition duration (1s)
-    }
-
-    // Start the background image rotation
-    setInterval(changeBackground, 3000); // Change image every 3 seconds
-</script>
 {% endblock %}
 
 {% block content %}
@@ -127,7 +70,7 @@
     <a href="{% url 'add_product' %}" class="btn btn-success mb-3">Add Product</a>
     {% endif %}
 
-    <!-- Thinner Search Bar Positioned Here -->
+    <!-- Search Bar -->
     <form method="get" class="modern-search-form mb-3" onsubmit="scrollToProducts()">
         <div class="modern-search-container">
             <span class="search-icon" onclick="this.parentElement.parentElement.submit()">
@@ -171,7 +114,7 @@
 </div>
 
 <style>
-/* Thinner Search Bar Styles */
+/* Search Bar Styles */
 .modern-search-form {
     max-width: 700px;
     margin: 0 auto;
@@ -183,10 +126,9 @@
     align-items: center;
     background: #1e40af;
     border-radius: 8px;
-    padding: 2px; /* Reduced padding for thinner appearance */
+    padding: 5px;
     border: 1px solid #3b82f6;
     transition: all 0.3s ease;
-    height: 35px; /* Explicitly set thinner height */
 }
 
 .modern-search-container:hover,
@@ -197,22 +139,21 @@
 }
 
 .search-icon {
-    padding: 0 10px; /* Reduced padding */
+    padding: 0 10px;
     color: #ffffff;
-    font-size: 1rem; /* Slightly smaller icon */
-    cursor: pointer; /* Indicate clickability */
+    font-size: 1.2rem;
+    cursor: pointer;
 }
 
 .modern-search-input {
     flex-grow: 1;
     border: none;
     background: transparent;
-    padding: 8px 10px; /* Reduced padding for thinner look */
+    padding: 10px;
     color: white;
-    font-size: 1rem; /* Slightly smaller font */
+    font-size: 1.1rem;
     outline: none;
     transition: all 0.3s ease;
-    height: 100%; /* Match container height */
 }
 
 .modern-search-input::placeholder {
@@ -224,14 +165,14 @@
     background: #3b82f6;
     border: none;
     border-radius: 6px;
-    width: 35px; /* Reduced width */
-    height: 29px; /* Reduced height to fit thinner container */
+    width: 40px;
+    height: 40px;
     color: white;
-    font-size: 1rem; /* Slightly smaller icon */
+    font-size: 1.2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 2px; /* Reduced margin */
+    margin-right: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
