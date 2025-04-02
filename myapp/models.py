@@ -58,7 +58,7 @@ class Product(models.Model):
     image2 = models.ImageField(upload_to='products/', null=True, blank=True, default="")
     image3 = models.ImageField(upload_to='products/', null=True, blank=True, default="")
     image4 = models.ImageField(upload_to='products/', null=True, blank=True, default="")
-
+    phone_number=models.CharField(max_length=10 ,default='')
     seller = models.ForeignKey('Seller', on_delete=models.CASCADE)
     location = models.CharField(max_length=50, choices=TANZANIA_REGIONS, default='Dar es Salaam')  # Default region
 

@@ -26,7 +26,7 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
-            'name', 'description', 'price', 'category', 'image', 'image1', 'image2', 'image3', 'image4', 'location',
+            'name', 'description', 'price', 'category', 'image', 'image1', 'image2', 'image3','phone_number', 'image4', 'location',
             'condition', 'dimensions', 'weight', 'material', 'color', 'warranty', 'model', 'release_year',
             'generation', 'brand', 'origin_country', 'power_consumption', 'battery_life', 'charging_time',
             'connectivity', 'processor', 'storage_capacity', 'screen_size', 'resolution', 'weight_capacity',

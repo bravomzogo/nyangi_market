@@ -37,10 +37,53 @@
         </div>
         <h1 style="font-family: Georgia, 'Times New Roman', Times, serif;">Nyangi Marketplace</h1>
         <nav>
+           
             <a href="{% url 'home' %}" style="text-decoration: none;">Home</a>
             <a href="#" style="text-decoration: none;">About Us</a>
+            
              <!-- Header Links for Login, Register, and Cart -->
             <div class="d-flex justify-content-end align-items-center mb-3">
+                <div class="welcome-message">
+                    {% if user.is_authenticated %}
+                        <p>We are happy to have you, <span>{{ user.username }}</span>! 😊</p>
+                        <style>.welcome-message {
+                            position: absolute;
+                            left: 20px;
+                            top: 20px;
+                            background: linear-gradient(135deg, #6e8efb, #a777e3);
+                            padding: 10px 20px;
+                            border-radius: 8px;
+                            color: white;
+                            font-size: 16px;
+                            font-weight: bold;
+                            font-family: 'Poppins', sans-serif;
+                            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+                            animation: fadeIn 1s ease-in-out;
+                        }
+                        
+                        /* Adding some cool effects */
+                        .welcome-message span {
+                            color: #ffeb3b; /* Yellow highlight */
+                            font-weight: bold;
+                        }
+                        
+                        /* Fade-in animation */
+                        @keyframes fadeIn {
+                            from {
+                                opacity: 0;
+                                transform: translateY(-10px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+                        </style>
+                    {% endif %}
+                </div>
+                
+                
+                
                 {% if user.is_authenticated %}
                     <!-- Display Cart Icon with Item Count -->
                     <a href="{% url 'view_cart' %}" class="btn btn-outline-primary me-2 position-relative" style="background-color:yellow;">
