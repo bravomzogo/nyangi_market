@@ -60,6 +60,17 @@
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
 <div class="container">
+    <!-- Categories Section -->
+    <div class="categories-section mb-4">
+        <h3>Categories</h3>
+        <div class="categories-buttons">
+            <a href="{% url 'home' %}" class="btn btn-primary m-1">All</a>
+            {% for category in categories %}
+            <a href="{% url 'filter_by_category' category.name %}?category={{ category.name }}" class="btn btn-outline-primary m-1">{{ category.name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
     <!-- Dark Mode Toggle Button -->
     <button id="dark-mode-toggle" class="btn btn-dark mb-3">
         <i class="bi bi-moon"></i> Dark Mode
@@ -89,27 +100,31 @@
     <h2 id="products">Available Products</h2>
 
     <div class="row">
-        {% for product in products %}
-        <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-4">
-            {% if product in recent_products %}
-            <span class="badge new-badge">New</span>
-            {% endif %}
-            <div class="card product-card position-relative">
-                <div class="image-container">
-                    <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
-                </div>
-                <div class="card-body">
-                    <p class="price"><strong style="color: black;">Price:</strong> {{ product.price|intcomma }} Tsh</p>
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="seller"><small>Sold by: {{ product.seller.shop_name }} / <small>{{ product.location }}</small></small></p>
-                    <a href="{% url 'product_detail' product.id %}" class="btn btn-primary view-details">View Details</a>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success mt-2">Add to Cart</a>
-                    {% endif %}
+        {% if products %}
+            {% for product in products %}
+            <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-4">
+                {% if product in recent_products %}
+                <span class="badge new-badge">New</span>
+                {% endif %}
+                <div class="card product-card position-relative">
+                    <div class="image-container">
+                        <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+                    </div>
+                    <div class="card-body">
+                        <p class="price"><strong style="color: black;">Price:</strong> {{ product.price|intcomma }} Tsh</p>
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="seller"><small>Sold by: {{ product.seller.shop_name }} / <small>{{ product.location }}</small></small></p>
+                        <a href="{% url 'product_detail' product.id %}" class="btn btn-primary view-details">View Details</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success mt-2">Add to Cart</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <p>No products found in this category.</p>
+        {% endif %}
     </div>
 </div>
 
@@ -213,6 +228,21 @@
 
 .dark-mode .price strong {
     color: #ffffff !important;
+}
+
+/* Categories Section Styles */
+.categories-section {
+    text-align: center;
+}
+
+.categories-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.categories-buttons .btn {
+    margin: 5px;
 }
 </style>
 

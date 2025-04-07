@@ -17,16 +17,19 @@ def receipt_view(request):
 
 
 def home(request):
-    products = Product.objects.all().order_by('-created_at') 
+    products = Product.objects.all().order_by('-created_at')
     recent_products = list(products[:4])  # Get the latest four products
     categories = Category.objects.all()
     query = request.GET.get('query', '')
+    selected_category = request.GET.get('category', '')
 
     if query:
         products = products.filter(name__icontains=query)
 
-    message = "No products found matching your search query." if not products else ""
+    if selected_category:
+        products = products.filter(category__name=selected_category)
 
+    message = "No products found matching your search query." if not products else ""
 
     cart_item_count = 0
     if request.user.is_authenticated:
@@ -38,7 +41,8 @@ def home(request):
         'query': query,
         'message': message,
         'categories': categories,
-        'cart_item_count': cart_item_count
+        'cart_item_count': cart_item_count,
+        'selected_category': selected_category,
     })
 
 @login_required
