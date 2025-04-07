@@ -1,6 +1,16 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from .models import Seller, Product
+
+
+class CustomUserRegistrationForm(UserCreationForm):
+    phone_number = forms.CharField(max_length=15, required=True, help_text="Enter your phone number.")
+    area_of_residence = forms.CharField(max_length=100, required=True, help_text="Enter your area of residence.")
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'phone_number', 'area_of_residence', 'password1', 'password2']
 
 
 class SellerRegistrationForm(forms.ModelForm):

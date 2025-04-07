@@ -8,20 +8,10 @@
 
 {% block content %}
 <div class="full-height d-flex justify-content-center align-items-center">
-    <div class="overlay"></div>
     <div class="col-md-8 col-lg-5">
         <div class="card shadow-lg border-0 rounded-4">
             <div class="card-body p-5">
                 <h2 class="text-center mb-3 fw-bold text-dark">Create an Account 🚀</h2>
-                <p class="text-center text-muted">Join us and start your shopping adventure today</p>
-
-                {% if form.errors %}
-                    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
-                        <strong>Error!</strong> Please correct the fields below.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endif %}
-
                 <form method="post">
                     {% csrf_token %}
 
@@ -33,7 +23,31 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label fw-medium">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-envelope-fill"></i></span>
+                            <input type="email" name="email" id="id_email" class="form-control" placeholder="Enter your email" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_phone_number" class="form-label fw-medium">Phone Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-telephone-fill"></i></span>
+                            <input type="text" name="phone_number" id="id_phone_number" class="form-control" placeholder="Enter your phone number" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_area_of_residence" class="form-label fw-medium">Area of Residence</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-geo-alt-fill"></i></span>
+                            <input type="text" name="area_of_residence" id="id_area_of_residence" class="form-control" placeholder="Enter your area of residence" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="id_password1" class="form-label fw-medium">Password</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
@@ -51,7 +65,6 @@
 
                     <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Register</button>
                 </form>
-
                 <div class="text-center text-muted small mt-3">
                     <p>Already have an account? <a href="{% url 'login' %}" class="text-decoration-none fw-medium">Sign in</a></p>
                 </div>

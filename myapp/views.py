@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import SellerRegistrationForm, ProductForm
+from .forms import SellerRegistrationForm, ProductForm, CustomUserRegistrationForm
 from .models import Product, Category, Seller,Cart
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -287,16 +287,19 @@ def login_view(request):
 
 def register_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.profile.phone_number = form.cleaned_data['phone_number']
+            user.profile.area_of_residence = form.cleaned_data['area_of_residence']
+            user.profile.save()
             login(request, user)
             messages.success(request, "Your account has been created successfully!")
             return redirect('home')
         else:
             messages.error(request, "Registration failed. Please correct the errors below.")
     else:
-        form = UserCreationForm()
+        form = CustomUserRegistrationForm()
     
     return render(request, 'myapp/register.html', {'form': form})
 

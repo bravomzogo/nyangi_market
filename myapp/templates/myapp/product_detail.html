@@ -65,11 +65,28 @@
                                 <th scope="row" class="col-4 col-md-3 align-top">Description</th>
                                 <td class="description-cell" style="word-break: break-word;">{{ product.description }}</td>
                             </tr>
-                            <tr><th scope="row" class="col-4 col-md-3">Location</th><td>{{ product.location }}</td></tr>
+                            <tr>
+                                <th scope="row" class="col-4 col-md-3">Location</th>
+                                <td>
+                                    {% if user.is_authenticated %}
+                                        {{ product.location }}
+                                    {% else %}
+                                        <a href="{% url 'login' %}">Login to view</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
                             <tr><th scope="row" class="col-4 col-md-3">Stock</th><td>In Stock</td></tr>
                             <tr><th scope="row" class="col-4 col-md-3">Seller</th><td>{{ product.seller }}</td></tr>
-                            <tr><th scope="row" class="col-4 col-md-3">Phone</th><td>{{ product.phone_number }}</td></tr>
-
+                            <tr>
+                                <th scope="row" class="col-4 col-md-3">Phone</th>
+                                <td>
+                                    {% if user.is_authenticated %}
+                                        {{ product.phone_number }}
+                                    {% else %}
+                                        <a href="{% url 'login' %}">Login to view</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
