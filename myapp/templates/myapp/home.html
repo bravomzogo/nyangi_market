@@ -81,6 +81,44 @@
     <a href="{% url 'add_product' %}" class="btn btn-success mb-3">Add Product</a>
     {% endif %}
 
+    <!-- Admin Dashboard Section -->
+    {% if user.is_authenticated and user.is_staff %}
+    <div class="admin-dashboard-section mb-4">
+        <h3>Admin Dashboard</h3>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <a href="{% url 'worker_contract_create' %}">Create Worker Contract</a>
+            </li>
+            <li class="list-group-item">
+                <a href="{% url 'subscription_plan_list' %}">View Subscription Plans</a>
+            </li>
+            <li class="list-group-item">
+                <a href="{% url 'subscription_plan_create' %}">Create Subscription Plan</a>
+            </li>
+            <li class="list-group-item">
+                <a href="{% url 'seller_subscription_create' %}">Create Seller Subscription</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Contracts Section -->
+    <div class="contracts-section mb-4">
+        <h3>Existing Contracts</h3>
+        {% if contracts %}
+        <ul class="list-group">
+            {% for contract in contracts %}
+            <li class="list-group-item">
+                <a href="{% url 'worker_contract_detail' contract.id %}">{{ contract.title }}</a>
+                <a href="{% url 'worker_contract_pdf' contract.id %}" class="btn btn-sm btn-secondary float-end">Download PDF</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No contracts available.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
     <!-- Search Bar -->
     <form method="get" class="modern-search-form mb-3" onsubmit="scrollToProducts()">
         <div class="modern-search-container">

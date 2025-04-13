@@ -259,6 +259,150 @@ class Order(models.Model):
     def __str__(self):
         return f"Order #{self.id} by {self.user.username}"
 
+class ParentDetails(models.Model):
+    first_name = models.CharField(max_length=100)
+    second_name = models.CharField(max_length=100)
+    residence = models.CharField(max_length=255)
+    is_mother = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.first_name} {self.second_name}"
+
+class Referee(models.Model):
+    name = models.CharField(max_length=255)
+    occupation = models.CharField(max_length=255)
+    signature = models.ImageField(upload_to='signatures/')
+
+    def __str__(self):
+        return self.name
+
+class EducationRecord(models.Model):
+    primary = models.CharField(max_length=255)
+    secondary = models.CharField(max_length=255)
+    high_school = models.CharField(max_length=255)
+    university = models.CharField(max_length=255)
+    talents = models.TextField()
+
+    def __str__(self):
+        return f"Education Record - {self.university}"
+
+class WorkerContract(models.Model):
+    # Personal Details
+    first_name = models.CharField(max_length=100)
+    second_name = models.CharField(max_length=100)
+    third_name = models.CharField(max_length=100)
+    sex = models.CharField(max_length=10, choices=[('M', 'Male'), ('F', 'Female')])
+    marital_status = models.CharField(max_length=20, choices=[
+        ('Single', 'Single'),
+        ('Married', 'Married'),
+        ('Divorced', 'Divorced'),
+        ('Widowed', 'Widowed')
+    ])
+    spouse_details = models.TextField(blank=True, null=True)
+    nationality = models.CharField(max_length=100)
+    passport_nida = models.CharField(max_length=50)
+    date_of_birth = models.DateField()
+    drivers_license = models.CharField(max_length=50)
+
+    # Parent Details
+    father = models.ForeignKey(ParentDetails, on_delete=models.CASCADE, related_name='father_contracts')
+    mother = models.ForeignKey(ParentDetails, on_delete=models.CASCADE, related_name='mother_contracts')
+
+    # Address
+    present_address = models.TextField()
+    permanent_address = models.TextField()
+    phone_number = models.CharField(max_length=15)
+    whatsapp_number = models.CharField(max_length=15)
+
+    # Referees
+    referee1 = models.ForeignKey(Referee, on_delete=models.CASCADE, related_name='referee1_contracts')
+    referee2 = models.ForeignKey(Referee, on_delete=models.CASCADE, related_name='referee2_contracts')
+
+    # Street/Ward Chairperson
+    chairperson_name = models.CharField(max_length=255)
+    chairperson_post = models.CharField(max_length=255)
+    chairperson_signature = models.ImageField(upload_to='signatures/')
+    chairperson_stamp = models.ImageField(upload_to='stamps/')
+
+    # Education
+    education_record = models.ForeignKey(EducationRecord, on_delete=models.CASCADE)
+
+    # Documents
+    nida_passport_doc = models.FileField(upload_to='documents/')
+    driving_license_doc = models.FileField(upload_to='documents/')
+    police_clearance_doc = models.FileField(upload_to='documents/')
+    educational_certificates_doc = models.FileField(upload_to='documents/')
+
+    # Contract Rules
+    contract_rules = models.TextField()
+
+    # Signatures
+    worker_signature = models.ImageField(upload_to='signatures/')
+    lawyer_name = models.CharField(max_length=255)
+    lawyer_signature = models.ImageField(upload_to='signatures/')
+    lawyer_stamp = models.ImageField(upload_to='stamps/')
+    ceo_name = models.CharField(max_length=255)
+    ceo_signature = models.ImageField(upload_to='signatures/')
+    ceo_stamp = models.ImageField(upload_to='stamps/')
+
+    # Status
+    is_approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.second_name} {self.third_name}"
+
+class SubscriptionPlan(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    duration_days = models.IntegerField()
+    features = models.TextField()
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+class SellerSubscription(models.Model):
+    SUBSCRIPTION_LEVELS = [
+        ('BRONZE', 'Bronze Booster'),
+        ('SILVER', 'Silver Spotlight'),
+        ('GOLD', 'Gold Galaxy'),
+    ]
+
+    seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
+    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE)
+    level = models.CharField(max_length=10, choices=SUBSCRIPTION_LEVELS)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+    auto_renew = models.BooleanField(default=True)
+    payment_status = models.CharField(max_length=20, choices=[
+        ('PENDING', 'Pending'),
+        ('PAID', 'Paid'),
+        ('FAILED', 'Failed'),
+        ('CANCELLED', 'Cancelled'),
+    ])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.seller.shop_name} - {self.plan.name}"
+
+    def is_valid(self):
+        return self.is_active and self.end_date > timezone.now()
+
+class SubscriptionFeature(models.Model):
+    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.plan.name} - {self.name}"
+
 
 
 

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Seller, Product
+from .models import Seller, Product, WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription
 
 
 class CustomUserRegistrationForm(UserCreationForm):
@@ -154,4 +154,59 @@ class ProductForm(forms.ModelForm):
 
 
     # Add location dropdown
+
+class ParentDetailsForm(forms.ModelForm):
+    class Meta:
+        model = ParentDetails
+        fields = ['first_name', 'second_name', 'residence', 'is_mother']
+
+class RefereeForm(forms.ModelForm):
+    class Meta:
+        model = Referee
+        fields = ['name', 'occupation', 'signature']
+
+class EducationRecordForm(forms.ModelForm):
+    class Meta:
+        model = EducationRecord
+        fields = ['primary', 'secondary', 'high_school', 'university', 'talents']
+
+class WorkerContractForm(forms.ModelForm):
+    class Meta:
+        model = WorkerContract
+        fields = [
+            'first_name', 'second_name', 'third_name', 'sex', 'marital_status', 'spouse_details',
+            'nationality', 'passport_nida', 'date_of_birth', 'drivers_license',
+            'present_address', 'permanent_address', 'phone_number', 'whatsapp_number',
+            'chairperson_name', 'chairperson_post', 'chairperson_signature', 'chairperson_stamp',
+            'nida_passport_doc', 'driving_license_doc', 'police_clearance_doc', 'educational_certificates_doc',
+            'contract_rules', 'worker_signature', 'lawyer_name', 'lawyer_signature', 'lawyer_stamp',
+            'ceo_name', 'ceo_signature', 'ceo_stamp'
+        ]
+        widgets = {
+            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
+            'contract_rules': forms.Textarea(attrs={'rows': 10}),
+            'spouse_details': forms.Textarea(attrs={'rows': 3}),
+        }
+
+class SubscriptionPlanForm(forms.ModelForm):
+    class Meta:
+        model = SubscriptionPlan
+        fields = ['name', 'description', 'price', 'duration_days', 'features', 'is_active']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+            'features': forms.Textarea(attrs={'rows': 5}),
+        }
+
+class SellerSubscriptionForm(forms.ModelForm):
+    class Meta:
+        model = SellerSubscription
+        fields = ['plan', 'level', 'auto_renew']
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['plan'].queryset = SubscriptionPlan.objects.filter(is_active=True)
 

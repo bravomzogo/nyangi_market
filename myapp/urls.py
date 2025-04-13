@@ -33,4 +33,21 @@ urlpatterns = [
     path('cart/', views.view_cart, name='view_cart'),
     path('add-to-cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
     path('remove-from-cart/<int:cart_item_id>/', views.remove_from_cart, name='remove_from_cart'),
+
+    # Worker Contract URLs
+    path('ceo/contract/create/', views.worker_contract_create, name='worker_contract_create'),
+    path('ceo/contract/<int:pk>/', views.worker_contract_detail, name='worker_contract_detail'),
+    path('ceo/contract/<int:pk>/pdf/', views.worker_contract_pdf, name='worker_contract_pdf'),
+    
+    # Subscription URLs
+    path('subscription/plans/', views.subscription_plan_list, name='subscription_plan_list'),
+    path('subscription/plan/create/', views.subscription_plan_create, name='subscription_plan_create'),
+    path('seller/subscription/create/', views.seller_subscription_create, name='seller_subscription_create'),
+    
+    # Password Reset URLs
+    path('password-reset/', views.password_reset_request, name='password_reset_request'),
+    path('password-reset-confirm/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),
+    
+    # About Us URL
+    path('about-us/', views.about_us, name='about_us'),
 ]

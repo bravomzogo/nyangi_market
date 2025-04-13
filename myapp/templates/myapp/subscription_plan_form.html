@@ -1,0 +1,72 @@
+{% extends 'myapp/base.html' %}
+{% load form_filters %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-primary">Create Subscription Plan</h2>
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                        {{ field|add_class:"form-control shadow-sm" }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-gradient w-100 py-2 mt-4 fw-bold">Create Plan</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(to right, #6a11cb, #2575fc);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    h2 {
+        font-weight: 700;
+    }
+
+    .card {
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: scale(1.02);
+    }
+
+    .btn-gradient {
+        background: linear-gradient(to right, #6a11cb, #2575fc);
+        color: white;
+        border: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-gradient:hover {
+        background: linear-gradient(to right, #2575fc, #6a11cb);
+        transform: translateY(-2px);
+    }
+
+    .form-control {
+        border-radius: 8px;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 10px rgba(106, 17, 203, 0.5);
+        border-color: #6a11cb;
+    }
+</style>
+{% endblock %}

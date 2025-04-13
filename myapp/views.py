@@ -7,6 +7,24 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import JsonResponse
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
+from .models import WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription
+from .forms import WorkerContractForm, ParentDetailsForm, RefereeForm, EducationRecordForm, SubscriptionPlanForm, SellerSubscriptionForm
+import pdfkit
+from django.template.loader import get_template
+from django.core.mail import EmailMessage
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.timezone import timezone
+from datetime import timedelta
+from django.contrib.auth.models import User
 
 def buy_page(request):
     return render(request, 'myapp/buy.html')
@@ -35,6 +53,8 @@ def home(request):
     if request.user.is_authenticated:
         cart_item_count = Cart.objects.filter(user=request.user).count()
 
+    contracts = WorkerContract.objects.all() if request.user.is_staff else None
+
     return render(request, 'myapp/home.html', {
         'products': products,
         'recent_products': recent_products,
@@ -43,6 +63,7 @@ def home(request):
         'categories': categories,
         'cart_item_count': cart_item_count,
         'selected_category': selected_category,
+        'contracts': contracts,
     })
 
 @login_required
@@ -339,3 +360,188 @@ def add_to_cart(request, product_id):
     
     messages.success(request, f"Added {product.name} to your cart.")
     return redirect('view_cart')  # Redirect to cart instead of home
+
+def is_admin(user):
+    return user.is_staff
+
+@login_required
+@user_passes_test(is_admin)
+def worker_contract_create(request):
+    if request.method == 'POST':
+        contract_form = WorkerContractForm(request.POST, request.FILES)
+        father_form = ParentDetailsForm(request.POST, prefix='father')
+        mother_form = ParentDetailsForm(request.POST, prefix='mother')
+        referee1_form = RefereeForm(request.POST, request.FILES, prefix='referee1')
+        referee2_form = RefereeForm(request.POST, request.FILES, prefix='referee2')
+        education_form = EducationRecordForm(request.POST)
+
+        if all([contract_form.is_valid(), father_form.is_valid(), mother_form.is_valid(),
+                referee1_form.is_valid(), referee2_form.is_valid(), education_form.is_valid()]):
+            father = father_form.save()
+            mother = mother_form.save()
+            referee1 = referee1_form.save()
+            referee2 = referee2_form.save()
+            education = education_form.save()
+
+            contract = contract_form.save(commit=False)
+            contract.father = father
+            contract.mother = mother
+            contract.referee1 = referee1
+            contract.referee2 = referee2
+            contract.education_record = education
+            contract.save()
+
+            messages.success(request, 'Contract created successfully!')
+            return redirect('worker_contract_detail', pk=contract.pk)
+    else:
+        contract_form = WorkerContractForm()
+        father_form = ParentDetailsForm(prefix='father')
+        mother_form = ParentDetailsForm(prefix='mother')
+        referee1_form = RefereeForm(prefix='referee1')
+        referee2_form = RefereeForm(prefix='referee2')
+        education_form = EducationRecordForm()
+
+    return render(request, 'myapp/worker_contract_form.html', {
+        'contract_form': contract_form,
+        'father_form': father_form,
+        'mother_form': mother_form,
+        'referee1_form': referee1_form,
+        'referee2_form': referee2_form,
+        'education_form': education_form,
+    })
+
+@login_required
+@user_passes_test(is_admin)
+def worker_contract_detail(request, pk):
+    contract = get_object_or_404(WorkerContract, pk=pk)
+    return render(request, 'myapp/worker_contract_detail.html', {'contract': contract})
+
+@login_required
+@user_passes_test(is_admin)
+def worker_contract_pdf(request, pk):
+    contract = get_object_or_404(WorkerContract, pk=pk)
+    template = get_template('myapp/worker_contract_pdf.html')
+    html = template.render({'contract': contract})
+    
+    options = {
+        'page-size': 'A4',
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+    }
+    
+    pdf = pdfkit.from_string(html, False, options=options)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="contract_{contract.pk}.pdf"'
+    return response
+
+@login_required
+@user_passes_test(is_admin)
+def subscription_plan_create(request):
+    if request.method == 'POST':
+        form = SubscriptionPlanForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Subscription plan created successfully!')
+            return redirect('subscription_plan_list')
+    else:
+        form = SubscriptionPlanForm()
+    return render(request, 'myapp/subscription_plan_form.html', {'form': form})
+
+@login_required
+def subscription_plan_list(request):
+    plans = SubscriptionPlan.objects.filter(is_active=True)
+    return render(request, 'myapp/subscription_plan_list.html', {'plans': plans})
+
+@login_required
+def seller_subscription_create(request):
+    if request.method == 'POST':
+        form = SellerSubscriptionForm(request.POST)
+        if form.is_valid():
+            subscription = form.save(commit=False)
+            subscription.seller = request.user.seller
+            subscription.start_date = timezone.now()
+            subscription.end_date = timezone.now() + timedelta(days=subscription.plan.duration_days)
+            subscription.save()
+            messages.success(request, 'Subscription created successfully!')
+            return redirect('seller_dashboard')
+    else:
+        form = SellerSubscriptionForm()
+    return render(request, 'myapp/seller_subscription_form.html', {'form': form})
+
+def password_reset_request(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            current_site = get_current_site(request)
+            
+            subject = 'Password Reset Request'
+            message = render_to_string('myapp/password_reset_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': uid,
+                'token': token,
+            })
+            
+            email = EmailMessage(
+                subject,
+                message,
+                'manyerere201@gmail.com',
+                [email],
+            )
+            email.send()
+            
+            messages.success(request, 'Password reset email has been sent.')
+            return redirect('login')
+        except User.DoesNotExist:
+            messages.error(request, 'No user found with this email address.')
+    return render(request, 'myapp/password_reset_request.html')
+
+def password_reset_confirm(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            password = request.POST.get('password')
+            user.set_password(password)
+            user.save()
+            messages.success(request, 'Your password has been reset successfully.')
+            return redirect('login')
+        return render(request, 'myapp/password_reset_confirm.html')
+    else:
+        messages.error(request, 'The password reset link is invalid or has expired.')
+        return redirect('password_reset_request')
+
+def about_us(request):
+    technical_team = [
+        {
+            'name': 'John Doe',
+            'position': 'Lead Developer',
+            'email': 'john.doe@example.com',
+            'phone': '+255 123 456 789',
+            'image': 'team/john.jpg'
+        },
+        {
+            'name': 'Jane Smith',
+            'position': 'UI/UX Designer',
+            'email': 'jane.smith@example.com',
+            'phone': '+255 987 654 321',
+            'image': 'team/jane.jpg'
+        },
+        {
+            'name': 'Mike Johnson',
+            'position': 'System Administrator',
+            'email': 'mike.johnson@example.com',
+            'phone': '+255 456 789 123',
+            'image': 'team/mike.jpg'
+        }
+    ]
+    return render(request, 'myapp/about_us.html', {'technical_team': technical_team})

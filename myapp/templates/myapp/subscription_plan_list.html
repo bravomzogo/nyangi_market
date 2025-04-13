@@ -1,0 +1,61 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Subscription Plans</h2>
+    
+    <div class="row">
+        {% for plan in plans %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">{{ plan.name }}</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-4">TZS {{ plan.price }}</h5>
+                    <p class="card-text">{{ plan.description }}</p>
+                    <div class="features mb-4">
+                        <h6>Features:</h6>
+                        <ul class="list-unstyled">
+                            {% for feature in plan.features.splitlines %}
+                                <li><i class="fas fa-check text-success"></i> {{ feature }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'seller_subscription_create' %}?plan={{ plan.id }}" class="btn btn-primary">Subscribe Now</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    .card-title {
+        color: #007bff;
+        font-weight: bold;
+    }
+    .features ul li {
+        margin-bottom: 0.5rem;
+    }
+    .btn-primary {
+        padding: 0.5rem 2rem;
+        font-weight: bold;
+    }
+</style>
+{% endblock %} 
