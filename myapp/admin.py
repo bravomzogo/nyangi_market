@@ -2,24 +2,40 @@ from django.contrib import admin
 from .models import (
     Seller, Product, Category, Cart, Order, Profile,
     WorkerContract, ParentDetails, Referee, EducationRecord,
-    SubscriptionPlan, SellerSubscription, SubscriptionFeature
+    SubscriptionPlan, SellerSubscription, SubscriptionFeature,
+    ProductAttribute, Receipt
 )
 from django.utils.html import format_html
 from django.utils.formats import number_format
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('formatted_price',)  # Show formatted price
+    list_display = ['name', 'price']
+    list_filter = ['category']
+    search_fields = ('name', 'description', 'seller__user__username')
+    readonly_fields = []
+    filter_horizontal = []
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'description', 'category', 'price')
+        }),
+        ('Media', {
+            'fields': ('video',)
+        }),
+        ('Seller Information', {
+            'fields': ('seller',)
+        }),
+        ('Additional Details', {
+            'fields': ('attributes',)
+        }),
+        ('Timestamps', {
+            'fields': (),
+            'classes': ('collapse',)
+        })
+    )
 
-    def formatted_price(self, obj):
-        return format_html(f"{number_format(obj.name, use_l10n=True)}")
-
-    formatted_price.admin_order_field = 'price'
-    formatted_price.short_description = 'Price'
 
 admin.site.register(Product, ProductAdmin)
-
-
 admin.site.register(Category)
 
 @admin.register(WorkerContract)
@@ -63,6 +79,19 @@ class SubscriptionFeatureAdmin(admin.ModelAdmin):
     list_display = ('name', 'plan', 'is_active')
     list_filter = ('is_active', 'plan')
     search_fields = ('name', 'description')
+
+@admin.register(ProductAttribute)
+class ProductAttributeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'attribute_type', 'required')
+    list_filter = ('category', 'attribute_type', 'required')
+    search_fields = ('name', 'category__name')
+
+@admin.register(Receipt)
+class ReceiptAdmin(admin.ModelAdmin):
+    list_display = ('transaction_id', 'order', 'date_created')
+    list_filter = ('date_created',)
+    search_fields = ('transaction_id', 'order__id')
+    readonly_fields = ('transaction_id', 'date_created')
 
 # Register other existing models
 admin.site.register(Seller)

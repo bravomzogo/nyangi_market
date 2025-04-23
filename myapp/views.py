@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import SellerRegistrationForm, ProductForm, CustomUserRegistrationForm
-from .models import Product, Category, Seller,Cart
-from django.http import HttpResponse
+from .models import Product, Category, Seller, Cart, WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription, Receipt, ProductAttribute
+from django.http import HttpResponse, FileResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -13,7 +13,6 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from .models import WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription
 from .forms import WorkerContractForm, ParentDetailsForm, RefereeForm, EducationRecordForm, SubscriptionPlanForm, SellerSubscriptionForm
 import pdfkit
 from django.template.loader import get_template
@@ -25,6 +24,8 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.timezone import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
+from weasyprint import HTML
+import os
 
 def buy_page(request):
     return render(request, 'myapp/buy.html')
@@ -108,6 +109,9 @@ def addo_product(request):
         if form.is_valid():
             product = form.save(commit=False)
             product.seller = request.user.seller
+            # Handle optional fields
+            if not form.cleaned_data.get('release_year'):
+                product.release_year = None
             product.save()
             return redirect('home')
     else:
@@ -545,3 +549,52 @@ def about_us(request):
         }
     ]
     return render(request, 'myapp/about_us.html', {'technical_team': technical_team})
+
+def generate_receipt(order):
+    receipt = Receipt.objects.create(order=order)
+    
+    # Generate PDF
+    context = {
+        'receipt': receipt,
+        'order': order,
+        'logo_url': os.path.join(settings.STATIC_URL, 'images/logo.png'),
+        'company_phone': settings.COMPANY_PHONE
+    }
+    
+    html_string = render_to_string('myapp/receipt.html', context)
+    html = HTML(string=html_string)
+    pdf_file = html.write_pdf()
+    
+    # Save PDF
+    receipt_path = f'receipts/{receipt.transaction_id}.pdf'
+    with open(os.path.join(settings.MEDIA_ROOT, receipt_path), 'wb') as f:
+        f.write(pdf_file)
+    
+    receipt.pdf_file = receipt_path
+    receipt.save()
+    
+    return receipt
+
+def get_category_attributes(request):
+    category_id = request.GET.get('category_id')
+    if category_id:
+        attributes = ProductAttribute.objects.filter(category_id=category_id)
+        grouped_attributes = {}
+        for attr in attributes:
+            group = attr.group or "General"
+            if group not in grouped_attributes:
+                grouped_attributes[group] = []
+            grouped_attributes[group].append({
+                'id': attr.id,
+                'name': attr.name,
+                'attribute_type': attr.attribute_type,
+                'required': attr.required,
+                'options': attr.options,
+            })
+        return JsonResponse({'attributes': grouped_attributes})
+    return JsonResponse({'attributes': {}})
+
+def download_receipt(request, receipt_id):
+    receipt = get_object_or_404(Receipt, id=receipt_id)
+    receipt_path = os.path.join(settings.MEDIA_ROOT, receipt.pdf_file)
+    return FileResponse(open(receipt_path, 'rb'), content_type='application/pdf')

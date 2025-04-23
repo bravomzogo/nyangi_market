@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import time
+import random
+import string
 
 
 # List of Tanzanian regions
@@ -64,6 +67,21 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class ProductAttribute(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    attribute_type = models.CharField(max_length=50, choices=[
+        ('text', 'Text'),
+        ('number', 'Number'),
+        ('select', 'Select'),
+        ('boolean', 'Boolean'),
+    ])
+    required = models.BooleanField(default=False)
+    options = models.TextField(blank=True, help_text="For select type, enter options separated by commas")
+
+    def __str__(self):
+        return f"{self.name} ({self.category.name})"
+
 class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -104,9 +122,9 @@ class Product(models.Model):
 
     # Furniture & Home Decor
     weight_capacity = models.CharField(max_length=50, default="", blank=True)
-    assembly_required = models.BooleanField(default="", blank=True, null=True)
+    assembly_required = models.BooleanField(default=None, blank=True, null=True)
     style = models.CharField(max_length=100, default="", blank=True)
-    water_resistant = models.BooleanField(default="", blank=True, null=True)
+    water_resistant = models.BooleanField(default=None, blank=True, null=True)
     upholstery_material = models.CharField(max_length=100, default="", blank=True)
 
     # Clothing, Shoes & Fashion
@@ -123,7 +141,7 @@ class Product(models.Model):
     mileage = models.CharField(max_length=50, default="", blank=True)
     engine_capacity = models.CharField(max_length=50, default="", blank=True)
     top_speed = models.CharField(max_length=50, default="", blank=True)
-    number_of_seats = models.IntegerField(default="", blank=True, null=True)
+    number_of_seats = models.IntegerField(default=None, blank=True, null=True)
 
     # Food & Beverages
     expiration_date = models.DateField(null=True, blank=True)
@@ -136,15 +154,15 @@ class Product(models.Model):
     author = models.CharField(max_length=100, default="", blank=True)
     publisher = models.CharField(max_length=100, default="", blank=True)
     edition = models.CharField(max_length=50, default="", blank=True)
-    pages = models.IntegerField(default="", blank=True, null=True)
+    pages = models.IntegerField(default=None, blank=True, null=True)
     language = models.CharField(max_length=50, default="", blank=True)
     paper_type = models.CharField(max_length=100, default="", blank=True)
 
     # Toys & Games
     recommended_age = models.CharField(max_length=50, default="", blank=True)
-    number_of_pieces = models.IntegerField(default="", blank=True, null=True)
+    number_of_pieces = models.IntegerField(default=None, blank=True, null=True)
     safety_certifications = models.CharField(max_length=100, default="", blank=True)
-    battery_required = models.BooleanField(default="", blank=True, null=True)
+    battery_required = models.BooleanField(default=None, blank=True, null=True)
     interactive_features = models.CharField(max_length=100, default="", blank=True)
 
     # Health & Beauty
@@ -163,6 +181,9 @@ class Product(models.Model):
     metal_type = models.CharField(max_length=100, default="", blank=True)
     weight = models.CharField(max_length=50, default="", blank=True)
     certification = models.CharField(max_length=100, default="", blank=True)
+
+    video = models.FileField(upload_to='product_videos/', null=True, blank=True)
+    attributes = models.JSONField(default=dict, blank=True)  # Store dynamic attributes
 
     def __str__(self):
         return self.name
@@ -234,6 +255,11 @@ class Product(models.Model):
         }
 
         return {label: value for value, label in details.items() if value not in [None, "", "N/A", "Unknown", "0"]}
+
+    def get_attributes_for_category(self):
+        if self.category:
+            return ProductAttribute.objects.filter(category=self.category)
+        return []
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -402,6 +428,25 @@ class SubscriptionFeature(models.Model):
 
     def __str__(self):
         return f"{self.plan.name} - {self.name}"
+
+class Receipt(models.Model):
+    transaction_id = models.CharField(max_length=50, unique=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+    pdf_file = models.FileField(upload_to='receipts/', null=True, blank=True)
+    
+    def generate_transaction_id(self):
+        timestamp = int(time.time())
+        random_str = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        return f"NY{timestamp}{random_str}"
+    
+    def save(self, *args, **kwargs):
+        if not self.transaction_id:
+            self.transaction_id = self.generate_transaction_id()
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"Receipt {self.transaction_id}"
 
 
 

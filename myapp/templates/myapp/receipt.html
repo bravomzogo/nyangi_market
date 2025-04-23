@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .receipt {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+        .details {
+            margin-bottom: 20px;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="header">
+            <img src="{{ logo_url }}" alt="Nyangi Marketplace Logo" class="logo">
+            <h2>Nyangi Marketplace</h2>
+            <p>Email: www.nyangiinvestment@marketplace.co.tz</p>
+            <p>Address: P.O. Box 1282 TABORA</p>
+            <p>Phone: {{ company_phone }}</p>
+        </div>
+
+        <div class="details">
+            <p><strong>Transaction ID:</strong> {{ receipt.transaction_id }}</p>
+            <p><strong>Date and Time:</strong> {{ receipt.date_created|date:"F j, Y, g:i a" }}</p>
+            <p><strong>Username:</strong> {{ order.user.username }}</p>
+            <p><strong>Address:</strong> {{ order.shipping_address }}</p>
+            <p><strong>Payment via:</strong> {{ order.payment_method }}</p>
+            <p><strong>Shop Name:</strong> {{ order.seller.shop_name }}</p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2"><strong>Total</strong></td>
+                    <td><strong>{{ order.total_amount }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="footer">
+            <p>Thanks for shopping with us!</p>
+        </div>
+    </div>
+</body>
+</html> 

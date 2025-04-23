@@ -3,125 +3,132 @@
 {% block content %}
 {% load static %}
 
-
-{% block shop_with_us %}
-<!-- Override to hide the "Shop with us" dropdown -->
-{% endblock %}
-
-{% block search_form %}
-<!-- Override to hide the search form -->
-{% endblock %}
-
-
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 <style>
     /* Custom Styles for the Add Product Form */
-.card {
-    border-radius: 10px;
-    border: none;
-}
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
 
-.card-header {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    background-color: #28a745; /* Custom green color */
-}
+    .card-header {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        background-color: #28a745;
+    }
 
-.card-body {
-    background-color: #f8f9fa;
-    padding: 40px;
-    border-radius: 10px;
-}
+    .card-body {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
 
-.card-body .form-group {
-    margin-bottom: 1.5rem;
-}
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-label {
-    font-size: 1.1rem;
-}
+    label {
+        font-size: 1rem;
+        font-weight: bold;
+    }
 
-input, select, textarea {
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    padding: 0.8rem;
-    font-size: 1rem;
-    width: 100%;
-}
+    input, select, textarea {
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        padding: 0.8rem;
+        font-size: 1rem;
+        width: 100%;
+    }
 
-input:focus, select:focus, textarea:focus {
-    border-color: #28a745;
-    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
-}
+    input:focus, select:focus, textarea:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+    }
 
-.btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
-}
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
 
-.btn-success:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
-}
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
 
-.text-danger {
-    font-size: 0.9rem;
-}
-
+    .text-danger {
+        font-size: 0.9rem;
+    }
 </style>
-<!-- Page Wrapper -->
+
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
-            <!-- Card Wrapper -->
             <div class="card shadow-lg border-0 rounded-lg">
-                <!-- Card Header -->
-                <div class="card-header bg-success text-white text-center py-4">
+                <div class="card-header text-white text-center py-4">
                     <h2 class="mb-0 font-weight-bold">Add a Product</h2>
                 </div>
-                <!-- Card Body -->
-                <div class="card-body p-5 bg-light">
-                    <form method="post" enctype="multipart/form-data">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="productForm">
                         {% csrf_token %}
                         
-                        <!-- Render non-file fields dynamically -->
-                        {% for field in form %}
-                            {% if field.widget.input_type != "file" %}
-                                <div class="form-group mb-4">
-                                    <label for="{{ field.id_for_label }}" class="font-weight-bold text-success">
-                                        {{ field.label }}
-                                    </label>
-                                    {{ field }}
-                                    {% if field.help_text %}
-                                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                                    {% endif %}
-                                    {% for error in field.errors %}
-                                        <p class="text-danger">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                        <!-- Basic Information -->
+                        <div class="form-group">
+                            {{ form.name.label_tag }}
+                            {{ form.name }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.description.label_tag }}
+                            {{ form.description }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.category.label_tag }}
+                            {{ form.category }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.price.label_tag }}
+                            {{ form.price }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.stock.label_tag }}
+                            {{ form.stock }}
+                        </div>
 
-                        <!-- File Upload Fields -->
-                        {% for field in form %}
-                            {% if field.widget.input_type == "file" %}
-                                <div class="form-group mb-4">
-                                    <label for="{{ field.id_for_label }}" class="font-weight-bold text-success">
-                                        {{ field.label }}
-                                    </label>
-                                    {{ field }}
-                                    {% for error in field.errors %}
-                                        <p class="text-danger">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                        <!-- Media Upload -->
+                        <div class="form-group">
+                            {{ form.image.label_tag }}
+                            {{ form.image }}
+                            <small class="form-text text-muted">Main image of the product.</small>
+                        </div>
+                        <div class="form-group">
+                            {{ form.image1.label_tag }}
+                            {{ form.image1 }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.image2.label_tag }}
+                            {{ form.image2 }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.image3.label_tag }}
+                            {{ form.image3 }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.image4.label_tag }}
+                            {{ form.image4 }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_video">Product Video</label>
+                            <input type="file" name="video" id="id_video" accept="video/*" class="form-control">
+                            <small class="form-text text-muted">Upload a video showcasing your product (optional).</small>
+                        </div>
+
+                        <!-- Dynamic Attributes -->
+                        <div id="dynamicAttributes">
+                            <!-- Attributes will be loaded dynamically -->
+                        </div>
 
                         <!-- Submit Button -->
-                        <div class="form-group text-center mt-4">
-                            <button type="submit" class="btn btn-success btn-lg w-100 rounded-lg shadow-sm">
-                                Add Product
-                            </button>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-success btn-lg w-100">Add Product</button>
                         </div>
                     </form>
                 </div>
@@ -129,5 +136,86 @@ input:focus, select:focus, textarea:focus {
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.querySelector('#id_category');
+    const dynamicAttributesDiv = document.querySelector('#dynamicAttributes');
+    
+    function loadAttributes() {
+        const categoryId = categorySelect.value;
+        if (categoryId) {
+            fetch(`/get-category-attributes/?category_id=${categoryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    dynamicAttributesDiv.innerHTML = '';
+                    for (const [group, attributes] of Object.entries(data.attributes)) {
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'mb-4';
+                        
+                        const groupHeader = document.createElement('h5');
+                        groupHeader.textContent = group;
+                        groupHeader.className = 'text-primary';
+                        groupDiv.appendChild(groupHeader);
+                        
+                        attributes.forEach(attr => {
+                            const div = document.createElement('div');
+                            div.className = 'form-group';
+                            
+                            const label = document.createElement('label');
+                            label.textContent = attr.name;
+                            if (attr.required) {
+                                label.innerHTML += ' <span class="text-danger">*</span>';
+                            }
+                            
+                            let input;
+                            switch(attr.attribute_type) {
+                                case 'text':
+                                    input = document.createElement('input');
+                                    input.type = 'text';
+                                    input.className = 'form-control';
+                                    break;
+                                case 'number':
+                                    input = document.createElement('input');
+                                    input.type = 'number';
+                                    input.className = 'form-control';
+                                    break;
+                                case 'select':
+                                    input = document.createElement('select');
+                                    input.className = 'form-control';
+                                    attr.options.split(',').forEach(option => {
+                                        const opt = document.createElement('option');
+                                        opt.value = option.trim();
+                                        opt.textContent = option.trim();
+                                        input.appendChild(opt);
+                                    });
+                                    break;
+                                case 'boolean':
+                                    input = document.createElement('input');
+                                    input.type = 'checkbox';
+                                    input.className = 'form-check-input';
+                                    break;
+                            }
+                            
+                            input.name = `attr_${attr.id}`;
+                            if (attr.required) {
+                                input.required = true;
+                            }
+                            
+                            div.appendChild(label);
+                            div.appendChild(input);
+                            groupDiv.appendChild(div);
+                        });
+                        
+                        dynamicAttributesDiv.appendChild(groupDiv);
+                    }
+                });
+        }
+    }
+    
+    categorySelect.addEventListener('change', loadAttributes);
+    loadAttributes(); // Load attributes on page load if category is selected
+});
+</script>
 
 {% endblock %}

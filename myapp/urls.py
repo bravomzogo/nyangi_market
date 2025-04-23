@@ -1,5 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.contrib import admin  # Ensure this is imported only once
 from . import views
 
 urlpatterns = [
@@ -50,4 +51,9 @@ urlpatterns = [
     
     # About Us URL
     path('about-us/', views.about_us, name='about_us'),
+    path('get-category-attributes/', views.get_category_attributes, name='get_category_attributes'),
+    path('receipt/<int:receipt_id>/', views.download_receipt, name='download_receipt'),
+
+    # Admin URL
+    path('admin/', admin.site.urls),  # Ensure this is not duplicated
 ]
