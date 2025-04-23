@@ -182,7 +182,7 @@ class Product(models.Model):
     weight = models.CharField(max_length=50, default="", blank=True)
     certification = models.CharField(max_length=100, default="", blank=True)
 
-    video = models.FileField(upload_to='product_videos/', null=True, blank=True)
+    video = models.FileField(upload_to='product_videos/', null=True, blank=True, default=None)  # Ensure default is None
     attributes = models.JSONField(default=dict, blank=True)  # Store dynamic attributes
 
     def __str__(self):

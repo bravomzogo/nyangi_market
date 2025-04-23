@@ -35,13 +35,14 @@ class SellerRegistrationForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'category', 'image', 'image1', 'image2', 'image3', 'image4', 'release_year']
+        fields = ['name', 'description', 'price', 'category', 'image', 'image1', 'image2', 'image3', 'image4', 'release_year', 'video']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Enter product name'}),
             'description': forms.Textarea(attrs={'placeholder': 'Enter product description'}),
             'price': forms.NumberInput(attrs={'placeholder': 'Enter price in your currency'}),
             'category': forms.Select(),
             'release_year': forms.NumberInput(attrs={'placeholder': 'Enter release year (optional)', 'min': 1900, 'max': 2100}),
+            'video': forms.ClearableFileInput(attrs={'accept': 'video/*'}),
         }
         labels = {
             'name': "Product Name",
@@ -50,6 +51,7 @@ class ProductForm(forms.ModelForm):
             'category': "Category",
             'image': "Main Image",
             'release_year': "Release Year",
+            'video': "Product Video",
         }
 
 class ParentDetailsForm(forms.ModelForm):

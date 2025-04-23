@@ -116,8 +116,8 @@
                             {{ form.image4 }}
                         </div>
                         <div class="form-group">
-                            <label for="id_video">Product Video</label>
-                            <input type="file" name="video" id="id_video" accept="video/*" class="form-control">
+                            {{ form.video.label_tag }}
+                            {{ form.video }}
                             <small class="form-text text-muted">Upload a video showcasing your product (optional).</small>
                         </div>
 

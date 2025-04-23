@@ -112,6 +112,8 @@ def addo_product(request):
             # Handle optional fields
             if not form.cleaned_data.get('release_year'):
                 product.release_year = None
+            if not form.cleaned_data.get('video'):  # Handle optional video field
+                product.video = None
             product.save()
             return redirect('home')
     else:
