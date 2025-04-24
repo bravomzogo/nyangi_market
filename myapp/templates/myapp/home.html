@@ -81,41 +81,99 @@
     <a href="{% url 'add_product' %}" class="btn btn-success mb-3">Add Product</a>
     {% endif %}
 
-    <!-- Admin Dashboard Section -->
+    <!-- Admin Dashboard Section - IMPROVED -->
     {% if user.is_authenticated and user.is_staff %}
-    <div class="admin-dashboard-section mb-4">
-        <h3>Admin Dashboard</h3>
-        <ul class="list-group">
-            <li class="list-group-item">
-                <a href="{% url 'worker_contract_create' %}">Create Worker Contract</a>
-            </li>
-            <li class="list-group-item">
-                <a href="{% url 'subscription_plan_list' %}">View Subscription Plans</a>
-            </li>
-            <li class="list-group-item">
-                <a href="{% url 'subscription_plan_create' %}">Create Subscription Plan</a>
-            </li>
-            <li class="list-group-item">
-                <a href="{% url 'seller_subscription_create' %}">Create Seller Subscription</a>
-            </li>
-        </ul>
-    </div>
-
-    <!-- Contracts Section -->
-    <div class="contracts-section mb-4">
-        <h3>Existing Contracts</h3>
-        {% if contracts %}
-        <ul class="list-group">
-            {% for contract in contracts %}
-            <li class="list-group-item">
-                <a href="{% url 'worker_contract_detail' contract.id %}">{{ contract.title }}</a>
-                <a href="{% url 'worker_contract_pdf' contract.id %}" class="btn btn-sm btn-secondary float-end">Download PDF</a>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No contracts available.</p>
-        {% endif %}
+    <div class="admin-dashboard-container mb-5">
+        <h3 class="admin-section-title">
+            <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
+        </h3>
+        
+        <div class="row">
+            <!-- Quick Actions Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card admin-card">
+                    <div class="card-header admin-card-header">
+                        <i class="bi bi-lightning-charge me-2"></i>Quick Actions
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'worker_contract_create' %}" class="btn btn-admin-action">
+                                <i class="bi bi-file-earmark-text me-2"></i>Create Contract
+                            </a>
+                            <a href="{% url 'subscription_plan_create' %}" class="btn btn-admin-action">
+                                <i class="bi bi-credit-card me-2"></i>Create Subscription Plan
+                            </a>
+                            <a href="{% url 'seller_subscription_create' %}" class="btn btn-admin-action">
+                                <i class="bi bi-shop me-2"></i>Assign Seller Subscription
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Management Links Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card admin-card">
+                    <div class="card-header admin-card-header">
+                        <i class="bi bi-gear me-2"></i>Management
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group admin-list-group">
+                            <a href="{% url 'subscription_plan_list' %}" class="list-group-item list-group-item-action admin-list-item">
+                                <i class="bi bi-list-ul me-2"></i>View All Subscription Plans
+                            </a>
+                            <a href="/admin/" class="list-group-item list-group-item-action admin-list-item">
+                                <i class="bi bi-shield-lock me-2"></i>Django Admin Panel
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action admin-list-item">
+                                <i class="bi bi-people me-2"></i>User Management
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contracts Section - IMPROVED -->
+        <div class="card admin-card mb-4">
+            <div class="card-header admin-card-header">
+                <i class="bi bi-file-earmark-text me-2"></i>Existing Contracts
+            </div>
+            <div class="card-body">
+                {% if contracts %}
+                <div class="table-responsive">
+                    <table class="table admin-table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contract in contracts %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'worker_contract_detail' contract.id %}" class="admin-link">
+                                        {{ contract.title }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'worker_contract_pdf' contract.id %}" class="btn btn-sm btn-admin">
+                                        <i class="bi bi-download me-1"></i>Download
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-admin">
+                    <i class="bi bi-info-circle me-2"></i>No contracts available.
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
     {% endif %}
 
@@ -167,6 +225,187 @@
 </div>
 
 <style>
+/* Admin Section Styles */
+.admin-dashboard-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
+.admin-section-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #3498db;
+}
+
+.admin-card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+}
+
+.admin-card-header {
+    background-color: #3498db;
+    color: white;
+    font-weight: 500;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 12px 15px;
+}
+
+.btn-admin-action {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    border: 1px solid #dee2e6;
+    text-align: left;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+}
+
+.btn-admin-action:hover {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.admin-list-group {
+    border-radius: 8px;
+}
+
+.admin-list-item {
+    border: none;
+    margin-bottom: 5px;
+    border-radius: 5px !important;
+    transition: all 0.2s ease;
+}
+
+.admin-list-item:hover {
+    background-color: #e9f7fe;
+    color: #3498db;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.admin-table th {
+    background-color: #f1f8fe;
+    color: #3498db;
+    font-weight: 500;
+}
+
+.admin-table td {
+    vertical-align: middle;
+    padding: 12px 15px;
+}
+
+.admin-table tr:hover td {
+    background-color: #f8f9fa;
+}
+
+.btn-admin {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-admin:hover {
+    background-color: #2980b9;
+    color: white;
+}
+
+.admin-link {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.admin-link:hover {
+    color: #3498db;
+}
+
+.alert-admin {
+    background-color: #e9f7fe;
+    color: #2c3e50;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+/* Dark Mode Styles for Admin Section */
+.dark-mode .admin-dashboard-container {
+    background-color: #2c3e50;
+}
+
+.dark-mode .admin-section-title {
+    color: #ecf0f1;
+    border-bottom-color: #3498db;
+}
+
+.dark-mode .admin-card {
+    background-color: #34495e;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .admin-card-header {
+    background-color: #2980b9;
+}
+
+.dark-mode .btn-admin-action {
+    background-color: #34495e;
+    color: #ecf0f1;
+    border-color: #4a6278;
+}
+
+.dark-mode .btn-admin-action:hover {
+    background-color: #3498db;
+    color: white;
+}
+
+.dark-mode .admin-list-item {
+    background-color: #3d566e;
+    color: #ecf0f1;
+}
+
+.dark-mode .admin-list-item:hover {
+    background-color: #4a6278;
+    color: #3498db;
+}
+
+.dark-mode .admin-table th {
+    background-color: #2c3e50;
+    color: #3498db;
+}
+
+.dark-mode .admin-table td {
+    background-color: #34495e;
+    color: #ecf0f1;
+}
+
+.dark-mode .admin-table tr:hover td {
+    background-color: #3d566e;
+}
+
+.dark-mode .admin-link {
+    color: #ecf0f1;
+}
+
+.dark-mode .admin-link:hover {
+    color: #3498db;
+}
+
+.dark-mode .alert-admin {
+    background-color: #3d566e;
+    color: #ecf0f1;
+}
+
 /* Search Bar Styles */
 .modern-search-form {
     max-width: 700px;
@@ -234,38 +473,6 @@
     background: #2563eb;
     transform: scale(1.05);
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-}
-
-/* Dark Mode Styles */
-.dark-mode {
-    background-color: #121212;
-    color: #ffffff;
-}
-
-.dark-mode .card {
-    background-color: #1e1e1e;
-    color: #ffffff;
-}
-
-.dark-mode .modern-search-container {
-    background: #333;
-    border-color: #555;
-}
-
-.dark-mode .modern-search-input {
-    color: #ffffff;
-}
-
-.dark-mode .modern-search-input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.dark-mode .modern-search-btn {
-    background: #555;
-}
-
-.dark-mode .price strong {
-    color: #ffffff !important;
 }
 
 /* Categories Section Styles */
