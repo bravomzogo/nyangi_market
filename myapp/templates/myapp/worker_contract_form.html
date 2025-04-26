@@ -2,443 +2,830 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="text-center mb-4">NYANGI INVESTMENT COMPANY CONTRACT AGREEMENT</h2>
+<div class="container contract-container py-4">
+    <div class="contract-header text-center mb-5">
+        <h1 class="contract-title">NYANGI INVESTMENT COMPANY</h1>
+        <h2 class="contract-subtitle">WORKER CONTRACT AGREEMENT</h2>
+        <div class="header-divider"></div>
+    </div>
     
     <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
         {% csrf_token %}
         
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>A. PERSONAL DETAILS</h4>
+        <!-- Progress Indicator -->
+        <div class="progress-steps mb-5">
+            <div class="progress-step active" data-step="1">Personal Details</div>
+            <div class="progress-step" data-step="2">Family Info</div>
+            <div class="progress-step" data-step="3">Address</div>
+            <div class="progress-step" data-step="4">Referees</div>
+            <div class="progress-step" data-step="5">Documents</div>
+            <div class="progress-step" data-step="6">Signatures</div>
+        </div>
+        
+        <!-- Section A: Personal Details -->
+        <div class="contract-section active" id="section-1">
+            <div class="section-header">
+                <i class="bi bi-person-badge me-2"></i>
+                <h3>A. PERSONAL DETAILS</h3>
             </div>
-            <div class="card-body">
-                <div class="row">
+            <div class="section-body">
+                <div class="row g-3">
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ contract_form.first_name.id_for_label }}">First Name</label>
+                        <div class="form-floating">
                             {{ contract_form.first_name }}
+                            <label for="{{ contract_form.first_name.id_for_label }}" class="form-label">First Name</label>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ contract_form.second_name.id_for_label }}">Second Name</label>
+                        <div class="form-floating">
                             {{ contract_form.second_name }}
+                            <label for="{{ contract_form.second_name.id_for_label }}" class="form-label">Middle Name</label>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ contract_form.third_name.id_for_label }}">Third Name</label>
+                        <div class="form-floating">
                             {{ contract_form.third_name }}
+                            <label for="{{ contract_form.third_name.id_for_label }}" class="form-label">Last Name</label>
                         </div>
                     </div>
-                </div>
-                
-                <div class="row mt-3">
+                    
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="{{ contract_form.sex.id_for_label }}">Sex</label>
+                        <div class="form-floating">
                             {{ contract_form.sex }}
+                            <label for="{{ contract_form.sex.id_for_label }}" class="form-label">Gender</label>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="{{ contract_form.marital_status.id_for_label }}">Marital Status</label>
+                        <div class="form-floating">
                             {{ contract_form.marital_status }}
+                            <label for="{{ contract_form.marital_status.id_for_label }}" class="form-label">Marital Status</label>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.spouse_details.id_for_label }}">Spouse Details (if married)</label>
+                        <div class="form-floating">
                             {{ contract_form.spouse_details }}
+                            <label for="{{ contract_form.spouse_details.id_for_label }}" class="form-label">Spouse Details (if married)</label>
                         </div>
                     </div>
-                </div>
-                
-                <div class="row mt-3">
+                    
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ contract_form.nationality.id_for_label }}">Nationality</label>
+                        <div class="form-floating">
                             {{ contract_form.nationality }}
+                            <label for="{{ contract_form.nationality.id_for_label }}" class="form-label">Nationality</label>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ contract_form.passport_nida.id_for_label }}">Passport/NIDA</label>
+                        <div class="form-floating">
                             {{ contract_form.passport_nida }}
+                            <label for="{{ contract_form.passport_nida.id_for_label }}" class="form-label">Passport/NIDA Number</label>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ contract_form.date_of_birth.id_for_label }}">Date of Birth</label>
+                        <div class="form-floating">
                             {{ contract_form.date_of_birth }}
+                            <label for="{{ contract_form.date_of_birth.id_for_label }}" class="form-label">Date of Birth</label>
                         </div>
                     </div>
-                </div>
-                
-                <div class="row mt-3">
+                    
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.drivers_license.id_for_label }}">Driver's License Number</label>
+                        <div class="form-floating">
                             {{ contract_form.drivers_license }}
+                            <label for="{{ contract_form.drivers_license.id_for_label }}" class="form-label">Driver's License Number</label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>B. PARENT DETAILS</h4>
+        <!-- Section B: Parent Details -->
+        <div class="contract-section" id="section-2">
+            <div class="section-header">
+                <i class="bi bi-people-fill me-2"></i>
+                <h3>B. PARENT DETAILS</h3>
             </div>
-            <div class="card-body">
-                <h5>Father's Details</h5>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ father_form.first_name.id_for_label }}">First Name</label>
-                            {{ father_form.first_name }}
+            <div class="section-body">
+                <div class="parent-card">
+                    <h4 class="parent-title"><i class="bi bi-gender-male me-2"></i>Father's Details</h4>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ father_form.first_name }}
+                                <label for="{{ father_form.first_name.id_for_label }}" class="form-label">First Name</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ father_form.second_name.id_for_label }}">Second Name</label>
-                            {{ father_form.second_name }}
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ father_form.second_name }}
+                                <label for="{{ father_form.second_name.id_for_label }}" class="form-label">Middle Name</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ father_form.residence.id_for_label }}">Residence</label>
-                            {{ father_form.residence }}
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ father_form.residence }}
+                                <label for="{{ father_form.residence.id_for_label }}" class="form-label">Residence</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <h5 class="mt-4">Mother's Details</h5>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ mother_form.first_name.id_for_label }}">First Name</label>
-                            {{ mother_form.first_name }}
+                
+                <div class="parent-card mt-4">
+                    <h4 class="parent-title"><i class="bi bi-gender-female me-2"></i>Mother's Details</h4>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ mother_form.first_name }}
+                                <label for="{{ mother_form.first_name.id_for_label }}" class="form-label">First Name</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ mother_form.second_name.id_for_label }}">Second Name</label>
-                            {{ mother_form.second_name }}
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ mother_form.second_name }}
+                                <label for="{{ mother_form.second_name.id_for_label }}" class="form-label">Middle Name</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ mother_form.residence.id_for_label }}">Residence</label>
-                            {{ mother_form.residence }}
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ mother_form.residence }}
+                                <label for="{{ mother_form.residence.id_for_label }}" class="form-label">Residence</label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>C. ADDRESS</h4>
+        <!-- Section C: Address -->
+        <div class="contract-section" id="section-3">
+            <div class="section-header">
+                <i class="bi bi-house-door-fill me-2"></i>
+                <h3>C. ADDRESS INFORMATION</h3>
             </div>
-            <div class="card-body">
-                <div class="row">
+            <div class="section-body">
+                <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.present_address.id_for_label }}">Present Address</label>
+                        <div class="form-floating">
                             {{ contract_form.present_address }}
+                            <label for="{{ contract_form.present_address.id_for_label }}" class="form-label">Current Address</label>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.permanent_address.id_for_label }}">Permanent Address</label>
+                        <div class="form-floating">
                             {{ contract_form.permanent_address }}
+                            <label for="{{ contract_form.permanent_address.id_for_label }}" class="form-label">Permanent Address</label>
                         </div>
                     </div>
-                </div>
-                
-                <div class="row mt-3">
+                    
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.phone_number.id_for_label }}">Phone Number</label>
+                        <div class="form-floating">
                             {{ contract_form.phone_number }}
+                            <label for="{{ contract_form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.whatsapp_number.id_for_label }}">WhatsApp Number</label>
+                        <div class="form-floating">
                             {{ contract_form.whatsapp_number }}
+                            <label for="{{ contract_form.whatsapp_number.id_for_label }}" class="form-label">WhatsApp Number</label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>D. REFEREES</h4>
+        <!-- Section D: Referees -->
+        <div class="contract-section" id="section-4">
+            <div class="section-header">
+                <i class="bi bi-person-lines-fill me-2"></i>
+                <h3>D. REFEREES</h3>
             </div>
-            <div class="card-body">
-                <h5>Referee 1</h5>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ referee1_form.name.id_for_label }}">Name</label>
-                            {{ referee1_form.name }}
+            <div class="section-body">
+                <div class="referee-card">
+                    <h4 class="referee-title">Referee 1</h4>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ referee1_form.name }}
+                                <label for="{{ referee1_form.name.id_for_label }}" class="form-label">Full Name</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ referee1_form.occupation.id_for_label }}">Occupation</label>
-                            {{ referee1_form.occupation }}
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ referee1_form.occupation }}
+                                <label for="{{ referee1_form.occupation.id_for_label }}" class="form-label">Occupation</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ referee1_form.signature.id_for_label }}">Signature</label>
-                            {{ referee1_form.signature }}
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ referee1_form.signature }}
+                                <label for="{{ referee1_form.signature.id_for_label }}" class="form-label">Signature</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <h5 class="mt-4">Referee 2</h5>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ referee2_form.name.id_for_label }}">Name</label>
-                            {{ referee2_form.name }}
+                
+                <div class="referee-card mt-4">
+                    <h4 class="referee-title">Referee 2</h4>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ referee2_form.name }}
+                                <label for="{{ referee2_form.name.id_for_label }}" class="form-label">Full Name</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ referee2_form.occupation.id_for_label }}">Occupation</label>
-                            {{ referee2_form.occupation }}
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ referee2_form.occupation }}
+                                <label for="{{ referee2_form.occupation.id_for_label }}" class="form-label">Occupation</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="{{ referee2_form.signature.id_for_label }}">Signature</label>
-                            {{ referee2_form.signature }}
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                {{ referee2_form.signature }}
+                                <label for="{{ referee2_form.signature.id_for_label }}" class="form-label">Signature</label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>E. STREET/WARD CHAIRPERSON</h4>
+        <!-- Section E: Street/Ward Chairperson -->
+        <div class="contract-section" id="section-5">
+            <div class="section-header">
+                <i class="bi bi-person-vcard-fill me-2"></i>
+                <h3>E. STREET/WARD CHAIRPERSON</h3>
             </div>
-            <div class="card-body">
-                <div class="row">
+            <div class="section-body">
+                <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.chairperson_name.id_for_label }}">Name</label>
+                        <div class="form-floating">
                             {{ contract_form.chairperson_name }}
+                            <label for="{{ contract_form.chairperson_name.id_for_label }}" class="form-label">Full Name</label>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.chairperson_post.id_for_label }}">Post</label>
+                        <div class="form-floating">
                             {{ contract_form.chairperson_post }}
+                            <label for="{{ contract_form.chairperson_post.id_for_label }}" class="form-label">Post/Position</label>
                         </div>
                     </div>
-                </div>
-                
-                <div class="row mt-3">
+                    
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.chairperson_signature.id_for_label }}">Signature</label>
+                        <div class="form-floating">
                             {{ contract_form.chairperson_signature }}
+                            <label for="{{ contract_form.chairperson_signature.id_for_label }}" class="form-label">Signature</label>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.chairperson_stamp.id_for_label }}">Official Stamp</label>
+                        <div class="form-floating">
                             {{ contract_form.chairperson_stamp }}
+                            <label for="{{ contract_form.chairperson_stamp.id_for_label }}" class="form-label">Official Stamp</label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>F. EDUCATION RECORD</h4>
+        <!-- Section F: Education Record -->
+        <div class="contract-section" id="section-6">
+            <div class="section-header">
+                <i class="bi bi-mortarboard-fill me-2"></i>
+                <h3>F. EDUCATION RECORD</h3>
             </div>
-            <div class="card-body">
-                <div class="row">
+            <div class="section-body">
+                <div class="row g-3">
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="{{ education_form.primary.id_for_label }}">Primary</label>
+                        <div class="form-floating">
                             {{ education_form.primary }}
+                            <label for="{{ education_form.primary.id_for_label }}" class="form-label">Primary School</label>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="{{ education_form.secondary.id_for_label }}">Secondary</label>
+                        <div class="form-floating">
                             {{ education_form.secondary }}
+                            <label for="{{ education_form.secondary.id_for_label }}" class="form-label">Secondary School</label>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="{{ education_form.high_school.id_for_label }}">High School</label>
+                        <div class="form-floating">
                             {{ education_form.high_school }}
+                            <label for="{{ education_form.high_school.id_for_label }}" class="form-label">High School</label>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="{{ education_form.university.id_for_label }}">University</label>
+                        <div class="form-floating">
                             {{ education_form.university }}
+                            <label for="{{ education_form.university.id_for_label }}" class="form-label">University</label>
                         </div>
                     </div>
-                </div>
-                
-                <div class="row mt-3">
+                    
                     <div class="col-12">
-                        <div class="form-group">
-                            <label for="{{ education_form.talents.id_for_label }}">Talents</label>
+                        <div class="form-floating">
                             {{ education_form.talents }}
+                            <label for="{{ education_form.talents.id_for_label }}" class="form-label">Talents/Skills</label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>G. DOCUMENTS TO BE UPLOADED</h4>
+        <!-- Section G: Documents -->
+        <div class="contract-section" id="section-7">
+            <div class="section-header">
+                <i class="bi bi-file-earmark-arrow-up-fill me-2"></i>
+                <h3>G. DOCUMENTS TO BE UPLOADED</h3>
             </div>
-            <div class="card-body">
-                <div class="row">
+            <div class="section-body">
+                <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.nida_passport_doc.id_for_label }}">NIDA/Passport</label>
+                        <div class="document-upload">
+                            <label for="{{ contract_form.nida_passport_doc.id_for_label }}" class="document-label">
+                                <i class="bi bi-file-text-fill me-2"></i>
+                                NIDA/Passport Document
+                            </label>
                             {{ contract_form.nida_passport_doc }}
+                            <small class="document-hint">(PDF, JPG, PNG - Max 5MB)</small>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.driving_license_doc.id_for_label }}">Driving License</label>
+                        <div class="document-upload">
+                            <label for="{{ contract_form.driving_license_doc.id_for_label }}" class="document-label">
+                                <i class="bi bi-file-text-fill me-2"></i>
+                                Driving License
+                            </label>
                             {{ contract_form.driving_license_doc }}
+                            <small class="document-hint">(PDF, JPG, PNG - Max 5MB)</small>
                         </div>
                     </div>
-                </div>
-                
-                <div class="row mt-3">
+                    
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.police_clearance_doc.id_for_label }}">Police Clearance Form</label>
+                        <div class="document-upload">
+                            <label for="{{ contract_form.police_clearance_doc.id_for_label }}" class="document-label">
+                                <i class="bi bi-file-text-fill me-2"></i>
+                                Police Clearance Form
+                            </label>
                             {{ contract_form.police_clearance_doc }}
+                            <small class="document-hint">(PDF, JPG, PNG - Max 5MB)</small>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.educational_certificates_doc.id_for_label }}">Educational Certificates</label>
+                        <div class="document-upload">
+                            <label for="{{ contract_form.educational_certificates_doc.id_for_label }}" class="document-label">
+                                <i class="bi bi-file-text-fill me-2"></i>
+                                Educational Certificates
+                            </label>
                             {{ contract_form.educational_certificates_doc }}
+                            <small class="document-hint">(PDF, JPG, PNG - Max 5MB)</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>H. CONTRACT RULES</h4>
+        <!-- Section H: Contract Rules -->
+        <div class="contract-section" id="section-8">
+            <div class="section-header">
+                <i class="bi bi-journal-text me-2"></i>
+                <h3>H. CONTRACT RULES</h3>
             </div>
-            <div class="card-body">
-                <div class="form-group">
-                    <label for="{{ contract_form.contract_rules.id_for_label }}">Contract Rules</label>
+            <div class="section-body">
+                <div class="form-floating">
                     {{ contract_form.contract_rules }}
+                    <label for="{{ contract_form.contract_rules.id_for_label }}" class="form-label">Contract Terms and Conditions</label>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>I. SIGNATURES AND OFFICIAL STAMPS</h4>
+        <!-- Section I: Signatures -->
+        <div class="contract-section" id="section-9">
+            <div class="section-header">
+                <i class="bi bi-pen-fill me-2"></i>
+                <h3>I. SIGNATURES AND OFFICIAL STAMPS (TO BE FILLED PHYSICALLY)</h3>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.worker_signature.id_for_label }}">Worker's Signature</label>
-                            {{ contract_form.worker_signature }}
+            <div class="section-body">
+                <div class="signature-card">
+                    <h4 class="signature-title">Worker's Signature</h4>
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <div class="signature-space" style="height: 100px; border: 1px dashed #ccc; margin-bottom: 20px;"></div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.lawyer_name.id_for_label }}">Lawyer's Name</label>
-                            {{ contract_form.lawyer_name }}
+                <div class="signature-card mt-4">
+                    <h4 class="signature-title">Lawyer's Verification</h4>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ contract_form.lawyer_name }}
+                                <label for="{{ contract_form.lawyer_name.id_for_label }}" class="form-label">Full Name</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="{{ contract_form.lawyer_signature.id_for_label }}">Lawyer's Signature</label>
-                            {{ contract_form.lawyer_signature }}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="{{ contract_form.lawyer_stamp.id_for_label }}">Lawyer's Stamp</label>
-                            {{ contract_form.lawyer_stamp }}
+                        <div class="col-md-6">
+                            <div class="signature-space" style="height: 100px; border: 1px dashed #ccc; margin-bottom: 20px;"></div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="{{ contract_form.ceo_name.id_for_label }}">CEO's Name</label>
-                            {{ contract_form.ceo_name }}
+                <div class="signature-card mt-4">
+                    <h4 class="signature-title">CEO's Approval</h4>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ contract_form.ceo_name }}
+                                <label for="{{ contract_form.ceo_name.id_for_label }}" class="form-label">Full Name</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="{{ contract_form.ceo_signature.id_for_label }}">CEO's Signature</label>
-                            {{ contract_form.ceo_signature }}
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="{{ contract_form.ceo_stamp.id_for_label }}">CEO's Stamp</label>
-                            {{ contract_form.ceo_stamp }}
+                        <div class="col-md-6">
+                            <div class="signature-space" style="height: 100px; border: 1px dashed #ccc; margin-bottom: 20px;"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="text-center mb-4">
-            <button type="submit" class="btn btn-primary btn-lg">Submit Contract</button>
+        <!-- Form Navigation -->
+        <div class="form-navigation mt-5">
+            <button type="button" class="btn btn-outline-primary prev-btn" disabled>
+                <i class="bi bi-arrow-left me-2"></i>Previous
+            </button>
+            <button type="button" class="btn btn-primary next-btn">
+                Next<i class="bi bi-arrow-right ms-2"></i>
+            </button>
+            <button type="submit" class="btn btn-success submit-btn">
+                <i class="bi bi-check-circle-fill me-2"></i>Submit Contract
+            </button>
         </div>
     </form>
 </div>
 
 <style>
-    .form-group {
-        margin-bottom: 1rem;
+    /* Base Styles */
+    .contract-container {
+        max-width: 1200px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
     }
-    .form-control {
-        border-radius: 0.25rem;
+    
+    .contract-header {
+        margin-bottom: 40px;
     }
-    .card {
-        border-radius: 0.25rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    
+    .company-logo {
+        height: 80px;
+        width: auto;
     }
-    .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    
+    .contract-title {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 5px;
     }
-    h4, h5 {
-        color: #343a40;
+    
+    .contract-subtitle {
+        color: #3498db;
+        font-weight: 600;
+        margin-bottom: 15px;
     }
-    label {
+    
+    .header-divider {
+        height: 3px;
+        background: linear-gradient(90deg, #3498db, #2c3e50);
+        width: 150px;
+        margin: 0 auto;
+        border-radius: 3px;
+    }
+    
+    /* Progress Steps */
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    
+    .progress-steps::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #e0e0e0;
+        z-index: 1;
+    }
+    
+    .progress-step {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        width: 16%;
+        font-size: 14px;
+        color: #95a5a6;
+        padding-top: 25px;
+    }
+    
+    .progress-step::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 20px;
+        background-color: #e0e0e0;
+        border-radius: 50%;
+    }
+    
+    .progress-step.active {
+        color: #3498db;
         font-weight: 500;
     }
+    
+    .progress-step.active::before {
+        background-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    /* Section Styles */
+    .contract-section {
+        margin-bottom: 30px;
+        display: none;
+    }
+    
+    .contract-section.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    .section-header {
+        background-color: #f8f9fa;
+        padding: 15px 20px;
+        border-radius: 8px 8px 0 0;
+        border-bottom: 2px solid #3498db;
+        margin-bottom: 0;
+    }
+    
+    .section-header h3 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .section-body {
+        padding: 20px;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+    }
+    
+    /* Form Styles */
+    .form-floating {
+        margin-bottom: 15px;
+        position: relative;
+    }
+    
+    .form-floating > .form-control,
+    .form-floating > .form-select {
+        height: calc(3.5rem + 2px);
+        padding: 1rem 0.75rem;
+    }
+    
+    .form-floating > label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        padding: 1rem 0.75rem;
+        pointer-events: none;
+        border: 1px solid transparent;
+        transform-origin: 0 0;
+        transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+        color: #7f8c8d;
+        font-weight: 500;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label,
+    .form-floating > .form-select ~ label {
+        transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        opacity: 0.85;
+        background-color: white;
+        padding: 0 0.5rem;
+        color: #3498db;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+    }
+    
+    /* Card Styles */
+    .parent-card, .referee-card, .signature-card {
+        background-color: #f8fafc;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #3498db;
+        margin-bottom: 20px;
+    }
+    
+    .parent-title, .referee-title, .signature-title {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Document Upload Styles */
+    .document-upload {
+        border: 2px dashed #bdc3c7;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .document-upload:hover {
+        border-color: #3498db;
+        background-color: #f8fafc;
+    }
+    
+    .document-label {
+        display: block;
+        font-weight: 500;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+    
+    .document-hint {
+        display: block;
+        color: #7f8c8d;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+    
+    /* Navigation Buttons */
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+    }
+    
+    .prev-btn, .next-btn, .submit-btn {
+        padding: 10px 25px;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .submit-btn {
+        display: none;
+        background-color: #2ecc71;
+        border-color: #2ecc71;
+    }
+    
+    .submit-btn:hover {
+        background-color: #27ae60;
+        border-color: #27ae60;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .progress-step {
+            font-size: 12px;
+            padding-top: 20px;
+        }
+        
+        .progress-step::before {
+            width: 15px;
+            height: 15px;
+        }
+        
+        .contract-title {
+            font-size: 24px;
+        }
+        
+        .contract-subtitle {
+            font-size: 18px;
+        }
+        
+        .form-navigation {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .prev-btn, .next-btn, .submit-btn {
+            width: 100%;
+        }
+    }
 </style>
-{% endblock %} 
+
+<script>
+    // Form Section Navigation
+    document.addEventListener('DOMContentLoaded', function() {
+        const sections = document.querySelectorAll('.contract-section');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        const submitBtn = document.querySelector('.submit-btn');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        
+        let currentSection = 0;
+        
+        // Show first section initially
+        showSection(currentSection);
+        
+        // Next button click handler
+        nextBtn.addEventListener('click', function() {
+            if (validateSection(currentSection)) {
+                currentSection++;
+                showSection(currentSection);
+            }
+        });
+        
+        // Previous button click handler
+        prevBtn.addEventListener('click', function() {
+            currentSection--;
+            showSection(currentSection);
+        });
+        
+        // Show appropriate section
+        function showSection(index) {
+            sections.forEach(section => section.classList.remove('active'));
+            sections[index].classList.add('active');
+            
+            // Update progress steps
+            progressSteps.forEach((step, i) => {
+                if (i <= index) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+            
+            // Update button visibility
+            if (index === 0) {
+                prevBtn.disabled = true;
+            } else {
+                prevBtn.disabled = false;
+            }
+            
+            if (index === sections.length - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+        }
+        
+        // Simple validation for current section
+        function validateSection(index) {
+            const currentSection = sections[index];
+            const inputs = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                currentSection.querySelector('.is-invalid').focus();
+            }
+            
+            return isValid;
+        }
+        
+        // Remove validation error when user starts typing
+        document.querySelectorAll('input, select, textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -347,8 +347,8 @@ class WorkerContract(models.Model):
     # Street/Ward Chairperson
     chairperson_name = models.CharField(max_length=255)
     chairperson_post = models.CharField(max_length=255)
-    chairperson_signature = models.ImageField(upload_to='signatures/')
-    chairperson_stamp = models.ImageField(upload_to='stamps/')
+    chairperson_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)  # Made optional
+    chairperson_stamp = models.ImageField(upload_to='stamps/', blank=True, null=True)  # Made optional
 
     # Education
     education_record = models.ForeignKey(EducationRecord, on_delete=models.CASCADE)
@@ -363,13 +363,13 @@ class WorkerContract(models.Model):
     contract_rules = models.TextField()
 
     # Signatures
-    worker_signature = models.ImageField(upload_to='signatures/')
+    worker_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)  # Made optional
     lawyer_name = models.CharField(max_length=255)
-    lawyer_signature = models.ImageField(upload_to='signatures/')
-    lawyer_stamp = models.ImageField(upload_to='stamps/')
+    lawyer_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)  # Made optional
+    lawyer_stamp = models.ImageField(upload_to='stamps/', blank=True, null=True)  # Made optional
     ceo_name = models.CharField(max_length=255)
-    ceo_signature = models.ImageField(upload_to='signatures/')
-    ceo_stamp = models.ImageField(upload_to='stamps/')
+    ceo_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)  # Made optional
+    ceo_stamp = models.ImageField(upload_to='stamps/', blank=True, null=True)  # Made optional
 
     # Status
     is_approved = models.BooleanField(default=False)

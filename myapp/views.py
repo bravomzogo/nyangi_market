@@ -377,16 +377,23 @@ def worker_contract_create(request):
         contract_form = WorkerContractForm(request.POST, request.FILES)
         father_form = ParentDetailsForm(request.POST, prefix='father')
         mother_form = ParentDetailsForm(request.POST, prefix='mother')
-        referee1_form = RefereeForm(request.POST, request.FILES, prefix='referee1')
-        referee2_form = RefereeForm(request.POST, request.FILES, prefix='referee2')
+        referee1_form = RefereeForm(request.POST, prefix='referee1')
+        referee2_form = RefereeForm(request.POST, prefix='referee2')
         education_form = EducationRecordForm(request.POST)
 
         if all([contract_form.is_valid(), father_form.is_valid(), mother_form.is_valid(),
                 referee1_form.is_valid(), referee2_form.is_valid(), education_form.is_valid()]):
             father = father_form.save()
             mother = mother_form.save()
-            referee1 = referee1_form.save()
-            referee2 = referee2_form.save()
+            referee1 = referee1_form.save(commit=False)
+            referee2 = referee2_form.save(commit=False)
+            
+            # Skip signature upload for referees
+            referee1.signature = None
+            referee2.signature = None
+            referee1.save()
+            referee2.save()
+            
             education = education_form.save()
 
             contract = contract_form.save(commit=False)
@@ -395,6 +402,16 @@ def worker_contract_create(request):
             contract.referee1 = referee1
             contract.referee2 = referee2
             contract.education_record = education
+            
+            # Skip signature and stamp uploads
+            contract.chairperson_signature = None
+            contract.chairperson_stamp = None
+            contract.worker_signature = None
+            contract.lawyer_signature = None
+            contract.lawyer_stamp = None
+            contract.ceo_signature = None
+            contract.ceo_stamp = None
+            
             contract.save()
 
             messages.success(request, 'Contract created successfully!')

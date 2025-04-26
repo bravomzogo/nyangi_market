@@ -76,10 +76,11 @@ class WorkerContractForm(forms.ModelForm):
             'first_name', 'second_name', 'third_name', 'sex', 'marital_status', 'spouse_details',
             'nationality', 'passport_nida', 'date_of_birth', 'drivers_license',
             'present_address', 'permanent_address', 'phone_number', 'whatsapp_number',
-            'chairperson_name', 'chairperson_post', 'chairperson_signature', 'chairperson_stamp',
+            'chairperson_name', 'chairperson_post',  # Removed signature and stamp fields
             'nida_passport_doc', 'driving_license_doc', 'police_clearance_doc', 'educational_certificates_doc',
-            'contract_rules', 'worker_signature', 'lawyer_name', 'lawyer_signature', 'lawyer_stamp',
-            'ceo_name', 'ceo_signature', 'ceo_stamp'
+            'contract_rules',  # Removed worker_signature
+            'lawyer_name',  # Removed lawyer_signature and stamp
+            'ceo_name',  # Removed ceo_signature and stamp
         ]
         widgets = {
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Worker Contract Agreement</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        .header h2 {
+            font-size: 20px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        .header-divider {
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #2c3e50);
+            width: 150px;
+            margin: 0 auto;
+            border-radius: 3px;
+        }
+        .section {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+        .section-header {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .section-header h3 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+        }
+        .section-body {
+            padding: 0 10px;
+        }
+        .signature-space {
+            height: 80px;
+            border-bottom: 1px solid #000;
+            margin-top: 10px;
+        }
+        .signature-block {
+            margin-top: 30px;
+        }
+        .signature-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .signature-box {
+            width: 45%;
+        }
+        .footer {
+            margin-top: 50px;
+            font-size: 12px;
+            text-align: center;
+            color: #7f8c8d;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-right {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>NYANGI INVESTMENT COMPANY</h1>
+        <h2>WORKER CONTRACT AGREEMENT</h2>
+        <div class="header-divider"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <h3>A. PERSONAL DETAILS</h3>
+        </div>
+        <div class="section-body">
+            <table>
+                <tr>
+                    <td width="30%"><strong>Full Name:</strong></td>
+                    <td>{{ contract.first_name }} {{ contract.second_name }} {{ contract.third_name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Gender:</strong></td>
+                    <td>{{ contract.get_sex_display }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Marital Status:</strong></td>
+                    <td>{{ contract.get_marital_status_display }}</td>
+                </tr>
+                {% if contract.spouse_details %}
+                <tr>
+                    <td><strong>Spouse Details:</strong></td>
+                    <td>{{ contract.spouse_details }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td><strong>Nationality:</strong></td>
+                    <td>{{ contract.nationality }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Passport/NIDA Number:</strong></td>
+                    <td>{{ contract.passport_nida }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Date of Birth:</strong></td>
+                    <td>{{ contract.date_of_birth }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Driver's License:</strong></td>
+                    <td>{{ contract.drivers_license }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <h3>B. PARENT DETAILS</h3>
+        </div>
+        <div class="section-body">
+            <h4>Father's Details</h4>
+            <table>
+                <tr>
+                    <td width="30%"><strong>Name:</strong></td>
+                    <td>{{ contract.father.first_name }} {{ contract.father.second_name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Residence:</strong></td>
+                    <td>{{ contract.father.residence }}</td>
+                </tr>
+            </table>
+
+            <h4 style="margin-top: 15px;">Mother's Details</h4>
+            <table>
+                <tr>
+                    <td width="30%"><strong>Name:</strong></td>
+                    <td>{{ contract.mother.first_name }} {{ contract.mother.second_name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Residence:</strong></td>
+                    <td>{{ contract.mother.residence }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <h3>C. ADDRESS INFORMATION</h3>
+        </div>
+        <div class="section-body">
+            <table>
+                <tr>
+                    <td width="30%"><strong>Current Address:</strong></td>
+                    <td>{{ contract.present_address }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Permanent Address:</strong></td>
+                    <td>{{ contract.permanent_address }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Phone Number:</strong></td>
+                    <td>{{ contract.phone_number }}</td>
+                </tr>
+                <tr>
+                    <td><strong>WhatsApp Number:</strong></td>
+                    <td>{{ contract.whatsapp_number }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <h3>D. REFEREES</h3>
+        </div>
+        <div class="section-body">
+            <h4>Referee 1</h4>
+            <table>
+                <tr>
+                    <td width="30%"><strong>Name:</strong></td>
+                    <td>{{ contract.referee1.name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Occupation:</strong></td>
+                    <td>{{ contract.referee1.occupation }}</td>
+                </tr>
+            </table>
+
+            <h4 style="margin-top: 15px;">Referee 2</h4>
+            <table>
+                <tr>
+                    <td width="30%"><strong>Name:</strong></td>
+                    <td>{{ contract.referee2.name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Occupation:</strong></td>
+                    <td>{{ contract.referee2.occupation }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <h3>E. STREET/WARD CHAIRPERSON</h3>
+        </div>
+        <div class="section-body">
+            <table>
+                <tr>
+                    <td width="30%"><strong>Name:</strong></td>
+                    <td>{{ contract.chairperson_name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Post/Position:</strong></td>
+                    <td>{{ contract.chairperson_post }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <h3>F. EDUCATION RECORD</h3>
+        </div>
+        <div class="section-body">
+            <table>
+                <tr>
+                    <td width="30%"><strong>Primary School:</strong></td>
+                    <td>{{ contract.education_record.primary }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Secondary School:</strong></td>
+                    <td>{{ contract.education_record.secondary }}</td>
+                </tr>
+                <tr>
+                    <td><strong>High School:</strong></td>
+                    <td>{{ contract.education_record.high_school }}</td>
+                </tr>
+                <tr>
+                    <td><strong>University:</strong></td>
+                    <td>{{ contract.education_record.university }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Talents/Skills:</strong></td>
+                    <td>{{ contract.education_record.talents }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <h3>G. DOCUMENTS ATTACHED</h3>
+        </div>
+        <div class="section-body">
+            <ul>
+                <li>NIDA/Passport Document</li>
+                <li>Driving License</li>
+                <li>Police Clearance Form</li>
+                <li>Educational Certificates</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <h3>H. CONTRACT RULES</h3>
+        </div>
+        <div class="section-body">
+            <div style="white-space: pre-line;">{{ contract.contract_rules }}</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <h3>I. SIGNATURES AND OFFICIAL STAMPS</h3>
+        </div>
+        <div class="section-body">
+            <div class="signature-block">
+                <h4>Worker's Signature</h4>
+                <p>I, {{ contract.first_name }} {{ contract.second_name }} {{ contract.third_name }}, agree to the terms of this contract.</p>
+                <div class="signature-space" style="width: 50%;"></div>
+                <p>Date: _________________________</p>
+            </div>
+
+            <div class="signature-block">
+                <h4>Lawyer's Verification</h4>
+                <p>Name: {{ contract.lawyer_name }}</p>
+                <div class="signature-row">
+                    <div class="signature-box">
+                        <p>Signature:</p>
+                        <div class="signature-space"></div>
+                    </div>
+                    <div class="signature-box">
+                        <p>Official Stamp:</p>
+                        <div class="signature-space"></div>
+                    </div>
+                </div>
+                <p>Date: _________________________</p>
+            </div>
+
+            <div class="signature-block">
+                <h4>CEO's Approval</h4>
+                <p>Name: {{ contract.ceo_name }}</p>
+                <div class="signature-row">
+                    <div class="signature-box">
+                        <p>Signature:</p>
+                        <div class="signature-space"></div>
+                    </div>
+                    <div class="signature-box">
+                        <p>Official Stamp:</p>
+                        <div class="signature-space"></div>
+                    </div>
+                </div>
+                <p>Date: _________________________</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>This contract was generated on {{ contract.created_at|date:"F j, Y" }} by NYANGI INVESTMENT COMPANY</p>
+        <p>All rights reserved © {% now "Y" %}</p>
+    </div>
+</body>
+</html>
