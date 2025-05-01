@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+{% load static %}
+{% load humanize %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Receipt - {{ receipt.transaction_id }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .logo { max-height: 80px; margin-bottom: 10px; }
+        .receipt-title { font-size: 24px; font-weight: bold; margin: 10px 0; }
+        .company-info { margin-bottom: 20px; text-align: center; }
+        .transaction-info { margin: 20px 0; }
+        .transaction-info table { width: 100%; }
+        .items-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .items-table th, .items-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .items-table th { background-color: #f2f2f2; }
+        .total { text-align: right; font-weight: bold; margin-top: 20px; }
+        .footer { margin-top: 40px; text-align: center; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- Logo placeholder - make sure to add your logo.png to static/images -->
+            <img src="{% static 'images/NyangiInvestment.jpeg' %}" alt="Nyangi Marketplace Logo" class="logo">
+            <div class="receipt-title">ORDER RECEIPT</div>
+        </div>
+        
+        <div class="company-info">
+            <div>Nyangi Marketplace</div>
+            <div>Email: {{ receipt.company_email }}</div>
+            <div>Address: {{ receipt.company_address }}</div>
+            <div>Phone: {{ receipt.company_phone }}</div>
+        </div>
+        
+        <div class="transaction-info">
+            <table>
+                <tr>
+                    <td><strong>Transaction ID:</strong> {{ receipt.transaction_id }}</td>
+                    <td><strong>Date:</strong> {{ receipt.date }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Username:</strong> {{ receipt.username }}</td>
+                    <td><strong>Time:</strong> {{ receipt.time }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Email:</strong> {{ receipt.user_email }}</td>
+                    <td><strong>Payment via:</strong> {{ receipt.payment_method }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><strong>Shop Name:</strong> {{ receipt.shop_name }}</td>
+                </tr>
+            </table>
+        </div>
+        
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Cost (Tsh)</th>
+                    <th>Total (Tsh)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in receipt.items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price|floatformat:0|intcomma }}</td>
+                    <td>{{ item.total|floatformat:0|intcomma }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="total">
+            <div>Subtotal: {{ receipt.subtotal|floatformat:0|intcomma }} Tsh</div>
+            <div>Total: {{ receipt.total|floatformat:0|intcomma }} Tsh</div>
+        </div>
+        
+        <div class="footer">
+            <p>Thanks for shopping with us!</p>
+        </div>
+    </div>
+</body>
+</html>
