@@ -56,4 +56,6 @@ urlpatterns = [
 
     # Admin URL
     path('admin/', admin.site.urls),  # Ensure this is not duplicated
+
+    path('process-fictional-payment/', views.process_fictional_payment, name='process_fictional_payment'),
 ]

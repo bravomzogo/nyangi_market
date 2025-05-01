@@ -613,7 +613,102 @@ def get_category_attributes(request):
         return JsonResponse({'attributes': grouped_attributes})
     return JsonResponse({'attributes': {}})
 
+from django.http import FileResponse, Http404
+from django.shortcuts import get_object_or_404
+from .models import Receipt
+import os
+
 def download_receipt(request, receipt_id):
     receipt = get_object_or_404(Receipt, id=receipt_id)
-    receipt_path = os.path.join(settings.MEDIA_ROOT, receipt.pdf_file)
-    return FileResponse(open(receipt_path, 'rb'), content_type='application/pdf')
+
+    try:
+        receipt_path = receipt.pdf_file.path  # ✅ Correct access
+        return FileResponse(open(receipt_path, 'rb'), content_type='application/pdf')
+    except FileNotFoundError:
+        raise Http404("Receipt file not found.")
+
+
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
+from django.template.loader import render_to_string
+from django.conf import settings
+from weasyprint import HTML
+import os
+import random
+import string
+from datetime import datetime
+from .models import Cart, Receipt, Order
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def process_fictional_payment(request):
+    if request.method == 'POST':
+        # Get cart items
+        cart_items = Cart.objects.filter(user=request.user)
+        
+        if not cart_items.exists():
+            return redirect('view_cart')
+        
+        # Calculate total price
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+        
+        # Create an order (for receipt purposes)
+        order = Order.objects.create(
+            user=request.user,
+            product=cart_items.first().product,  # Just use the first product for simplicity
+            quantity=sum(item.quantity for item in cart_items),
+            total_price=total_price
+        )
+        
+        # Generate receipt
+        receipt = Receipt.objects.create(order=order)
+        
+        # Prepare receipt data
+        receipt_data = {
+            'company_name': 'Nyangi Marketplace',
+            'company_email': 'nyangiinvestment@marketplace.co.tz',
+            'company_address': 'P.o.box 1282 TABORA',
+            'company_phone': '+255 123 456 789',
+            'transaction_id': receipt.transaction_id,
+            'date': datetime.now().strftime('%Y-%m-%d'),
+            'time': datetime.now().strftime('%H:%M:%S'),
+            'username': request.user.username,
+            'user_email': request.user.email,
+            'payment_method': 'LIPA NO(123456)',
+            'shop_name': cart_items.first().product.seller.shop_name if cart_items.first().product.seller else 'Unknown Shop',
+            'items': [
+                {
+                    'name': item.product.name,
+                    'quantity': item.quantity,
+                    'price': item.product.price,
+                    'total': item.product.price * item.quantity
+                } for item in cart_items
+            ],
+            'subtotal': total_price,
+            'total': total_price,
+            'logo_url': os.path.join(settings.STATIC_URL, 'images/logo.png')  # Make sure you have a logo.png in static/images
+        }
+        
+        # Generate PDF receipt
+        html_string = render_to_string('myapp/receipt_template.html', {'receipt': receipt_data})
+        html = HTML(string=html_string)
+        
+        # Ensure receipts directory exists
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'receipts'), exist_ok=True)
+        
+        # Save PDF
+        pdf_path = os.path.join(settings.MEDIA_ROOT, 'receipts', f'{receipt.transaction_id}.pdf')
+        html.write_pdf(pdf_path)
+        
+        # Update receipt with PDF path
+        receipt.pdf_file = f'receipts/{receipt.transaction_id}.pdf'
+        receipt.save()
+        
+        # Clear the cart
+        cart_items.delete()
+        
+        # Redirect to receipt download page
+        return redirect('download_receipt', receipt_id=receipt.id)
+    
+    return redirect('view_cart')
