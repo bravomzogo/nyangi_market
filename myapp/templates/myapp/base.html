@@ -24,13 +24,6 @@
 </head>
 
 <body>
-    <!-- Loader -->
-    <div id="loader-wrapper">
-        <div id="loader"></div>
-        <div class="loader-section section-left"></div>
-        <div class="loader-section section-right"></div>
-    </div>
-
     <header>
         <div class="logo-container">
             <img src="{% static 'images/NyangiInvestment.jpeg' %}" alt="Nyangi Logo" class="logo">
@@ -184,18 +177,11 @@
         }
 
         // Function to check if the page is reloaded or category is selected
-        window.onload = function () {
-            document.getElementById('loader').style.display = 'none';
-
-        }
+        // Loader removed
         
     </script>
     <!-- JavaScript Files -->
-    <script>
-        window.onload = function() {
-            document.getElementById('loader-wrapper').style.display = 'none';
-        }
-    </script>
+    <!-- Loader removed -->
 
 </body>
 
