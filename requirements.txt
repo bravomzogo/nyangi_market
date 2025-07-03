@@ -6,7 +6,7 @@ charset-normalizer==3.0.1
 cssselect2==0.4.1
 dj-database-url==2.3.0
 Django==3.2.25
-django-payments==3.0.1
+django-payments==2.0.0
 django-phonenumber-field==8.1.0
 django-weasyprint==2.4.0
 fonttools==4.57.0
