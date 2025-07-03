@@ -32,6 +32,7 @@ build/
 
 # Shell scripts for automation
 update_requirements.sh
+setup_mysql_env.sh
 
 # IDE specific files
 .idea/
