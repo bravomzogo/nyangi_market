@@ -101,9 +101,9 @@ class Product(models.Model):
     dimensions = models.CharField(max_length=100, default="", blank=True)
     weight = models.CharField(max_length=50, default="", blank=True)
     material = models.CharField(max_length=100, default="", blank=True)
-    color = models.CharField(max_length=50, default="", blank=True)
+    color = models.TextField(default="", blank=True)
     warranty = models.CharField(max_length=50, default="No Warranty", blank=True)
-    model = models.CharField(max_length=100, default="", blank=True)
+    model = models.TextField(default="", blank=True)
     release_year = models.IntegerField(default="", blank=True, null=True)
     generation = models.CharField(max_length=50, default="", blank=True)
     brand = models.CharField(max_length=100, default="", blank=True)
@@ -115,10 +115,10 @@ class Product(models.Model):
     battery_life = models.CharField(max_length=50, default="", blank=True)
     charging_time = models.CharField(max_length=50, default="", blank=True)
     connectivity = models.CharField(max_length=100, default="", blank=True)
-    processor = models.CharField(max_length=100, default="", blank=True)
-    storage_capacity = models.CharField(max_length=100, default="", blank=True)
+    processor = models.TextField(default="", blank=True)
+    storage_capacity = models.TextField(default="", blank=True)
     screen_size = models.CharField(max_length=50, default="", blank=True)
-    resolution = models.CharField(max_length=100, default="", blank=True)
+    resolution = models.TextField(default="", blank=True)
 
     # Furniture & Home Decor
     weight_capacity = models.CharField(max_length=50, default="", blank=True)
@@ -130,10 +130,10 @@ class Product(models.Model):
     # Clothing, Shoes & Fashion
     size = models.CharField(max_length=50, default="", blank=True)
     gender = models.CharField(max_length=50, default="", blank=True)
-    fabric_type = models.CharField(max_length=100, default="", blank=True)
+    fabric_type = models.TextField(default="", blank=True)
     washing_instructions = models.TextField(default="", blank=True)
-    shoe_type = models.CharField(max_length=100, default="", blank=True)
-    closure_type = models.CharField(max_length=100, default="", blank=True)
+    shoe_type = models.TextField(default="", blank=True)
+    closure_type = models.TextField(default="", blank=True)
 
     # Automobile & Vehicle Accessories
     fuel_type = models.CharField(max_length=50, default="", blank=True)
@@ -152,33 +152,33 @@ class Product(models.Model):
 
     # Books, Stationery & Office Supplies
     author = models.CharField(max_length=100, default="", blank=True)
-    publisher = models.CharField(max_length=100, default="", blank=True)
+    publisher = models.TextField(default="", blank=True)
     edition = models.CharField(max_length=50, default="", blank=True)
     pages = models.IntegerField(default=None, blank=True, null=True)
     language = models.CharField(max_length=50, default="", blank=True)
-    paper_type = models.CharField(max_length=100, default="", blank=True)
+    paper_type = models.TextField(default="", blank=True)
 
     # Toys & Games
     recommended_age = models.CharField(max_length=50, default="", blank=True)
     number_of_pieces = models.IntegerField(default=None, blank=True, null=True)
-    safety_certifications = models.CharField(max_length=100, default="", blank=True)
+    safety_certifications = models.TextField(default="", blank=True)
     battery_required = models.BooleanField(default=None, blank=True, null=True)
-    interactive_features = models.CharField(max_length=100, default="", blank=True)
+    interactive_features = models.TextField(default="", blank=True)
 
     # Health & Beauty
     skin_type = models.CharField(max_length=100, default="", blank=True)
     scent = models.CharField(max_length=100, default="", blank=True)
-    application_method = models.CharField(max_length=100, default="", blank=True)
+    application_method = models.TextField(default="", blank=True)
     volume = models.CharField(max_length=50, default="", blank=True)
 
     # Sports & Outdoor
     sport_type = models.CharField(max_length=100, default="", blank=True)
     weather_resistant = models.BooleanField(default="", blank=True, null=True)
-    material_durability = models.CharField(max_length=100, default="", blank=True)
+    material_durability = models.TextField(default="", blank=True)
 
     # Jewelry & Accessories
-    gemstone = models.CharField(max_length=100, default="", blank=True)
-    metal_type = models.CharField(max_length=100, default="", blank=True)
+    gemstone = models.TextField(default="", blank=True)
+    metal_type = models.TextField(default="", blank=True)
     weight = models.CharField(max_length=50, default="", blank=True)
     certification = models.CharField(max_length=100, default="", blank=True)
 
@@ -254,6 +254,7 @@ class Product(models.Model):
             self.certification: "Certification",
         }
 
+        # Filter out empty values while handling both CharField and TextField types
         return {label: value for value, label in details.items() if value not in [None, "", "N/A", "Unknown", "0"]}
 
     def get_attributes_for_category(self):
