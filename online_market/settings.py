@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import dj_database_url
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -83,17 +84,40 @@ WSGI_APPLICATION = 'online_market.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+# Database configuration
+# The application will try to use MySQL if the environment variables are set,
+# otherwise it will fall back to PostgreSQL or SQLite
 
-DATABASES = {
-    'default': dj_database_url.parse("postgresql://manyerere201:exHjyP9UQFX0@ep-shy-mud-a5gs0r74.us-east-2.aws.neon."
-                                     "tech/nyangi_market?sslmode=require")
-}
+if os.environ.get('db_hostname') and os.environ.get('db_name') and os.environ.get('db_username') and os.environ.get('db_password'):
+    # MySQL configuration using environment variables
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('db_name'),
+            'USER': os.environ.get('db_username'),
+            'PASSWORD': os.environ.get('db_password'),
+            'HOST': os.environ.get('db_hostname'),
+            'PORT': '3306',
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+                'charset': 'utf8mb4',
+            }
+        }
+    }
+else:
+    # Fallback to PostgreSQL configuration
+    DATABASES = {
+        'default': dj_database_url.parse("postgresql://manyerere201:exHjyP9UQFX0@ep-shy-mud-a5gs0r74.us-east-2.aws.neon."
+                                        "tech/nyangi_market?sslmode=require")
+    }
+    
+    # Uncomment to use SQLite for local development
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': BASE_DIR / 'db.sqlite3',
+    #     }
+    # }
 
 
 # Password validation
