@@ -8,7 +8,7 @@ dj-database-url==2.3.0
 Django==3.2.25
 django-payments==2.0.0
 django-phonenumber-field==6.0.0
-django-weasyprint==2.4.0
+django-weasyprint==2.2.0
 fonttools==4.57.0
 gunicorn==23.0.0
 idna==3.10
