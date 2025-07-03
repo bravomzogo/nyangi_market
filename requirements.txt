@@ -10,7 +10,7 @@ django-payments==2.0.0
 django-phonenumber-field==6.0.0
 django-weasyprint==2.2.0
 fonttools==4.27.1
-gunicorn==23.0.0
+gunicorn==21.2.0
 idna==3.10
 packaging==24.2
 pdfkit==1.0.0
