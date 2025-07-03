@@ -14,6 +14,10 @@ from pathlib import Path
 import dj_database_url
 import os
 
+# Configure PyMySQL as MySQLdb
+import pymysql
+pymysql.install_as_MySQLdb()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -89,7 +93,7 @@ WSGI_APPLICATION = 'online_market.wsgi.application'
 # otherwise it will fall back to PostgreSQL or SQLite
 
 if os.environ.get('db_hostname') and os.environ.get('db_name') and os.environ.get('db_username') and os.environ.get('db_password'):
-    # MySQL configuration using environment variables
+    # MySQL configuration using environment variables with PyMySQL
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -99,8 +103,14 @@ if os.environ.get('db_hostname') and os.environ.get('db_name') and os.environ.ge
             'HOST': os.environ.get('db_hostname'),
             'PORT': '3306',
             'OPTIONS': {
-                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
                 'charset': 'utf8mb4',
+                'use_unicode': True,
+                'sql_mode': 'STRICT_TRANS_TABLES',
+                'autocommit': True,
+            },
+            'TEST': {
+                'CHARSET': 'utf8mb4',
+                'COLLATION': 'utf8mb4_unicode_ci',
             }
         }
     }
