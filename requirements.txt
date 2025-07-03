@@ -20,7 +20,7 @@ pillow==8.4.0
 pycparser==2.21
 pydyf==0.1.2
 pyphen==0.11.0
-requests==2.32.3
+requests==2.27.1
 sqlparse==0.5.3
 tinycss2==1.4.0
 tinyhtml5==2.0.0
