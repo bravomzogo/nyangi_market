@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import dj_database_url
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv(Path(__file__).resolve().parent.parent / '.env')
 
 # Configure PyMySQL as MySQLdb
 import pymysql
@@ -26,10 +30,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ag66=x47=j%u626ymqp9xd*$5)f+x8dq5lwk#f*4=x$#z83uo0'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-ag66=x47=j%u626ymqp9xd*$5)f+x8dq5lwk#f*4=x$#z83uo0')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
