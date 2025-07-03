@@ -7,7 +7,6 @@ from myapp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('myapp.urls')),
-    path('admin/', admin.site.urls),
     path('mpesa-callback/', views.mpesa_callback, name='mpesa_callback'),
 
 ]
