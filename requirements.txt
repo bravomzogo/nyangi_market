@@ -4,7 +4,7 @@ certifi==2025.1.31
 cffi==1.15.1
 charset-normalizer==3.0.1
 cssselect2==0.4.1
-dj-database-url==2.3.0
+dj-database-url
 Django==3.2.25
 django-payments==2.0.0
 django-phonenumber-field==6.0.0
