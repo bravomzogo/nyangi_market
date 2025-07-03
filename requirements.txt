@@ -3,7 +3,7 @@ Brotli==1.1.0
 certifi==2025.1.31
 cffi==1.15.1
 charset-normalizer==3.0.1
-cssselect2==0.8.0
+cssselect2==0.4.1
 dj-database-url==2.3.0
 Django==5.1.7
 django-payments==3.0.1
