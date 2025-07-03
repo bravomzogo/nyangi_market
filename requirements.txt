@@ -18,7 +18,7 @@ phonenumberslite==9.0.3
 pillow==8.4.0
 # psycopg2-binary==2.9.8
 pycparser==2.21
-pydyf==0.11.0
+pydyf==0.1.2
 pyphen==0.17.2
 requests==2.32.3
 sqlparse==0.5.3
