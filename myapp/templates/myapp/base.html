@@ -87,6 +87,10 @@
                             </span>
                         {% endif %}
                     </a>
+                    <!-- My Orders Link -->
+                    <a href="{% url 'user_orders' %}" class="btn btn-outline-info me-2" style="background-color:#17a2b8; color: white;">
+                        <i class="fas fa-clipboard-list"></i> My Orders
+                    </a>
                     <!-- Logout Link -->
                     <a href="{% url 'logout' %}" class="btn btn-outline-danger" style="background-color:rgb(63, 59, 60); color: rgb(126, 114, 114);">Logout</a>
                 {% else %}

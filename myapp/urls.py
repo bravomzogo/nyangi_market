@@ -58,4 +58,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),  # Ensure this is not duplicated
 
     path('process-fictional-payment/', views.process_fictional_payment, name='process_fictional_payment'),
+
+    # New Payment URLs
+    path('payment/checkout/', views.payment_checkout, name='payment_checkout'),
+    path('payment/submit-proof/', views.submit_payment_proof, name='submit_payment_proof'),
+    path('payment/confirmation/', views.payment_confirmation, name='payment_confirmation'),
+    path('orders/', views.user_orders, name='user_orders'),
 ]

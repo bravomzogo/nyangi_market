@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import SellerRegistrationForm, ProductForm, CustomUserRegistrationForm
-from .models import Product, Category, Seller, Cart, WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription, Receipt, ProductAttribute
+from .models import Product, Category, Seller, Cart, WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription, Receipt, ProductAttribute, Order, Payment
 from django.http import HttpResponse, FileResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
@@ -712,3 +712,121 @@ def process_fictional_payment(request):
         return redirect('download_receipt', receipt_id=receipt.id)
     
     return redirect('view_cart')
+
+def payment_checkout(request):
+    # Check if we're coming from an existing order
+    order_id = request.GET.get('order_id')
+    if order_id:
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+            cart_items = order.items.all()
+            total_amount = order.total_price
+            
+            # If this order already has a payment, redirect to orders page
+            if Payment.objects.filter(order=order).exists():
+                messages.info(request, 'Payment for this order has already been submitted')
+                return redirect('user_orders')
+        except Order.DoesNotExist:
+            messages.error(request, 'Order not found')
+            return redirect('view_cart')
+    else:
+        # Create a new order from the cart
+        cart_items = Cart.objects.filter(user=request.user)
+        if not cart_items.exists():
+            messages.error(request, 'Your cart is empty')
+            return redirect('view_cart')
+        
+        # Calculate total amount
+        total_amount = sum(item.product.price * item.quantity for item in cart_items)
+        
+        # Create a new order
+        order = Order.objects.create(
+            user=request.user,
+            total_price=total_amount
+        )
+        
+        # Add cart items to order
+        for cart_item in cart_items:
+            order.items.create(
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                price=cart_item.product.price
+            )
+    
+    context = {
+        'order': order,
+        'cart_items': cart_items,
+        'total_amount': total_amount,
+        'lipa_number': 'NYANGI-123456'  # Replace with your actual payment number
+    }
+    return render(request, 'myapp/payment_checkout.html', context)
+
+def submit_payment_proof(request):
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        reference_number = request.POST.get('reference_number')
+        payment_proof = request.FILES.get('payment_proof')
+        
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+            
+            # Create payment record
+            payment = Payment.objects.create(
+                order=order,
+                user=request.user,
+                amount=order.total_price,
+                payment_proof=payment_proof,
+                lipa_number=request.POST.get('lipa_number'),
+                reference_number=reference_number
+            )
+            
+            # Clear the user's cart
+            Cart.objects.filter(user=request.user).delete()
+            
+            messages.success(
+                request, 
+                'Payment proof submitted successfully. You will receive your receipt via email once the payment is approved.'
+            )
+            return redirect('payment_confirmation')
+            
+        except Order.DoesNotExist:
+            messages.error(request, 'Invalid order')
+            return redirect('view_cart')
+    
+    return redirect('view_cart')
+
+def payment_confirmation(request):
+    return render(request, 'myapp/payment_confirmation.html')
+
+@login_required
+def user_orders(request):
+    """Display all orders for the current user with their approval status"""
+    # Get all orders for the current user
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    
+    # For each order, get payment information if it exists
+    orders_data = []
+    for order in orders:
+        order_info = {
+            'order': order,
+            'items': order.items.all(),
+            'payment': None,
+            'status': 'Not Submitted'
+        }
+        
+        # Check if payment exists for this order
+        try:
+            payment = Payment.objects.get(order=order)
+            order_info['payment'] = payment
+            order_info['status'] = dict(Payment.PAYMENT_STATUS).get(payment.status, payment.status)
+        except Payment.DoesNotExist:
+            pass
+        
+        orders_data.append(order_info)
+    
+    context = {
+        'orders_data': orders_data,
+        'title': 'My Orders'
+    }
+    
+    return render(request, 'myapp/user_orders.html', context)

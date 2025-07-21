@@ -273,18 +273,30 @@ class Cart(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        """ Automatically calculate total price before saving """
-        self.total_price = self.product.price * self.quantity
-        super().save(*args, **kwargs)
+    is_paid = models.BooleanField(default=False)
+    
+    def update_total(self):
+        """Calculate total price from order items"""
+        self.total_price = sum(item.price * item.quantity for item in self.items.all())
+        self.save()
 
     def __str__(self):
         return f"Order #{self.id} by {self.user.username}"
+
+class OrderItem(models.Model):
+    order = models.ForeignKey('Order', related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name}"
+    
+    @property
+    def total(self):
+        return self.price * self.quantity
 
 class ParentDetails(models.Model):
     first_name = models.CharField(max_length=100)
@@ -433,6 +445,7 @@ class SubscriptionFeature(models.Model):
 class Receipt(models.Model):
     transaction_id = models.CharField(max_length=50, unique=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    payment = models.ForeignKey('Payment', on_delete=models.CASCADE, null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     pdf_file = models.FileField(upload_to='receipts/', null=True, blank=True)
     
@@ -448,6 +461,80 @@ class Receipt(models.Model):
     
     def __str__(self):
         return f"Receipt {self.transaction_id}"
+
+class Payment(models.Model):
+    PAYMENT_STATUS = [
+        ('PENDING', 'Pending Approval'),
+        ('APPROVED', 'Payment Approved'),
+        ('REJECTED', 'Payment Rejected')
+    ]
+    
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_proof = models.FileField(upload_to='payment_proofs/')
+    lipa_number = models.CharField(max_length=50)  # The number where payment was sent to
+    reference_number = models.CharField(max_length=100)  # Payment reference provided by user
+    status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='PENDING')
+    created_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_payments')
+    notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Payment {self.id} - {self.status} - {self.amount}"
+
+    def approve_payment(self, admin_user):
+        from django.utils import timezone
+        from django.core.mail import send_mail
+        from django.template.loader import render_to_string
+        
+        self.status = 'APPROVED'
+        self.approved_at = timezone.now()
+        self.approved_by = admin_user
+        self.save()
+
+        # Generate receipt
+        receipt = Receipt.objects.create(
+            order=self.order,
+            payment=self,
+            transaction_id=f"PAY-{self.id}"
+        )
+
+        # Send email to buyer
+        buyer_context = {
+            'user': self.user,
+            'order': self.order,
+            'payment': self,
+            'receipt_url': f"/receipt/{receipt.id}/"
+        }
+        buyer_msg_html = render_to_string('myapp/email/payment_approved_buyer.html', buyer_context)
+        send_mail(
+            'Payment Approved - Your Receipt',
+            'Your payment has been approved. Please find your receipt attached.',
+            'noreply@nyangimarketplace.co.tz',
+            [self.user.email],
+            html_message=buyer_msg_html
+        )
+
+        # Send email to seller
+        # For each product in the order, notify the seller
+        for item in self.order.items.all():
+            seller = item.product.seller
+            seller_context = {
+                'seller': seller,
+                'order': self.order,
+                'item': item,
+                'payment': self
+            }
+            seller_msg_html = render_to_string('myapp/email/payment_approved_seller.html', seller_context)
+            send_mail(
+                'New Payment Received',
+                'A new payment has been approved for your product.',
+                'noreply@nyangimarketplace.co.tz',
+                [seller.user.email],
+                html_message=seller_msg_html
+        )
 
 
 

@@ -1,0 +1,99 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+{% load humanize %}
+{% load myapp_filters %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Payment Details</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h4>Payment Instructions</h4>
+                        <p>Please follow these steps to complete your payment:</p>
+                        <ol>
+                            <li>Send the total amount to our LIPA number</li>
+                            <li>Take a screenshot or save the payment confirmation</li>
+                            <li>Upload the proof of payment below</li>
+                            <li>Wait for admin approval</li>
+                            <li>Receive your receipt via email</li>
+                        </ol>
+                    </div>
+
+                    <div class="payment-details mt-4">
+                        <h4>LIPA Number</h4>
+                        <div class="lipa-number-box">
+                            <h2 class="text-center">{{ lipa_number }}</h2>
+                        </div>
+                        
+                        <h4 class="mt-4">Order Summary</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart_items %}
+                                <tr>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.product.price|intcomma }} Tsh</td>
+                                    <td>{{ item.product.price|multiply:item.quantity|intcomma }} Tsh</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="3" class="text-right"><strong>Total Amount:</strong></td>
+                                    <td><strong>{{ total_amount|intcomma }} Tsh</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <form method="POST" action="{% url 'submit_payment_proof' %}" enctype="multipart/form-data" class="mt-4">
+                            {% csrf_token %}
+                            <input type="hidden" name="order_id" value="{{ order.id }}">
+                            <input type="hidden" name="lipa_number" value="{{ lipa_number }}">
+                            
+                            <div class="form-group">
+                                <label for="reference_number">Payment Reference Number</label>
+                                <input type="text" class="form-control" id="reference_number" name="reference_number" required>
+                                <small class="form-text text-muted">Enter the reference number from your payment confirmation</small>
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <label for="payment_proof">Upload Payment Proof</label>
+                                <input type="file" class="form-control" id="payment_proof" name="payment_proof" required>
+                                <small class="form-text text-muted">Upload a screenshot or photo of your payment confirmation</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary mt-3">Submit Payment Proof</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Need Help?</h4>
+                </div>
+                <div class="card-body">
+                    <p>If you need assistance with your payment, please contact our support team:</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone"></i> +255 123 456 789</li>
+                        <li><i class="fas fa-envelope"></i> support@nyangimarketplace.co.tz</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
