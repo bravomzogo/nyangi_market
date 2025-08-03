@@ -241,25 +241,18 @@ def seller_payment_detail(request, payment_id):
                 if action == 'approve':
                     payment.seller_approval = True
                     
-                    # Automatically approve the payment when seller approves
-                    payment.status = 'APPROVED'
-                    payment.approved_at = timezone.now()
-                    payment.approved_by = request.user
-                    
-                    # Generate receipt
-                    from myapp.models import Receipt
-                    receipt, created = Receipt.objects.get_or_create(
-                        payment=payment,
-                        defaults={
-                            'order': payment.order,
-                            'transaction_id': f"PAY-{payment.id}"
-                        }
-                    )
+                    # Use the helper function to approve payment without sending emails
+                    from myapp.tasks import approve_payment_without_emails
+                    approve_payment_without_emails(payment, request.user)
                     
                     messages.success(request, "Payment has been approved successfully.")
                 else:
                     payment.seller_approval = False
-                    payment.status = 'REJECTED'
+                    
+                    # Use helper function to reject payment without sending emails
+                    from myapp.tasks import reject_payment_without_emails
+                    reject_payment_without_emails(payment, request.user)
+                    
                     messages.info(request, "Payment has been rejected.")
                 
                 payment.save()

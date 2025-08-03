@@ -5,6 +5,55 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def approve_payment_without_emails(payment, user):
+    """
+    Approve a payment without sending any notification emails.
+    This is used when sellers approve payments directly.
+    """
+    from django.utils import timezone
+    from .models import Receipt
+    
+    try:
+        # Update payment status
+        payment.status = 'APPROVED'
+        payment.approved_at = timezone.now()
+        payment.approved_by = user
+        payment.save()
+
+        # Generate receipt
+        receipt, created = Receipt.objects.get_or_create(
+            payment=payment,
+            defaults={
+                'order': payment.order,
+                'transaction_id': f"PAY-{payment.id}"
+            }
+        )
+        
+        logger.info(f"Payment {payment.id} approved by seller {user.username} without sending emails")
+        return True
+    except Exception as e:
+        logger.error(f"Error approving payment {payment.id} without emails: {str(e)}")
+        return False
+
+def reject_payment_without_emails(payment, user):
+    """
+    Reject a payment without sending any notification emails.
+    This is used when sellers reject payments directly.
+    """
+    from django.utils import timezone
+    
+    try:
+        # Update payment status
+        payment.status = 'REJECTED'
+        payment.seller_reviewed_at = timezone.now()
+        payment.save()
+        
+        logger.info(f"Payment {payment.id} rejected by seller {user.username} without sending emails")
+        return True
+    except Exception as e:
+        logger.error(f"Error rejecting payment {payment.id} without emails: {str(e)}")
+        return False
+
 def send_payment_approved_emails(payment_id):
     """
     Send payment approval emails asynchronously.
