@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     
     <style>
-        /* Admin Messages Styling */
+        /* Admin Messages Styling - Enhanced for Animation */
         .admin-messages-container {
             position: fixed;
             width: 100%;
@@ -33,7 +33,7 @@
             position: absolute;
             left: 20px;
             top: 100px;
-            width: 280px;
+            width: 300px;
             max-width: 80%;
             display: flex;
             flex-direction: column;
@@ -45,7 +45,7 @@
             position: absolute;
             right: 20px;
             top: 100px;
-            width: 280px;
+            width: 300px;
             max-width: 80%;
             display: flex;
             flex-direction: column;
@@ -54,73 +54,131 @@
         }
         
         .admin-message-bubble {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            background: linear-gradient(145deg, #ffffff, #f5f8fa);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.08);
             overflow: hidden;
-            transform: translateY(20px);
+            transform: translateY(40px) scale(0.95);
             opacity: 0;
-            transition: all 0.3s ease-out;
-            border-left: 4px solid #3498db;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-left: 5px solid #3498db;
             max-height: 80vh;
             overflow-y: auto;
+            position: relative;
+        }
+        
+        .admin-message-bubble::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: translateX(-100%);
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            20% { transform: translateX(100%); }
+            100% { transform: translateX(100%); }
         }
         
         .admin-message-bubble.show {
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
             opacity: 1;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 10px 25px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.08); }
+            50% { box-shadow: 0 15px 30px rgba(52, 152, 219, 0.2), 0 8px 15px rgba(52, 152, 219, 0.15); }
+            100% { box-shadow: 0 10px 25px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.08); }
         }
         
         .admin-message-bubble.hiding {
-            transform: translateX(100px);
+            transform: translateX(100px) rotate(5deg);
             opacity: 0;
         }
         
         .admin-message-header {
-            background: #3498db;
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
-            padding: 10px 15px;
+            padding: 12px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-message-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            transform: translateX(-100%);
+            animation: headerShimmer 3s infinite;
+        }
+        
+        @keyframes headerShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
         .admin-message-title {
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
         
         .admin-message-close {
-            background: transparent;
+            background: rgba(255,255,255,0.1);
             border: none;
             color: white;
             font-size: 20px;
             cursor: pointer;
             line-height: 1;
             padding: 0;
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            transition: background 0.2s;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 2;
         }
         
         .admin-message-close:hover {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
         }
         
         .admin-message-body {
-            padding: 12px 15px;
+            padding: 15px 18px;
             color: #333;
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            max-width: 100%;
         }
         
         /* Dark mode support */
         .dark-mode .admin-message-bubble {
-            background: #2c3e50;
+            background: linear-gradient(145deg, #2c3e50, #1a2530);
             border-left-color: #3498db;
         }
         
@@ -128,11 +186,183 @@
             color: #ecf0f1;
         }
         
+        .dark-mode .admin-message-header {
+            background: linear-gradient(135deg, #3498db, #2475a8);
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 576px) {
             .admin-messages-left, .admin-messages-right {
                 width: 85%;
             }
+        }
+
+        /* Floating Message Switch Styles */
+        .message-switch {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .message-switch-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .message-switch-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .message-switch-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .message-count-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .message-panel {
+            position: absolute;
+            bottom: 75px;
+            right: 0;
+            width: 320px;
+            max-height: 70vh;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            transform: scale(0.9);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+            transform-origin: bottom right;
+        }
+
+        .message-panel.show {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .message-panel-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .message-panel-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .message-panel-header button {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .message-panel-header button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .message-panel-content {
+            padding: 0;
+            max-height: calc(70vh - 60px);
+            overflow-y: auto;
+        }
+
+        .message-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .message-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .message-item h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .message-item p {
+            margin: 0;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Dark Mode for Message Switch */
+        .dark-mode .message-panel {
+            background: #2c3e50;
+        }
+
+        .dark-mode .message-panel-content {
+            background: #2c3e50;
+        }
+
+        .dark-mode .message-item {
+            border-bottom-color: #374a5c;
+        }
+
+        .dark-mode .message-item:hover {
+            background-color: #223344;
+        }
+
+        .dark-mode .message-item h4 {
+            color: #ecf0f1;
+        }
+
+        .dark-mode .message-item p {
+            color: #bdc3c7;
         }
     </style>
 </head>
@@ -309,6 +539,23 @@
         <i class="fa fa-chevron-up"></i>
     </button>
 
+    <!-- Floating Message Switch -->
+    <div id="message-switch" class="message-switch">
+        <div class="message-switch-icon" onclick="toggleMessagePanel()">
+            <i class="fas fa-comment-dots"></i>
+            <span id="message-count-badge" class="message-count-badge">0</span>
+        </div>
+        <div id="message-panel" class="message-panel">
+            <div class="message-panel-header">
+                <h3>Announcements</h3>
+                <button onclick="toggleMessagePanel()">×</button>
+            </div>
+            <div id="message-panel-content" class="message-panel-content">
+                <!-- Messages will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript to handle Back to Top button visibility and scroll functionality -->
     <script>
       
@@ -332,6 +579,7 @@
         // Admin messages functionality
         function hideMessage(closeBtn) {
             const messageBubble = closeBtn.closest('.admin-message-bubble');
+            messageBubble.classList.remove('show');
             messageBubble.classList.add('hiding');
             
             // Store in session storage that this message has been closed
@@ -342,6 +590,9 @@
                 hiddenMessages.push(messageId);
                 sessionStorage.setItem('hiddenMessages', JSON.stringify(hiddenMessages));
             }
+            
+            // Add a nice rotation effect before removing
+            messageBubble.style.transformOrigin = 'center right';
             
             // Remove after animation completes
             setTimeout(() => {
@@ -358,6 +609,9 @@
                 if (rightContainer && !rightContainer.querySelector('.admin-message-bubble')) {
                     rightContainer.style.display = 'none';
                 }
+                
+                // Update message switch count
+                updateMessageSwitchCount();
             }, 500);
         }
         
@@ -375,11 +629,124 @@
             // Stagger the appearance of message bubbles for better UX
             const allBubbles = document.querySelectorAll('.admin-message-bubble');
             allBubbles.forEach((bubble, index) => {
+                // Add random slight offset to each bubble's initial position
+                const randomXOffset = Math.random() * 20 - 10; // Random value between -10 and 10
+                bubble.style.transform = `translateY(40px) translateX(${randomXOffset}px) scale(0.95)`;
+                
+                // Staggered appearance with increasing delay
                 setTimeout(() => {
                     bubble.classList.add('show');
-                }, index * 300); // 300ms delay between each message appearing
+                    
+                    // Add subtle hover effect
+                    bubble.addEventListener('mouseenter', () => {
+                        bubble.style.transform = 'translateY(-5px) scale(1.02)';
+                        bubble.style.boxShadow = '0 15px 30px rgba(52, 152, 219, 0.25), 0 10px 15px rgba(52, 152, 219, 0.15)';
+                    });
+                    
+                    bubble.addEventListener('mouseleave', () => {
+                        bubble.style.transform = 'translateY(0) scale(1)';
+                        bubble.style.boxShadow = '';
+                    });
+                    
+                }, 300 + (index * 200)); // 300ms base delay + 200ms per message
             });
+            
+            // Periodically highlight unread messages to draw attention
+            setInterval(() => {
+                const visibleBubbles = document.querySelectorAll('.admin-message-bubble.show');
+                if (visibleBubbles.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * visibleBubbles.length);
+                    const randomBubble = visibleBubbles[randomIndex];
+                    
+                    // Add quick attention-grabbing highlight
+                    randomBubble.style.borderLeftWidth = '8px';
+                    randomBubble.style.borderLeftColor = '#e74c3c';
+                    
+                    // Return to normal after brief highlight
+                    setTimeout(() => {
+                        randomBubble.style.borderLeftWidth = '5px';
+                        randomBubble.style.borderLeftColor = '#3498db';
+                    }, 1500);
+                }
+            }, 15000); // Every 15 seconds
+            
+            // Initialize the message switch panel
+            updateMessageSwitchCount();
         });
+
+        // Toggle message panel visibility
+        function toggleMessagePanel() {
+            const panel = document.getElementById('message-panel');
+            panel.classList.toggle('show');
+            
+            // If opening the panel, populate it with messages
+            if (panel.classList.contains('show')) {
+                populateMessagePanel();
+            }
+        }
+        
+        // Update count on message switch
+        function updateMessageSwitchCount() {
+            const visibleBubbles = document.querySelectorAll('.admin-message-bubble.show');
+            const countBadge = document.getElementById('message-count-badge');
+            
+            if (countBadge) {
+                countBadge.textContent = visibleBubbles.length;
+                
+                // Hide badge if no messages
+                if (visibleBubbles.length === 0) {
+                    countBadge.style.display = 'none';
+                } else {
+                    countBadge.style.display = 'flex';
+                }
+            }
+        }
+        
+        // Populate the message panel with active messages
+        function populateMessagePanel() {
+            const panelContent = document.getElementById('message-panel-content');
+            const visibleBubbles = document.querySelectorAll('.admin-message-bubble.show');
+            
+            // Clear previous content
+            panelContent.innerHTML = '';
+            
+            if (visibleBubbles.length === 0) {
+                panelContent.innerHTML = '<div class="message-item"><p>No active announcements</p></div>';
+                return;
+            }
+            
+            // Add each message as an item in the panel
+            visibleBubbles.forEach(bubble => {
+                const title = bubble.querySelector('.admin-message-title').textContent;
+                const message = bubble.querySelector('.admin-message-body').textContent.trim();
+                const messageId = bubble.getAttribute('data-message-id');
+                
+                const messageItem = document.createElement('div');
+                messageItem.className = 'message-item';
+                messageItem.setAttribute('data-message-id', messageId);
+                messageItem.innerHTML = `
+                    <h4>${title}</h4>
+                    <p>${message.substring(0, 100)}${message.length > 100 ? '...' : ''}</p>
+                `;
+                
+                // When clicking on a message in the panel, scroll to the actual message
+                messageItem.addEventListener('click', () => {
+                    // Close the panel
+                    document.getElementById('message-panel').classList.remove('show');
+                    
+                    // Scroll to the message and highlight it
+                    bubble.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Add highlight effect
+                    bubble.style.boxShadow = '0 0 0 4px rgba(52, 152, 219, 0.5)';
+                    setTimeout(() => {
+                        bubble.style.boxShadow = '';
+                    }, 2000);
+                });
+                
+                panelContent.appendChild(messageItem);
+            });
+        }
 
         // Function to check if the page is reloaded or category is selected
         // Loader removed

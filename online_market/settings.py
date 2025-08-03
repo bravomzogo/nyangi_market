@@ -81,6 +81,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'myapp.context_processors.cart_item_count',
+                'myapp.context_processors.pending_orders_count',
+                'myapp.context_processors.active_admin_messages',
             ],
         },
     },
@@ -209,11 +211,26 @@ LOGOUT_REDIRECT_URL = 'home'
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'manyerere201@gmail.com'
-EMAIL_HOST_PASSWORD = 'your_app_password_here'  # Use an app-specific password from Google
+
+# First check for specific sales email settings (for backward compatibility)
+if os.environ.get('SALES_EMAIL_HOST'):
+    EMAIL_HOST = os.environ.get('SALES_EMAIL_HOST')
+    EMAIL_PORT = int(os.environ.get('SALES_EMAIL_PORT', 465))
+    EMAIL_HOST_USER = os.environ.get('SALES_EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('SALES_EMAIL_HOST_PASSWORD')
+    EMAIL_USE_TLS = os.environ.get('SALES_EMAIL_USE_TLS', 'True').lower() == 'true'
+    EMAIL_USE_SSL = os.environ.get('SALES_EMAIL_USE_SSL', 'False').lower() == 'true'
+# Then try the generic email settings
+else:
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'nyangiassetsmarketplace.co.tz')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'sales@nyangiassetsmarketplace.co.tz')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+    EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() == 'true'
+
+# Define default from email based on the host user
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
 # Password Reset Settings
 PASSWORD_RESET_TIMEOUT = 86400  # 24 hours in seconds
