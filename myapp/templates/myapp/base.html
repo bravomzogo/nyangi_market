@@ -18,12 +18,161 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    
+    <style>
+        /* Admin Messages Styling */
+        .admin-messages-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
         
-
-  
+        .admin-messages-left {
+            position: absolute;
+            left: 20px;
+            top: 100px;
+            width: 280px;
+            max-width: 80%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: auto;
+        }
+        
+        .admin-messages-right {
+            position: absolute;
+            right: 20px;
+            top: 100px;
+            width: 280px;
+            max-width: 80%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: auto;
+        }
+        
+        .admin-message-bubble {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+            border-left: 4px solid #3498db;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .admin-message-bubble.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .admin-message-bubble.hiding {
+            transform: translateX(100px);
+            opacity: 0;
+        }
+        
+        .admin-message-header {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-message-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .admin-message-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        
+        .admin-message-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .admin-message-body {
+            padding: 12px 15px;
+            color: #333;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        /* Dark mode support */
+        .dark-mode .admin-message-bubble {
+            background: #2c3e50;
+            border-left-color: #3498db;
+        }
+        
+        .dark-mode .admin-message-body {
+            color: #ecf0f1;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .admin-messages-left, .admin-messages-right {
+                width: 85%;
+            }
+        }
+    </style>
 </head>
 
 <body>
+    <!-- Admin Messages Component -->
+    {% if has_admin_messages %}
+    <div class="admin-messages-container">
+        <!-- Left Side Messages -->
+        <div class="admin-messages-left">
+            {% for message in admin_messages_left %}
+            <div class="admin-message-bubble" data-message-id="{{ message.id }}">
+                <div class="admin-message-header">
+                    <span class="admin-message-title">{{ message.title|default:"Announcement" }}</span>
+                    <button class="admin-message-close" onclick="hideMessage(this)">×</button>
+                </div>
+                <div class="admin-message-body">
+                    {{ message.message|linebreaks }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Right Side Messages -->
+        <div class="admin-messages-right">
+            {% for message in admin_messages_right %}
+            <div class="admin-message-bubble" data-message-id="{{ message.id }}">
+                <div class="admin-message-header">
+                    <span class="admin-message-title">{{ message.title|default:"Announcement" }}</span>
+                    <button class="admin-message-close" onclick="hideMessage(this)">×</button>
+                </div>
+                <div class="admin-message-body">
+                    {{ message.message|linebreaks }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
     <header>
         <div class="logo-container">
             <img src="{% static 'images/NyangiInvestment.jpeg' %}" alt="Nyangi Logo" class="logo">
@@ -179,6 +328,58 @@
                 behavior: 'smooth'
             });
         }
+        
+        // Admin messages functionality
+        function hideMessage(closeBtn) {
+            const messageBubble = closeBtn.closest('.admin-message-bubble');
+            messageBubble.classList.add('hiding');
+            
+            // Store in session storage that this message has been closed
+            const messageId = messageBubble.getAttribute('data-message-id');
+            const hiddenMessages = JSON.parse(sessionStorage.getItem('hiddenMessages') || '[]');
+            
+            if (!hiddenMessages.includes(messageId)) {
+                hiddenMessages.push(messageId);
+                sessionStorage.setItem('hiddenMessages', JSON.stringify(hiddenMessages));
+            }
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                messageBubble.remove();
+                
+                // Check if no messages remain in their container
+                const leftContainer = document.querySelector('.admin-messages-left');
+                const rightContainer = document.querySelector('.admin-messages-right');
+                
+                if (leftContainer && !leftContainer.querySelector('.admin-message-bubble')) {
+                    leftContainer.style.display = 'none';
+                }
+                
+                if (rightContainer && !rightContainer.querySelector('.admin-message-bubble')) {
+                    rightContainer.style.display = 'none';
+                }
+            }, 500);
+        }
+        
+        // Hide previously closed messages on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const hiddenMessages = JSON.parse(sessionStorage.getItem('hiddenMessages') || '[]');
+            
+            hiddenMessages.forEach(id => {
+                const messageBubble = document.querySelector(`.admin-message-bubble[data-message-id="${id}"]`);
+                if (messageBubble) {
+                    messageBubble.style.display = 'none';
+                }
+            });
+            
+            // Stagger the appearance of message bubbles for better UX
+            const allBubbles = document.querySelectorAll('.admin-message-bubble');
+            allBubbles.forEach((bubble, index) => {
+                setTimeout(() => {
+                    bubble.classList.add('show');
+                }, index * 300); // 300ms delay between each message appearing
+            });
+        });
 
         // Function to check if the page is reloaded or category is selected
         // Loader removed

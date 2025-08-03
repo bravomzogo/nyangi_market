@@ -1,4 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcfrom django.core.mail import send_mail, EmailMessage
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settingsmport render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import SellerRegistrationForm, ProductForm, CustomUserRegistrationForm
@@ -513,7 +518,7 @@ def password_reset_request(request):
             email = EmailMessage(
                 subject,
                 message,
-                'manyerere201@gmail.com',
+                settings.DEFAULT_FROM_EMAIL,
                 [email],
             )
             email.send()
@@ -667,7 +672,7 @@ def process_fictional_payment(request):
         # Prepare receipt data
         receipt_data = {
             'company_name': 'Nyangi Marketplace',
-            'company_email': 'nyangiinvestment@marketplace.co.tz',
+            'company_email': settings.DEFAULT_FROM_EMAIL,
             'company_address': 'P.o.box 1282 TABORA',
             'company_phone': '+255 123 456 789',
             'transaction_id': receipt.transaction_id,

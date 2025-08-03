@@ -54,8 +54,6 @@ urlpatterns = [
     path('get-category-attributes/', views.get_category_attributes, name='get_category_attributes'),
     path('receipt/<int:receipt_id>/', views.download_receipt, name='download_receipt'),
 
-    # Admin URL
-    path('admin/', admin.site.urls),  # Ensure this is not duplicated
 
     path('process-fictional-payment/', views.process_fictional_payment, name='process_fictional_payment'),
 

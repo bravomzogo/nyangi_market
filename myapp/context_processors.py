@@ -1,5 +1,6 @@
 # context_processors.py
-from .models import Cart, Order, Payment
+from .models import Cart, Order, Payment, AdminMessage
+from django.utils import timezone
 
 def cart_item_count(request):
     if request.user.is_authenticated:
@@ -27,3 +28,22 @@ def pending_orders_count(request):
         return {'pending_orders_count': total_pending}
     
     return {'pending_orders_count': 0}
+
+def active_admin_messages(request):
+    """Provide active admin messages to all templates"""
+    now = timezone.now()
+    messages = AdminMessage.objects.filter(
+        is_active=True,
+        start_date__lte=now,
+        end_date__gte=now
+    ).order_by('-priority')
+    
+    # Split messages by position
+    left_messages = messages.filter(position='left')
+    right_messages = messages.filter(position='right')
+    
+    return {
+        'admin_messages_left': left_messages,
+        'admin_messages_right': right_messages,
+        'has_admin_messages': messages.exists()
+    }

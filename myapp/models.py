@@ -486,56 +486,73 @@ class Payment(models.Model):
 
     def approve_payment(self, admin_user):
         from django.utils import timezone
-        from django.core.mail import send_mail
-        from django.template.loader import render_to_string
+        import logging
         
-        self.status = 'APPROVED'
-        self.approved_at = timezone.now()
-        self.approved_by = admin_user
-        self.save()
+        logger = logging.getLogger(__name__)
+        
+        try:
+            # Update payment status
+            self.status = 'APPROVED'
+            self.approved_at = timezone.now()
+            self.approved_by = admin_user
+            self.save()
 
-        # Generate receipt
-        receipt = Receipt.objects.create(
-            order=self.order,
-            payment=self,
-            transaction_id=f"PAY-{self.id}"
+            # Generate receipt
+            from .models import Receipt
+            receipt, created = Receipt.objects.get_or_create(
+                payment=self,
+                defaults={
+                    'order': self.order,
+                    'transaction_id': f"PAY-{self.id}"
+                }
+            )
+
+            # Send emails asynchronously if possible
+            try:
+                # Try to use Django's background tasks
+                from django.db import transaction
+                from .tasks import send_payment_approved_emails
+                
+                # Call the task outside the current transaction to prevent blocking
+                transaction.on_commit(lambda: send_payment_approved_emails(self.id))
+                logger.info(f"Email sending task queued for payment {self.id}")
+            except ImportError:
+                # If background task processing is not available, send emails directly
+                from .tasks import send_payment_approved_emails
+                send_payment_approved_emails(self.id)
+                logger.info(f"Emails sent synchronously for payment {self.id}")
+                
+            return True
+        except Exception as e:
+            logger.error(f"Error in approve_payment: {str(e)}")
+            # Re-raise the exception to show error in admin
+            raise
+
+
+class AdminMessage(models.Model):
+    message = models.TextField(help_text="Enter the message to be displayed to users")
+    title = models.CharField(max_length=255, blank=True, null=True, help_text="Optional title for the message")
+    start_date = models.DateTimeField(help_text="When this message should start showing")
+    end_date = models.DateTimeField(help_text="When this message should stop showing")
+    is_active = models.BooleanField(default=True, help_text="Manually disable the message if needed")
+    position = models.CharField(max_length=10, choices=[('left', 'Left'), ('right', 'Right')], 
+                               default='right', help_text="Which side of the screen to show the message on")
+    priority = models.IntegerField(default=0, help_text="Higher priority messages show on top if multiple are active")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-priority', '-start_date']
+        
+    def __str__(self):
+        return f"{self.title or 'Message'} ({self.start_date.strftime('%Y-%m-%d')} to {self.end_date.strftime('%Y-%m-%d')})"
+    
+    def is_currently_active(self):
+        now = timezone.now()
+        return (
+            self.is_active and 
+            self.start_date <= now <= self.end_date
         )
-
-        # Send email to buyer
-        buyer_context = {
-            'user': self.user,
-            'order': self.order,
-            'payment': self,
-            'receipt_url': f"/receipt/{receipt.id}/"
-        }
-        buyer_msg_html = render_to_string('myapp/email/payment_approved_buyer.html', buyer_context)
-        send_mail(
-            'Payment Approved - Your Receipt',
-            'Your payment has been approved. Please find your receipt attached.',
-            'noreply@nyangimarketplace.co.tz',
-            [self.user.email],
-            html_message=buyer_msg_html
-        )
-
-        # Send email to seller
-        # For each product in the order, notify the seller
-        for item in self.order.items.all():
-            seller = item.product.seller
-            seller_context = {
-                'seller': seller,
-                'order': self.order,
-                'item': item,
-                'payment': self
-            }
-            seller_msg_html = render_to_string('myapp/email/payment_approved_seller.html', seller_context)
-            send_mail(
-                'New Payment Received',
-                'A new payment has been approved for your product.',
-                'noreply@nyangimarketplace.co.tz',
-                [seller.user.email],
-                html_message=seller_msg_html
-        )
-
-
 
 

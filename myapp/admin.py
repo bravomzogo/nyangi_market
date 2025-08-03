@@ -3,10 +3,11 @@ from .models import (
     Seller, Product, Category, Cart, Order, Profile,
     WorkerContract, ParentDetails, Referee, EducationRecord,
     SubscriptionPlan, SellerSubscription, SubscriptionFeature,
-    ProductAttribute, Receipt, Payment, OrderItem
+    ProductAttribute, Receipt, Payment, OrderItem, AdminMessage
 )
 from django.utils.html import format_html
 from django.utils.formats import number_format
+from django.utils import timezone
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -106,9 +107,18 @@ class PaymentAdmin(admin.ModelAdmin):
         return self.readonly_fields
     
     def save_model(self, request, obj, form, change):
-        if 'status' in form.changed_data and obj.status == 'APPROVED':
-            obj.approve_payment(request.user)
-        super().save_model(request, obj, form, change)
+        try:
+            if 'status' in form.changed_data and obj.status == 'APPROVED':
+                obj.approve_payment(request.user)
+                self.message_user(request, "Payment approved successfully. Email notifications have been sent.")
+            else:
+                super().save_model(request, obj, form, change)
+        except Exception as e:
+            self.message_user(request, f"Error approving payment: {str(e)}", level='ERROR')
+            # Log the error for debugging
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error in payment approval: {str(e)}", exc_info=True)
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
@@ -126,6 +136,33 @@ class OrderAdmin(admin.ModelAdmin):
 admin.site.register(Seller)
 admin.site.register(Cart)
 admin.site.register(Profile)
+
+@admin.register(AdminMessage)
+class AdminMessageAdmin(admin.ModelAdmin):
+    list_display = ['title', 'message_preview', 'start_date', 'end_date', 'is_active', 'position', 'status']
+    list_filter = ['is_active', 'position', 'start_date', 'end_date']
+    search_fields = ['title', 'message']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    def message_preview(self, obj):
+        if len(obj.message) > 50:
+            return obj.message[:50] + "..."
+        return obj.message
+    
+    def status(self, obj):
+        now = timezone.now()
+        if obj.is_active:
+            if obj.start_date <= now <= obj.end_date:
+                return format_html('<span style="color: green;">Active</span>')
+            elif now < obj.start_date:
+                return format_html('<span style="color: orange;">Scheduled</span>')
+            else:
+                return format_html('<span style="color: red;">Expired</span>')
+        else:
+            return format_html('<span style="color: gray;">Disabled</span>')
+    
+    message_preview.short_description = 'Message'
+    status.short_description = 'Status'
 
 admin.site.site_title = "CEO portal"
 admin.site.site_header = "CEO panel | CEO only"
