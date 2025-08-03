@@ -1,6 +1,7 @@
 # context_processors.py
-from .models import Cart, Order, Payment, AdminMessage
+from .models import Cart, Order, Payment, AdminMessage, Seller, OrderItem
 from django.utils import timezone
+from django.db.models import Q
 
 def cart_item_count(request):
     if request.user.is_authenticated:
@@ -28,6 +29,30 @@ def pending_orders_count(request):
         return {'pending_orders_count': total_pending}
     
     return {'pending_orders_count': 0}
+
+def pending_payments_count(request):
+    """Count payments that need seller review"""
+    if request.user.is_authenticated:
+        try:
+            # Check if the user is a seller
+            seller = Seller.objects.get(user=request.user)
+            
+            # Get orders that contain products from this seller
+            order_items = OrderItem.objects.filter(product__seller=seller)
+            order_ids = order_items.values_list('order_id', flat=True).distinct()
+            
+            # Count payments that need review
+            count = Payment.objects.filter(
+                order__id__in=order_ids,
+                status='PENDING',
+                seller_reviewed=False
+            ).count()
+            
+            return {'pending_payments_count': count}
+        except Seller.DoesNotExist:
+            return {'pending_payments_count': 0}
+    
+    return {'pending_payments_count': 0}
 
 def active_admin_messages(request):
     """Provide active admin messages to all templates"""

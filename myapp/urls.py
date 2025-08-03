@@ -62,4 +62,9 @@ urlpatterns = [
     path('payment/submit-proof/', views.submit_payment_proof, name='submit_payment_proof'),
     path('payment/confirmation/', views.payment_confirmation, name='payment_confirmation'),
     path('orders/', views.user_orders, name='user_orders'),
+    
+    # Seller Payment Management URLs
+    path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
+    path('seller/payments/', views.seller_payment_list, name='seller_payment_list'),
+    path('seller/payments/<int:payment_id>/', views.seller_payment_detail, name='seller_payment_detail'),
 ]

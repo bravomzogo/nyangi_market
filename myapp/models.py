@@ -480,6 +480,10 @@ class Payment(models.Model):
     approved_at = models.DateTimeField(null=True, blank=True)
     approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_payments')
     notes = models.TextField(blank=True)
+    seller_reviewed = models.BooleanField(default=False, help_text="Whether the seller has reviewed this payment")
+    seller_approval = models.BooleanField(null=True, blank=True, help_text="Seller's decision on payment approval")
+    seller_notes = models.TextField(blank=True, help_text="Seller's notes on the payment")
+    seller_reviewed_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Payment {self.id} - {self.status} - {self.amount}"
@@ -527,6 +531,26 @@ class Payment(models.Model):
             logger.error(f"Error in approve_payment: {str(e)}")
             # Re-raise the exception to show error in admin
             raise
+            
+    def reject_payment(self, user, reason=""):
+        from django.utils import timezone
+        
+        self.status = 'REJECTED'
+        self.approved_at = timezone.now()
+        self.approved_by = user
+        self.notes = reason
+        self.save()
+        
+        # TODO: Implement email notification for payment rejection
+        
+    def get_seller(self):
+        """Return the seller associated with this payment's order items"""
+        # Get first order item's product seller
+        order_items = self.order.items.all()
+        if order_items.exists():
+            first_item = order_items.first()
+            return first_item.product.seller
+        return None
 
 
 class AdminMessage(models.Model):

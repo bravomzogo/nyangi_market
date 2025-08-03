@@ -96,10 +96,20 @@ class ReceiptAdmin(admin.ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'amount', 'status', 'created_at', 'approved_at']
-    list_filter = ['status', 'created_at', 'approved_at']
+    list_display = ['id', 'user', 'amount', 'status', 'seller_review_status', 'created_at', 'approved_at']
+    list_filter = ['status', 'seller_reviewed', 'seller_approval', 'created_at', 'approved_at']
     search_fields = ['user__username', 'reference_number', 'lipa_number']
-    readonly_fields = ['created_at']
+    readonly_fields = ['created_at', 'seller_reviewed', 'seller_approval', 'seller_notes', 'seller_reviewed_at']
+    
+    def seller_review_status(self, obj):
+        if not obj.seller_reviewed:
+            return format_html('<span style="color: orange;">Pending Seller Review</span>')
+        elif obj.seller_approval:
+            return format_html('<span style="color: green;">Seller Approved</span>')
+        else:
+            return format_html('<span style="color: red;">Seller Rejected</span>')
+    
+    seller_review_status.short_description = "Seller Review"
     
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.status == 'APPROVED':
@@ -111,14 +121,17 @@ class PaymentAdmin(admin.ModelAdmin):
             if 'status' in form.changed_data and obj.status == 'APPROVED':
                 obj.approve_payment(request.user)
                 self.message_user(request, "Payment approved successfully. Email notifications have been sent.")
+            elif 'status' in form.changed_data and obj.status == 'REJECTED':
+                obj.reject_payment(request.user, obj.notes)
+                self.message_user(request, "Payment rejected successfully.")
             else:
                 super().save_model(request, obj, form, change)
         except Exception as e:
-            self.message_user(request, f"Error approving payment: {str(e)}", level='ERROR')
+            self.message_user(request, f"Error processing payment: {str(e)}", level='ERROR')
             # Log the error for debugging
             import logging
             logger = logging.getLogger(__name__)
-            logger.error(f"Error in payment approval: {str(e)}", exc_info=True)
+            logger.error(f"Error in payment processing: {str(e)}", exc_info=True)
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem

@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import SellerRegistrationForm, ProductForm, CustomUserRegistrationForm
-from .models import Product, Category, Seller, Cart, WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription, Receipt, ProductAttribute, Order, Payment
+from .models import Product, Category, Seller, Cart, WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription, Receipt, ProductAttribute, Order, Payment, OrderItem
 from django.http import HttpResponse, FileResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
@@ -27,7 +27,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.sites.shortcuts import get_current_site
-from django.utils.timezone import timezone
+from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
 from weasyprint import HTML
@@ -163,7 +163,122 @@ def seller_logout(request):
 
 
 def member_dashboard(request):
-    return render(request, 'myapp/member_dashboard.html')
+    # Check if the user is a seller
+    try:
+        seller = Seller.objects.get(user=request.user)
+        return redirect('seller_dashboard')
+    except Seller.DoesNotExist:
+        # Regular member dashboard
+        return render(request, 'myapp/member_dashboard.html')
+
+@login_required
+def seller_dashboard(request):
+    try:
+        seller = Seller.objects.get(user=request.user)
+    except Seller.DoesNotExist:
+        messages.error(request, "You don't have seller privileges.")
+        return redirect('home')
+    
+    # Get products by this seller
+    products = Product.objects.filter(seller=seller).order_by('-created_at')
+    
+    # Get orders that contain products from this seller
+    order_items = OrderItem.objects.filter(product__seller=seller)
+    order_ids = order_items.values_list('order_id', flat=True).distinct()
+    orders = Order.objects.filter(id__in=order_ids).order_by('-created_at')
+    
+    # Get pending payments for this seller's products
+    pending_payments = Payment.objects.filter(
+        order__id__in=order_ids,
+        status='PENDING',
+        seller_reviewed=False
+    )
+    
+    # Get recent payments for this seller's products
+    recent_payments = Payment.objects.filter(
+        order__id__in=order_ids
+    ).order_by('-created_at')[:5]  # Show latest 5 payments
+    
+    context = {
+        'seller': seller,
+        'products_count': products.count(),
+        'orders_count': orders.count(),
+        'pending_payments_count': pending_payments.count(),
+        'recent_payments': recent_payments,
+        'products': products[:5],  # Show latest 5 products
+        'orders': orders[:5]  # Show latest 5 orders
+    }
+    return render(request, 'myapp/seller_dashboard.html', context)
+
+@login_required
+def seller_payment_detail(request, payment_id):
+    try:
+        seller = Seller.objects.get(user=request.user)
+    except Seller.DoesNotExist:
+        messages.error(request, "You don't have seller privileges.")
+        return redirect('home')
+    
+    # Get the payment
+    try:
+        # Find order items with products from this seller
+        payment = Payment.objects.get(id=payment_id)
+        order_items = payment.order.items.filter(product__seller=seller)
+        
+        if not order_items.exists():
+            messages.error(request, "This payment doesn't include any of your products.")
+            return redirect('seller_payment_list')
+        
+        # Process review form
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            notes = request.POST.get('notes', '')
+            
+            if action in ['approve', 'reject']:
+                payment.seller_reviewed = True
+                payment.seller_notes = notes
+                payment.seller_reviewed_at = timezone.now()
+                
+                if action == 'approve':
+                    payment.seller_approval = True
+                    
+                    # Automatically approve the payment when seller approves
+                    payment.status = 'APPROVED'
+                    payment.approved_at = timezone.now()
+                    payment.approved_by = request.user
+                    
+                    # Generate receipt
+                    from myapp.models import Receipt
+                    receipt, created = Receipt.objects.get_or_create(
+                        payment=payment,
+                        defaults={
+                            'order': payment.order,
+                            'transaction_id': f"PAY-{payment.id}"
+                        }
+                    )
+                    
+                    messages.success(request, "Payment has been approved successfully.")
+                else:
+                    payment.seller_approval = False
+                    payment.status = 'REJECTED'
+                    messages.info(request, "Payment has been rejected.")
+                
+                payment.save()
+                return redirect('seller_payment_list')
+        
+        # Get the seller's products in this order
+        seller_items = order_items.select_related('product')
+        
+        context = {
+            'payment': payment,
+            'seller': seller,
+            'order_items': seller_items,
+            'seller_total': sum(item.price * item.quantity for item in seller_items)
+        }
+        return render(request, 'myapp/seller_payment_detail.html', context)
+    
+    except Payment.DoesNotExist:
+        messages.error(request, "Payment not found.")
+        return redirect('seller_payment_list')
 
 
 
@@ -800,6 +915,45 @@ def submit_payment_proof(request):
             return redirect('view_cart')
     
     return redirect('view_cart')
+
+
+@login_required
+def seller_payment_list(request):
+    try:
+        seller = Seller.objects.get(user=request.user)
+    except Seller.DoesNotExist:
+        messages.error(request, "You don't have seller privileges.")
+        return redirect('home')
+    
+    # Get all order items containing products from this seller
+    order_items = OrderItem.objects.filter(product__seller=seller)
+    order_ids = order_items.values_list('order_id', flat=True).distinct()
+    
+    # Get payments for these orders
+    payments = Payment.objects.filter(
+        order__id__in=order_ids
+    ).order_by('-created_at')
+    
+    # Filter payments based on request parameters
+    status = request.GET.get('status')
+    if status:
+        payments = payments.filter(status=status)
+    
+    reviewed = request.GET.get('reviewed')
+    if reviewed:
+        seller_reviewed = (reviewed == 'yes')
+        payments = payments.filter(seller_reviewed=seller_reviewed)
+    
+    context = {
+        'payments': payments,
+        'seller': seller,
+        'current_status': status,
+        'current_reviewed': reviewed
+    }
+    return render(request, 'myapp/seller_payment_list.html', context)
+
+
+@login_required
 
 def payment_confirmation(request):
     return render(request, 'myapp/payment_confirmation.html')

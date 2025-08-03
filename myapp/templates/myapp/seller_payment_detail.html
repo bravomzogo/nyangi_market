@@ -1,0 +1,183 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'seller_dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'seller_payment_list' %}">Payments</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Payment #{{ payment.id }}</li>
+                </ol>
+            </nav>
+            <h2>Payment Details</h2>
+            <p>Review payment proof and approve or reject.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Payment Details -->
+        <div class="col-md-7">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Payment Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4 fw-bold">Payment ID:</div>
+                        <div class="col-sm-8">{{ payment.id }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 fw-bold">Date:</div>
+                        <div class="col-sm-8">{{ payment.created_at|date:"F d, Y H:i" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 fw-bold">Customer:</div>
+                        <div class="col-sm-8">{{ payment.user.username }} ({{ payment.user.email }})</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 fw-bold">Total Amount:</div>
+                        <div class="col-sm-8">TZS {{ payment.amount }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 fw-bold">Your Products Total:</div>
+                        <div class="col-sm-8">TZS {{ seller_total }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 fw-bold">Lipa Number:</div>
+                        <div class="col-sm-8">{{ payment.lipa_number }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 fw-bold">Reference Number:</div>
+                        <div class="col-sm-8">{{ payment.reference_number }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 fw-bold">Status:</div>
+                        <div class="col-sm-8">
+                            {% if payment.status == 'PENDING' %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif payment.status == 'APPROVED' %}
+                            <span class="badge bg-success">Approved</span>
+                            {% elif payment.status == 'REJECTED' %}
+                            <span class="badge bg-danger">Rejected</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 fw-bold">Your Review:</div>
+                        <div class="col-sm-8">
+                            {% if payment.seller_reviewed %}
+                                {% if payment.seller_approval %}
+                                <span class="badge bg-success">Approved by you</span>
+                                {% else %}
+                                <span class="badge bg-danger">Rejected by you</span>
+                                {% endif %}
+                            {% else %}
+                            <span class="badge bg-secondary">Pending your review</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if payment.seller_notes %}
+                    <div class="row mb-2">
+                        <div class="col-sm-4 fw-bold">Your Notes:</div>
+                        <div class="col-sm-8">{{ payment.seller_notes }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Order Items for This Seller -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Your Products in This Order</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                <tr>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>TZS {{ item.price }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>TZS {{ item.total }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr class="table-active">
+                                    <td colspan="3" class="text-end fw-bold">Total:</td>
+                                    <td class="fw-bold">TZS {{ seller_total }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Proof and Review Form -->
+        <div class="col-md-5">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Payment Proof</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        {% if payment.payment_proof %}
+                            {% if 'image' in payment.payment_proof.url %}
+                            <img src="{{ payment.payment_proof.url }}" alt="Payment Proof" class="img-fluid mb-2" style="max-height: 400px;">
+                            {% else %}
+                            <div class="d-grid">
+                                <a href="{{ payment.payment_proof.url }}" class="btn btn-primary" target="_blank">
+                                    <i class="fas fa-file-download me-2"></i> View/Download Payment Proof
+                                </a>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                        <div class="alert alert-warning">No payment proof uploaded.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Form -->
+            {% if not payment.seller_reviewed and payment.status == 'PENDING' %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Review Payment</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes (optional)</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add any notes or comments about this payment"></textarea>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" name="action" value="approve" class="btn btn-success">
+                                <i class="fas fa-check-circle me-2"></i> Approve Payment
+                            </button>
+                            <button type="submit" name="action" value="reject" class="btn btn-danger">
+                                <i class="fas fa-times-circle me-2"></i> Reject Payment
+                            </button>
+                        </div>
+                        <div class="mt-2 text-muted small">
+                            <i class="fas fa-info-circle me-1"></i> Your approval is final and will immediately update the payment status.
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

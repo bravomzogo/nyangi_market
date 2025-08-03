@@ -1,0 +1,250 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ seller.shop_name }}</h5>
+                    <small>Seller Portal</small>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'seller_dashboard' %}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'seller_payment_list' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-money-bill-wave me-2"></i> Payment Requests
+                        {% if pending_payments_count > 0 %}
+                        <span class="badge bg-danger rounded-pill float-end">{{ pending_payments_count }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i> My Products
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-cart me-2"></i> Orders
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line me-2"></i> Sales Reports
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-cog me-2"></i> Settings
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Quick Links Card -->
+            <div class="card mt-3">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0">Quick Actions</h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'seller_payment_list' %}?status=PENDING&reviewed=no" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i> Review Pending Payments
+                        {% if pending_payments_count > 0 %}
+                        <span class="badge bg-danger rounded-pill float-end">{{ pending_payments_count }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus-circle me-2"></i> Add New Product
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="mb-4">
+                <h2>Seller Dashboard</h2>
+                <p>Welcome to your seller dashboard. Manage your products, orders, and payments here.</p>
+            </div>
+
+            <!-- Dashboard Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Products</h5>
+                            <h2 class="display-4">{{ products_count }}</h2>
+                            <p class="card-text">Total products in your inventory</p>
+                            <a href="#" class="btn btn-outline-light btn-sm">Manage Products</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Orders</h5>
+                            <h2 class="display-4">{{ orders_count }}</h2>
+                            <p class="card-text">Total orders for your products</p>
+                            <a href="#" class="btn btn-outline-light btn-sm">View Orders</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body">
+                            <h5 class="card-title">Pending Payments</h5>
+                            <h2 class="display-4">{{ pending_payments_count }}</h2>
+                            <p class="card-text">Payments waiting for your review</p>
+                            <a href="{% url 'seller_payment_list' %}?status=PENDING&reviewed=no" class="btn btn-dark btn-sm">Review Payments</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Products -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Products</h5>
+                    <a href="#" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if products %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Category</th>
+                                    <th>Date Added</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+                                    </td>
+                                    <td>TZS {{ product.price }}</td>
+                                    <td>{{ product.category.name }}</td>
+                                    <td>{{ product.created_at|date:"M d, Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">You haven't added any products yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Payment Requests -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-money-bill-wave me-2 text-success"></i>Recent Payment Requests
+                    </h5>
+                    <a href="{% url 'seller_payment_list' %}" class="btn btn-sm btn-success">View All Payments</a>
+                </div>
+                <div class="card-body">
+                    {% if pending_payments_count > 0 %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        You have <strong>{{ pending_payments_count }}</strong> payment requests waiting for your review.
+                    </div>
+                    {% endif %}
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in recent_payments %}
+                                <tr {% if not payment.seller_reviewed and payment.status == 'PENDING' %}class="table-warning"{% endif %}>
+                                    <td>{{ payment.id }}</td>
+                                    <td>{{ payment.created_at|date:"M d, Y" }}</td>
+                                    <td>{{ payment.user.username }}</td>
+                                    <td>TZS {{ payment.amount }}</td>
+                                    <td>
+                                        {% if payment.status == 'PENDING' %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        {% elif payment.status == 'APPROVED' %}
+                                        <span class="badge bg-success">Approved</span>
+                                        {% elif payment.status == 'REJECTED' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'seller_payment_detail' payment.id %}" class="btn btn-sm btn-primary">
+                                            {% if not payment.seller_reviewed and payment.status == 'PENDING' %}
+                                            Review
+                                            {% else %}
+                                            View
+                                            {% endif %}
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">No recent payment requests found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Orders</h5>
+                    <a href="#" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>{{ order.id }}</td>
+                                    <td>{{ order.user.username }}</td>
+                                    <td>TZS {{ order.total_price }}</td>
+                                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if order.is_paid %}
+                                        <span class="badge bg-success">Paid</span>
+                                        {% else %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No orders for your products yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

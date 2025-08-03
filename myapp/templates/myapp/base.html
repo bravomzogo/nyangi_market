@@ -466,10 +466,25 @@
                             </span>
                         {% endif %}
                     </a>
+                    
                     <!-- My Orders Link -->
                     <a href="{% url 'user_orders' %}" class="btn btn-outline-info me-2" style="background-color:#17a2b8; color: white;">
                         <i class="fas fa-clipboard-list"></i> My Orders
                     </a>
+                    
+                    <!-- Seller Dashboard Link (only shown to sellers) -->
+                    {% if user.seller %}
+                    <a href="{% url 'seller_dashboard' %}" class="btn btn-outline-success me-2 position-relative" style="background-color:#28a745; color: white;">
+                        <i class="fas fa-store"></i> Seller Dashboard
+                        {% if pending_payments_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ pending_payments_count }}
+                                <span class="visually-hidden">unreviewed payments</span>
+                            </span>
+                        {% endif %}
+                    </a>
+                    {% endif %}
+                    
                     <!-- Logout Link -->
                     <a href="{% url 'logout' %}" class="btn btn-outline-danger" style="background-color:rgb(63, 59, 60); color: rgb(126, 114, 114);">Logout</a>
                 {% else %}
