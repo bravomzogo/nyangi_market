@@ -83,6 +83,7 @@ TEMPLATES = [
                 'myapp.context_processors.cart_item_count',
                 'myapp.context_processors.pending_orders_count',
                 'myapp.context_processors.active_admin_messages',
+                'myapp.context_processors.pending_payments_count',
             ],
         },
     },
