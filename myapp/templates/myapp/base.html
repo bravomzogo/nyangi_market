@@ -766,6 +766,29 @@
         // Function to check if the page is reloaded or category is selected
         // Loader removed
         
+        // Password visibility toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButtons = document.querySelectorAll('.toggle-password');
+            
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const passwordField = this.closest('.input-group').querySelector('input');
+                    const icon = this.querySelector('i');
+                    
+                    // Toggle the password visibility
+                    if (passwordField.type === 'password') {
+                        passwordField.type = 'text';
+                        icon.classList.remove('bi-eye-slash');
+                        icon.classList.add('bi-eye');
+                    } else {
+                        passwordField.type = 'password';
+                        icon.classList.remove('bi-eye');
+                        icon.classList.add('bi-eye-slash');
+                    }
+                });
+            });
+        });
+        
     </script>
     <!-- JavaScript Files -->
     <!-- Loader removed -->

@@ -19,24 +19,36 @@
                         <label for="id_username" class="form-label fw-medium">Username</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-person-fill"></i></span>
-                            <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required>
+                            <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required minlength="3" maxlength="30">
+                        </div>
+                        <div id="username-feedback" class="form-text mt-1"></div>
+                        <div class="username-requirements small text-muted mt-1">
+                            <div class="requirement" id="req-length"><i class="bi bi-circle me-1"></i> 3-30 characters long</div>
+                            <div class="requirement" id="req-alphanumeric"><i class="bi bi-circle me-1"></i> Letters, numbers, and underscores only</div>
+                            <div class="requirement" id="req-unique"><i class="bi bi-circle me-1"></i> Username must be unique</div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="id_email" class="form-label fw-medium">Email</label>
+                        <label for="id_email" class="form-label fw-medium">Email <span class="text-muted small">(optional)</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-envelope-fill"></i></span>
-                            <input type="email" name="email" id="id_email" class="form-control" placeholder="Enter your email" required>
+                            <input type="email" name="email" id="id_email" class="form-control" placeholder="Enter your email (optional)">
                         </div>
+                        <small class="form-text text-muted">
+                            You can leave this blank if you don't have an email address.
+                        </small>
                     </div>
 
                     <div class="mb-3">
-                        <label for="id_phone_number" class="form-label fw-medium">Phone Number</label>
+                        <label for="id_phone_number" class="form-label fw-medium">WhatsApp Number <span class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="bi bi-telephone-fill"></i></span>
-                            <input type="text" name="phone_number" id="id_phone_number" class="form-control" placeholder="Enter your phone number" required>
+                            <span class="input-group-text bg-light"><i class="bi bi-whatsapp text-success"></i></span>
+                            <input type="text" name="phone_number" id="id_phone_number" class="form-control" placeholder="Enter your WhatsApp number (e.g. +255XXXXXXXXX)" required>
                         </div>
+                        <small class="form-text text-muted">
+                            Enter your WhatsApp number with country code (e.g., +255XXXXXXXXX).
+                        </small>
                     </div>
 
                     <div class="mb-3">
@@ -46,12 +58,25 @@
                             <input type="text" name="area_of_residence" id="id_area_of_residence" class="form-control" placeholder="Enter your area of residence" required>
                         </div>
                     </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="id_use_whatsapp_for_recovery" name="use_whatsapp_for_recovery" checked>
+                        <label class="form-check-label" for="id_use_whatsapp_for_recovery">
+                            Use WhatsApp for account recovery <span class="badge bg-success">Recommended</span>
+                        </label>
+                        <div class="form-text">
+                            Faster and more reliable than email recovery
+                        </div>
+                    </div>
 
                     <div class="mb-3">
                         <label for="id_password1" class="form-label fw-medium">Password</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
                             <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Enter your password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" tabindex="-1">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -60,6 +85,9 @@
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
                             <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirm your password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" tabindex="-1">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -173,6 +201,98 @@
         }
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const usernameInput = document.getElementById('id_username');
+    const usernameFeedback = document.getElementById('username-feedback');
+    const reqLength = document.getElementById('req-length');
+    const reqAlphanumeric = document.getElementById('req-alphanumeric');
+    const reqUnique = document.getElementById('req-unique');
+    
+    let typingTimer;
+    const doneTypingInterval = 500; // Wait 500ms after user stops typing
+    
+    // Update visual validation as user types
+    usernameInput.addEventListener('input', function() {
+        const username = this.value.trim();
+        
+        // Clear any previous timers for username check
+        clearTimeout(typingTimer);
+        
+        // Check length requirement (3-30 characters)
+        if (username.length >= 3 && username.length <= 30) {
+            reqLength.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i> 3-30 characters long';
+        } else {
+            reqLength.innerHTML = '<i class="bi bi-x-circle text-danger me-1"></i> 3-30 characters long';
+        }
+        
+        // Check alphanumeric requirement (letters, numbers, underscores only)
+        const alphanumericRegex = /^[a-zA-Z0-9_]+$/;
+        if (username && alphanumericRegex.test(username)) {
+            reqAlphanumeric.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i> Letters, numbers, and underscores only';
+        } else if (username) {
+            reqAlphanumeric.innerHTML = '<i class="bi bi-x-circle text-danger me-1"></i> Letters, numbers, and underscores only';
+        } else {
+            reqAlphanumeric.innerHTML = '<i class="bi bi-circle me-1"></i> Letters, numbers, and underscores only';
+        }
+        
+        // Check uniqueness only after user stops typing for a moment
+        if (username.length >= 3) {
+            reqUnique.innerHTML = '<i class="bi bi-hourglass-split text-warning me-1"></i> Checking availability...';
+            
+            typingTimer = setTimeout(function() {
+                checkUsernameAvailability(username);
+            }, doneTypingInterval);
+        } else {
+            reqUnique.innerHTML = '<i class="bi bi-circle me-1"></i> Username must be unique';
+        }
+    });
+    
+    // Function to check username availability via AJAX
+    function checkUsernameAvailability(username) {
+        fetch('/check-username-availability/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ username: username })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.available) {
+                reqUnique.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i> Username is available';
+                usernameFeedback.innerHTML = '<span class="text-success"><i class="bi bi-check-circle-fill"></i> Great username choice!</span>';
+            } else {
+                reqUnique.innerHTML = '<i class="bi bi-x-circle text-danger me-1"></i> Username already taken';
+                usernameFeedback.innerHTML = '<span class="text-danger"><i class="bi bi-exclamation-circle-fill"></i> This username is already taken</span>';
+            }
+        })
+        .catch(error => {
+            console.error('Error checking username:', error);
+            reqUnique.innerHTML = '<i class="bi bi-exclamation-circle text-warning me-1"></i> Could not verify availability';
+        });
+    }
+    
+    // Special styling for username requirements
+    const style = document.createElement('style');
+    style.textContent = `
+        .username-requirements {
+            margin-top: 8px;
+        }
+        .requirement {
+            margin-bottom: 3px;
+            transition: color 0.3s ease;
+        }
+        .requirement i {
+            width: 16px;
+            display: inline-block;
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
 
 <!-- Bootstrap Icons (CDN) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">

@@ -5,12 +5,19 @@ from .models import Seller, Product, WorkerContract, ParentDetails, Referee, Edu
 
 
 class CustomUserRegistrationForm(UserCreationForm):
-    phone_number = forms.CharField(max_length=15, required=True, help_text="Enter your phone number.")
+    email = forms.EmailField(required=False, help_text="Optional. Enter your email address if you have one.")
+    phone_number = forms.CharField(max_length=15, required=True, help_text="Enter your WhatsApp number with country code.")
     area_of_residence = forms.CharField(max_length=100, required=True, help_text="Enter your area of residence.")
+    use_whatsapp_for_recovery = forms.BooleanField(
+        required=False, 
+        initial=True, 
+        label="Use WhatsApp for account recovery",
+        help_text="Recommended: Faster and more reliable than email recovery"
+    )
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'phone_number', 'area_of_residence', 'password1', 'password2']
+        fields = ['username', 'email', 'phone_number', 'area_of_residence', 'use_whatsapp_for_recovery', 'password1', 'password2']
 
 
 class SellerRegistrationForm(forms.ModelForm):

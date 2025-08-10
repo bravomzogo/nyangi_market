@@ -6,7 +6,10 @@ from django.dispatch import receiver
 import time
 import random
 import string
+from datetime import timedelta
 
+# Import the password reset model from separate file
+from .models_password_reset import PasswordResetCode
 
 # List of Tanzanian regions
 TANZANIA_REGIONS = [
@@ -49,9 +52,16 @@ class Seller(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    phone_number = models.CharField(max_length=15, blank=True)
+    phone_number = models.CharField(max_length=15, blank=True, help_text="WhatsApp number used for account recovery")
     area_of_residence = models.CharField(max_length=100, blank=True)
-
+    use_whatsapp_for_recovery = models.BooleanField(default=True, help_text="Use WhatsApp as primary recovery method")
+    
+    def get_recovery_contact(self):
+        """Return the primary recovery contact (WhatsApp if enabled, otherwise email)"""
+        if self.use_whatsapp_for_recovery and self.phone_number:
+            return self.phone_number
+        return self.user.email
+    
     def __str__(self):
         return f"{self.user.username}'s Profile"
 
@@ -95,6 +105,8 @@ class Product(models.Model):
     phone_number=models.CharField(max_length=10 ,default='')
     seller = models.ForeignKey('Seller', on_delete=models.CASCADE)
     location = models.CharField(max_length=50, choices=TANZANIA_REGIONS, default='Dar es Salaam')  # Default region
+    likes_count = models.PositiveIntegerField(default=0)
+    dislikes_count = models.PositiveIntegerField(default=0)
 
     # General technical details
     condition = models.CharField(max_length=100, default="New", blank=True)
@@ -580,3 +592,23 @@ class AdminMessage(models.Model):
         )
 
 
+
+class ProductInteraction(models.Model):
+    LIKE = 'LIKE'
+    DISLIKE = 'DISLIKE'
+    INTERACTION_CHOICES = [
+        (LIKE, 'Like'),
+        (DISLIKE, 'Dislike'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    interaction_type = models.CharField(max_length=10, choices=INTERACTION_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        # Ensure a user can only have one interaction per product
+        unique_together = ('user', 'product')
+        
+    def __str__(self):
+        return f"{self.user.username} - {self.interaction_type} - {self.product.name}"

@@ -8,11 +8,13 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import SellerRegistrationForm, ProductForm, CustomUserRegistrationForm
-from .models import Product, Category, Seller, Cart, WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription, Receipt, ProductAttribute, Order, Payment, OrderItem
-from django.http import HttpResponse, FileResponse
+from .models import Product, Category, Seller, Cart, WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription, Receipt, ProductAttribute, Order, Payment, OrderItem, ProductInteraction, AdminMessage
+from django.http import HttpResponse, FileResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from django.views.decorators.http import require_POST
+from django.db import transaction
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from django.core.mail import send_mail
@@ -131,8 +133,26 @@ def addo_product(request):
 def product_detail(request, id):
     user = request.user
     product = get_object_or_404(Product, id=id)
-    return render(request, 'myapp/product_detail.html', {'product': product,
-                                                        'user': user})
+    
+    # Get the user's interaction with this product if they're logged in
+    user_interaction = None
+    if user.is_authenticated:
+        try:
+            user_interaction = ProductInteraction.objects.get(user=user, product=product)
+        except ProductInteraction.DoesNotExist:
+            pass
+    
+    # Ensure like/dislike counts are available even if they're zero
+    if product.likes_count is None:
+        product.likes_count = 0
+    if product.dislikes_count is None:
+        product.dislikes_count = 0
+    
+    return render(request, 'myapp/product_detail.html', {
+        'product': product,
+        'user': user,
+        'user_interaction': user_interaction
+    })
 
 
 def seller_login(request):
@@ -434,12 +454,26 @@ def register_view(request):
     if request.method == 'POST':
         form = CustomUserRegistrationForm(request.POST)
         if form.is_valid():
+            # Validate WhatsApp number format
+            phone_number = form.cleaned_data['phone_number']
+            if not phone_number.startswith('+'):
+                form.add_error('phone_number', 'WhatsApp number must include country code (e.g., +255XXXXXXXXX)')
+                messages.error(request, "Please enter a valid WhatsApp number with country code.")
+                return render(request, 'myapp/register.html', {'form': form})
+                
             user = form.save()
-            user.profile.phone_number = form.cleaned_data['phone_number']
+            user.profile.phone_number = phone_number
             user.profile.area_of_residence = form.cleaned_data['area_of_residence']
+            user.profile.use_whatsapp_for_recovery = form.cleaned_data.get('use_whatsapp_for_recovery', True)
             user.profile.save()
+            
+            # Display appropriate success message based on recovery preference
+            if user.profile.use_whatsapp_for_recovery:
+                messages.success(request, "Your account has been created successfully with WhatsApp recovery enabled!")
+            else:
+                messages.success(request, "Your account has been created successfully with email recovery enabled!")
+                
             login(request, user)
-            messages.success(request, "Your account has been created successfully!")
             return redirect('home')
         else:
             messages.error(request, "Registration failed. Please correct the errors below.")
@@ -983,3 +1017,95 @@ def user_orders(request):
     }
     
     return render(request, 'myapp/user_orders.html', context)
+
+
+@login_required
+@require_POST
+def product_interaction(request, product_id):
+    """Handle like and dislike functionality for products"""
+    product = get_object_or_404(Product, id=product_id)
+    interaction_type = request.POST.get('interaction_type')
+    
+    # Validate interaction type
+    if interaction_type not in [ProductInteraction.LIKE, ProductInteraction.DISLIKE]:
+        return JsonResponse({'status': 'error', 'message': 'Invalid interaction type'}, status=400)
+    
+    with transaction.atomic():
+        # Check if user already has an interaction with this product
+        interaction, created = ProductInteraction.objects.get_or_create(
+            user=request.user,
+            product=product,
+            defaults={'interaction_type': interaction_type}
+        )
+        
+        if not created:
+            # User is changing their interaction or removing it
+            if interaction.interaction_type == interaction_type:
+                # User clicked the same button again, remove the interaction
+                if interaction.interaction_type == ProductInteraction.LIKE:
+                    product.likes_count = max(0, product.likes_count - 1)
+                else:
+                    product.dislikes_count = max(0, product.dislikes_count - 1)
+                interaction.delete()
+                interaction_status = 'removed'
+            else:
+                # User is changing from like to dislike or vice versa
+                if interaction.interaction_type == ProductInteraction.LIKE:
+                    product.likes_count = max(0, product.likes_count - 1)
+                    product.dislikes_count += 1
+                else:
+                    product.dislikes_count = max(0, product.dislikes_count - 1)
+                    product.likes_count += 1
+                
+                interaction.interaction_type = interaction_type
+                interaction.save()
+                interaction_status = 'changed'
+        else:
+            # New interaction
+            if interaction_type == ProductInteraction.LIKE:
+                product.likes_count += 1
+            else:
+                product.dislikes_count += 1
+            interaction_status = 'added'
+        
+        product.save()
+    
+    # Check if request is AJAX
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Get the current interaction type after all changes
+        current_interaction = None
+        try:
+            interaction = ProductInteraction.objects.get(user=request.user, product=product)
+            current_interaction = interaction.interaction_type
+        except ProductInteraction.DoesNotExist:
+            pass
+            
+        return JsonResponse({
+            'status': 'success',
+            'interaction_status': interaction_status,
+            'interaction_type': current_interaction,
+            'likes_count': product.likes_count,
+            'dislikes_count': product.dislikes_count
+        })
+    else:
+        # Regular form submission - redirect back to product detail
+        return redirect('product_detail', id=product_id)
+
+
+@login_required
+def get_product_interaction_status(request, product_id):
+    """Get the current user's interaction status with a product"""
+    product = get_object_or_404(Product, id=product_id)
+    
+    try:
+        interaction = ProductInteraction.objects.get(user=request.user, product=product)
+        interaction_type = interaction.interaction_type
+    except ProductInteraction.DoesNotExist:
+        interaction_type = None
+    
+    return JsonResponse({
+        'status': 'success',
+        'interaction_type': interaction_type,
+        'likes_count': product.likes_count,
+        'dislikes_count': product.dislikes_count
+    })

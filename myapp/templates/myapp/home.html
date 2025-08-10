@@ -59,6 +59,24 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 
+<style>
+    /* Product Rating Styles */
+    .product-ratings {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+    .product-ratings .fas.fa-thumbs-up {
+        color: #28a745;
+    }
+    .product-ratings .fas.fa-thumbs-down {
+        color: #dc3545;
+    }
+    .likes-count, .dislikes-count {
+        font-weight: bold;
+        margin-left: 2px;
+    }
+</style>
+
 <div class="container">
     <!-- Categories Section -->
     <div class="categories-section mb-4">
@@ -222,6 +240,19 @@
                         <p class="price"><strong style="color: black;">Price:</strong> {{ product.price|intcomma }} Tsh</p>
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="seller"><small>Sold by: {{ product.seller.shop_name }} / <small>{{ product.location }}</small></small></p>
+                        
+                        <!-- Product Ratings Display -->
+                        <div class="product-ratings d-flex align-items-center mb-2">
+                            <div class="me-3">
+                                <i class="fas fa-thumbs-up text-success"></i>
+                                <span class="likes-count">{{ product.likes_count }}</span>
+                            </div>
+                            <div>
+                                <i class="fas fa-thumbs-down text-danger"></i>
+                                <span class="dislikes-count">{{ product.dislikes_count }}</span>
+                            </div>
+                        </div>
+                        
                         <a href="{% url 'product_detail' product.id %}" class="btn btn-primary view-details">View Details</a>
                         {% if user.is_authenticated %}
                             <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success mt-2">Add to Cart</a>

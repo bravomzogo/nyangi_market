@@ -2,6 +2,8 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.contrib import admin  # Ensure this is imported only once
 from . import views
+from . import views_password_reset
+from . import views_username_validation
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -24,11 +26,18 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('logout/', views.logout_view, name='logout'),
 
-    # Password Reset URLs
-    path('password-reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
-    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    # Password Reset URLs - WhatsApp and Email
+    path('password-reset/', views_password_reset.password_reset_choice, name='password_reset_choice'),
+    path('password-reset/whatsapp/', views_password_reset.password_reset_whatsapp, name='password_reset_whatsapp'),
+    path('password-reset/whatsapp/verify/', views_password_reset.password_reset_whatsapp_verify, name='password_reset_whatsapp_verify'),
+    path('password-reset/whatsapp/confirm/', views_password_reset.password_reset_whatsapp_confirm, name='password_reset_whatsapp_confirm'),
+    path('password-reset/email/', views_password_reset.password_reset_email_form, name='password_reset_email'),
+    path('password-reset/complete/', views_password_reset.password_reset_complete_view, name='password_reset_complete'),
+    path('password-reset/resend-code/', views_password_reset.resend_whatsapp_code, name='resend_whatsapp_code'),
+    
+    # Legacy password reset URLs (keeping for backwards compatibility)
+    path('password-reset-old/', views.password_reset_request, name='password_reset_request'),
+    path('password-reset-confirm/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),
 
     # Cart URLs
     path('cart/', views.view_cart, name='view_cart'),
@@ -45,10 +54,6 @@ urlpatterns = [
     path('subscription/plan/create/', views.subscription_plan_create, name='subscription_plan_create'),
     path('seller/subscription/create/', views.seller_subscription_create, name='seller_subscription_create'),
     
-    # Password Reset URLs
-    path('password-reset/', views.password_reset_request, name='password_reset_request'),
-    path('password-reset-confirm/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),
-    
     # About Us URL
     path('about-us/', views.about_us, name='about_us'),
     path('get-category-attributes/', views.get_category_attributes, name='get_category_attributes'),
@@ -56,6 +61,9 @@ urlpatterns = [
 
 
     path('process-fictional-payment/', views.process_fictional_payment, name='process_fictional_payment'),
+
+    # Username validation URL
+    path('check-username-availability/', views_username_validation.check_username_availability, name='check_username_availability'),
 
     # New Payment URLs
     path('payment/checkout/', views.payment_checkout, name='payment_checkout'),
@@ -67,4 +75,8 @@ urlpatterns = [
     path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
     path('seller/payments/', views.seller_payment_list, name='seller_payment_list'),
     path('seller/payments/<int:payment_id>/', views.seller_payment_detail, name='seller_payment_detail'),
+    
+    # Product Interaction URLs
+    path('product/<int:product_id>/interaction/', views.product_interaction, name='product_interaction'),
+    path('product/<int:product_id>/interaction-status/', views.get_product_interaction_status, name='product_interaction_status'),
 ]
