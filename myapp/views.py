@@ -130,6 +130,56 @@ def addo_product(request):
     return render(request, 'myapp/add_product.html', {'form': form})
 
 
+@login_required
+def edit_product(request, product_id):
+    # Get the product
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Check if the logged-in user is the seller of this product
+    if not hasattr(request.user, 'seller') or product.seller != request.user.seller:
+        messages.error(request, "You don't have permission to edit this product.")
+        return redirect('seller_products')
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            updated_product = form.save(commit=False)
+            # Handle optional fields
+            if not form.cleaned_data.get('release_year'):
+                updated_product.release_year = None
+            if not form.cleaned_data.get('video') and 'video-clear' in request.POST:
+                updated_product.video = None
+            updated_product.save()
+            messages.success(request, "Product updated successfully!")
+            return redirect('seller_products')
+    else:
+        form = ProductForm(instance=product)
+    
+    return render(request, 'myapp/edit_product.html', {
+        'form': form,
+        'product': product,
+        'seller': request.user.seller
+    })
+
+
+@login_required
+def delete_product(request, product_id):
+    # Get the product
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Check if the logged-in user is the seller of this product
+    if not hasattr(request.user, 'seller') or product.seller != request.user.seller:
+        messages.error(request, "You don't have permission to delete this product.")
+        return redirect('seller_products')
+    
+    # Delete the product
+    product_name = product.name
+    product.delete()
+    
+    messages.success(request, f"Product '{product_name}' has been deleted.")
+    return redirect('seller_products')
+
+
 def product_detail(request, id):
     user = request.user
     product = get_object_or_404(Product, id=id)
@@ -744,6 +794,23 @@ def generate_receipt(order):
 
 def get_category_attributes(request):
     category_id = request.GET.get('category_id')
+    product_id = request.GET.get('product_id')
+    
+    product_attributes = {}
+    if product_id:
+        try:
+            product = Product.objects.get(id=product_id)
+            # Get existing attribute values for this product
+            try:
+                from .models import ProductAttributeValue
+                attribute_values = ProductAttributeValue.objects.filter(product=product)
+                for attr_value in attribute_values:
+                    product_attributes[attr_value.attribute.id] = attr_value.value
+            except:
+                pass
+        except Product.DoesNotExist:
+            pass
+    
     if category_id:
         attributes = ProductAttribute.objects.filter(category_id=category_id)
         grouped_attributes = {}
@@ -751,13 +818,21 @@ def get_category_attributes(request):
             group = attr.group or "General"
             if group not in grouped_attributes:
                 grouped_attributes[group] = []
-            grouped_attributes[group].append({
+            
+            attr_dict = {
                 'id': attr.id,
                 'name': attr.name,
                 'attribute_type': attr.attribute_type,
                 'required': attr.required,
                 'options': attr.options,
-            })
+            }
+            
+            # Add existing value if available
+            if attr.id in product_attributes:
+                attr_dict['value'] = product_attributes[attr.id]
+                
+            grouped_attributes[group].append(attr_dict)
+            
         return JsonResponse({'attributes': grouped_attributes})
     return JsonResponse({'attributes': {}})
 
@@ -1109,3 +1184,6 @@ def get_product_interaction_status(request, product_id):
         'likes_count': product.likes_count,
         'dislikes_count': product.dislikes_count
     })
+
+# Import seller views
+from .views_seller import seller_products, seller_orders, seller_order_detail, seller_reports, seller_settings

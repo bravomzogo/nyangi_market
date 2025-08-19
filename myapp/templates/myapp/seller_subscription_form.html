@@ -1,0 +1,125 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">Subscribe to a Plan</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Select a subscription plan to enhance your selling experience on Nyangi Marketplace.
+                    </div>
+                    
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.plan.id_for_label }}" class="form-label fw-bold">Select Plan</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                {{ form.plan }}
+                            </div>
+                            {% if form.plan.errors %}
+                                <div class="text-danger small mt-1">{{ form.plan.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.level.id_for_label }}" class="form-label fw-bold">Level</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
+                                {{ form.level }}
+                            </div>
+                            {% if form.level.errors %}
+                                <div class="text-danger small mt-1">{{ form.level.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4 form-check">
+                            {{ form.auto_renew }}
+                            <label class="form-check-label" for="{{ form.auto_renew.id_for_label }}">
+                                Auto-renew subscription when it expires
+                            </label>
+                            {% if form.auto_renew.errors %}
+                                <div class="text-danger small mt-1">{{ form.auto_renew.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'member' %}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-1"></i> Subscribe Now
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4 shadow">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title mb-0">Subscription Benefits</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Increased product visibility
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Priority customer support
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Detailed sales analytics
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Reduced transaction fees
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Promotional opportunities
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Featured seller status
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .card-header {
+        padding: 1rem;
+    }
+    .form-control, .form-select {
+        padding: 0.75rem;
+    }
+    .input-group-text {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,274 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ seller.shop_name }}</h5>
+                    <small>Seller Portal</small>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'seller_dashboard' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'seller_payment_list' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-money-bill-wave me-2"></i> Payment Requests
+                        {% if pending_payments_count > 0 %}
+                        <span class="badge bg-danger rounded-pill float-end">{{ pending_payments_count }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'seller_products' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i> My Products
+                    </a>
+                    <a href="{% url 'seller_orders' %}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-shopping-cart me-2"></i> Orders
+                    </a>
+                    <a href="{% url 'seller_reports' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line me-2"></i> Sales Reports
+                    </a>
+                    <a href="{% url 'seller_settings' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-cog me-2"></i> Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'seller_dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'seller_orders' %}">Orders</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Order #{{ order.id }}</li>
+                </ol>
+            </nav>
+            
+            <div class="mb-4 d-flex justify-content-between align-items-center">
+                <h2>Order #{{ order.id }}</h2>
+                <div>
+                    <a href="{% url 'seller_orders' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Order Information -->
+            <div class="row mb-4">
+                <!-- Order Summary -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Order Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5">Order ID:</dt>
+                                <dd class="col-sm-7">{{ order.id }}</dd>
+                                
+                                <dt class="col-sm-5">Order Date:</dt>
+                                <dd class="col-sm-7">{{ order.created_at|date:"F d, Y, g:i a" }}</dd>
+                                
+                                <dt class="col-sm-5">Payment Status:</dt>
+                                <dd class="col-sm-7">
+                                    {% if order.is_paid %}
+                                    <span class="badge bg-success">Paid</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-5">Total Amount:</dt>
+                                <dd class="col-sm-7">TZS {{ order.total_price }}</dd>
+                                
+                                <dt class="col-sm-5">Payment Method:</dt>
+                                <dd class="col-sm-7">
+                                    {% if payment %}
+                                    {{ payment.get_payment_method_display }}
+                                    {% else %}
+                                    Not specified
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Customer Information -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Customer Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5">Customer:</dt>
+                                <dd class="col-sm-7">{{ order.user.username }}</dd>
+                                
+                                <dt class="col-sm-5">Email:</dt>
+                                <dd class="col-sm-7">{{ order.user.email|default:"Not provided" }}</dd>
+                                
+                                <dt class="col-sm-5">Phone:</dt>
+                                <dd class="col-sm-7">
+                                    {% if customer_profile %}
+                                    {{ customer_profile.phone_number }}
+                                    {% else %}
+                                    Not provided
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-5">WhatsApp:</dt>
+                                <dd class="col-sm-7">
+                                    {% if customer_profile and customer_profile.whatsapp_number %}
+                                    {{ customer_profile.whatsapp_number }}
+                                    {% else %}
+                                    Not provided
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-5">Location:</dt>
+                                <dd class="col-sm-7">
+                                    {% if customer_profile and customer_profile.location %}
+                                    {{ customer_profile.get_location_display }}
+                                    {% else %}
+                                    Not provided
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="card-footer bg-white">
+                            {% if customer_profile and customer_profile.whatsapp_number %}
+                            <a href="https://wa.me/{{ customer_profile.whatsapp_number }}" target="_blank" class="btn btn-success btn-sm">
+                                <i class="fab fa-whatsapp me-2"></i>Contact via WhatsApp
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Items -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 80px">Image</th>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                <tr>
+                                    <td>
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'product_detail' item.product.id %}" class="text-decoration-none fw-bold">{{ item.product.name }}</a>
+                                    </td>
+                                    <td>TZS {{ item.price }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>TZS {{ item.total }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold">Total:</td>
+                                    <td class="fw-bold">TZS {{ order.total_price }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Information -->
+            {% if payment %}
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Payment Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-5">Payment ID:</dt>
+                                <dd class="col-sm-7">{{ payment.id }}</dd>
+                                
+                                <dt class="col-sm-5">Payment Date:</dt>
+                                <dd class="col-sm-7">{{ payment.created_at|date:"F d, Y, g:i a" }}</dd>
+                                
+                                <dt class="col-sm-5">Payment Method:</dt>
+                                <dd class="col-sm-7">{{ payment.get_payment_method_display }}</dd>
+                                
+                                <dt class="col-sm-5">Transaction ID:</dt>
+                                <dd class="col-sm-7">{{ payment.transaction_id|default:"Not provided" }}</dd>
+                                
+                                <dt class="col-sm-5">Status:</dt>
+                                <dd class="col-sm-7">
+                                    {% if payment.status == 'APPROVED' %}
+                                    <span class="badge bg-success">Approved</span>
+                                    {% elif payment.status == 'REJECTED' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-5">Amount:</dt>
+                                <dd class="col-sm-7">TZS {{ payment.amount }}</dd>
+                            </dl>
+                        </div>
+                        
+                        {% if payment.payment_proof %}
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <strong>Payment Proof:</strong>
+                            </div>
+                            <div class="text-center">
+                                <a href="{{ payment.payment_proof.url }}" target="_blank">
+                                    <img src="{{ payment.payment_proof.url }}" alt="Payment Proof" class="img-fluid img-thumbnail" style="max-height: 200px;">
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if payment.status == 'PENDING' and not payment.seller_reviewed %}
+                    <div class="mt-3">
+                        <form method="post" action="{% url 'seller_payment_detail' payment.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="note" class="form-label">Notes (Optional)</label>
+                                <textarea class="form-control" id="note" name="note" rows="2" placeholder="Add a note about this payment..."></textarea>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" name="action" value="approve" class="btn btn-success">
+                                    <i class="fas fa-check me-2"></i>Approve Payment
+                                </button>
+                                <button type="submit" name="action" value="reject" class="btn btn-danger">
+                                    <i class="fas fa-times me-2"></i>Reject Payment
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

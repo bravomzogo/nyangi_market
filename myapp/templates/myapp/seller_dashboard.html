@@ -21,16 +21,16 @@
                         <span class="badge bg-danger rounded-pill float-end">{{ pending_payments_count }}</span>
                         {% endif %}
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
+                    <a href="{% url 'seller_products' %}" class="list-group-item list-group-item-action">
                         <i class="fas fa-box me-2"></i> My Products
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
+                    <a href="{% url 'seller_orders' %}" class="list-group-item list-group-item-action">
                         <i class="fas fa-shopping-cart me-2"></i> Orders
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
+                    <a href="{% url 'seller_reports' %}" class="list-group-item list-group-item-action">
                         <i class="fas fa-chart-line me-2"></i> Sales Reports
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
+                    <a href="{% url 'seller_settings' %}" class="list-group-item list-group-item-action">
                         <i class="fas fa-cog me-2"></i> Settings
                     </a>
                 </div>
@@ -113,6 +113,7 @@
                                     <th>Product</th>
                                     <th>Price</th>
                                     <th>Category</th>
+                                    <th>Likes</th>
                                     <th>Date Added</th>
                                 </tr>
                             </thead>
@@ -124,6 +125,12 @@
                                     </td>
                                     <td>TZS {{ product.price }}</td>
                                     <td>{{ product.category.name }}</td>
+                                    <td>
+                                        <span class="badge bg-success">{{ product.likes_count }} 👍</span>
+                                        {% if product.dislikes_count > 0 %}
+                                        <span class="badge bg-danger">{{ product.dislikes_count }} 👎</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{ product.created_at|date:"M d, Y" }}</td>
                                 </tr>
                                 {% endfor %}

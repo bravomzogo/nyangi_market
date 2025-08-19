@@ -139,8 +139,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="interaction_type" value="LIKE">
                                 <button type="submit" class="btn btn-outline-success interaction-btn {% if user_interaction.interaction_type == 'LIKE' %}active{% endif %}">
-                                    <i class="fas fa-thumbs-up me-1"></i> Like
-                                    <span id="likesCount" class="badge bg-success ms-1">{{ product.likes_count }}</span>
+                                    👍 <span id="likesCount" class="badge bg-success ms-1">{{ product.likes_count }}</span>
                                 </button>
                             </form>
                         </div>
@@ -149,8 +148,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="interaction_type" value="DISLIKE">
                                 <button type="submit" class="btn btn-outline-danger interaction-btn {% if user_interaction.interaction_type == 'DISLIKE' %}active{% endif %}">
-                                    <i class="fas fa-thumbs-down me-1"></i> Dislike
-                                    <span id="dislikesCount" class="badge bg-danger ms-1">{{ product.dislikes_count }}</span>
+                                    👎 <span id="dislikesCount" class="badge bg-danger ms-1">{{ product.dislikes_count }}</span>
                                 </button>
                             </form>
                         </div>

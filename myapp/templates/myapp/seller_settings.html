@@ -1,0 +1,311 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ seller.shop_name }}</h5>
+                    <small>Seller Portal</small>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'seller_dashboard' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'seller_payment_list' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-money-bill-wave me-2"></i> Payment Requests
+                        {% if pending_payments_count > 0 %}
+                        <span class="badge bg-danger rounded-pill float-end">{{ pending_payments_count }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'seller_products' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i> My Products
+                    </a>
+                    <a href="{% url 'seller_orders' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-cart me-2"></i> Orders
+                    </a>
+                    <a href="{% url 'seller_reports' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line me-2"></i> Sales Reports
+                    </a>
+                    <a href="{% url 'seller_settings' %}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-cog me-2"></i> Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="mb-4">
+                <h2>Seller Settings</h2>
+                <p>Manage your seller account and preferences.</p>
+            </div>
+            
+            {% if messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+            
+            <div class="row">
+                <!-- Shop Information Settings -->
+                <div class="col-md-7 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Shop Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'seller_settings' %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="form_type" value="shop_info">
+                                
+                                <div class="mb-3">
+                                    <label for="shop_name" class="form-label">Shop Name</label>
+                                    <input type="text" class="form-control" id="shop_name" name="shop_name" value="{{ seller.shop_name }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Shop Description</label>
+                                    <textarea class="form-control" id="description" name="description" rows="4">{{ seller.description }}</textarea>
+                                    <div class="form-text">Tell customers about your shop, what you sell, and your expertise.</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="phone_number" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone_number" name="phone_number" value="{{ seller.phone_number }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="whatsapp_number" class="form-label">WhatsApp Number</label>
+                                    <input type="tel" class="form-control" id="whatsapp_number" name="whatsapp_number" value="{{ seller.whatsapp_number }}">
+                                    <div class="form-text">Optional. Used for WhatsApp business inquiries.</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="location" class="form-label">Location</label>
+                                    <select class="form-select" id="location" name="location">
+                                        {% for code, name in regions %}
+                                        <option value="{{ code }}" {% if seller.location == code %}selected{% endif %}>{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">Save Shop Information</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Subscription Information -->
+                <div class="col-md-5 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Subscription Information</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if subscription %}
+                            <div class="text-center mb-3">
+                                <div class="mb-2">
+                                    <span class="badge bg-success p-2">Active Subscription</span>
+                                </div>
+                                <h4>{{ subscription.get_plan_display }}</h4>
+                                <p class="text-muted">{{ subscription.get_level_display }} Level</p>
+                            </div>
+                            
+                            <dl class="row">
+                                <dt class="col-sm-6">Start Date:</dt>
+                                <dd class="col-sm-6">{{ subscription.start_date|date:"M d, Y" }}</dd>
+                                
+                                <dt class="col-sm-6">End Date:</dt>
+                                <dd class="col-sm-6">{{ subscription.end_date|date:"M d, Y" }}</dd>
+                                
+                                <dt class="col-sm-6">Auto-renew:</dt>
+                                <dd class="col-sm-6">
+                                    {% if subscription.auto_renew %}
+                                    <span class="text-success"><i class="fas fa-check-circle"></i> Enabled</span>
+                                    {% else %}
+                                    <span class="text-danger"><i class="fas fa-times-circle"></i> Disabled</span>
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                            
+                            <div class="d-grid gap-2 mt-3">
+                                <a href="{% url 'seller_subscription_create' %}" class="btn btn-outline-primary">Change Plan</a>
+                                
+                                <form method="post" action="{% url 'seller_settings' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="form_type" value="toggle_auto_renew">
+                                    <button type="submit" class="btn btn-outline-secondary w-100">
+                                        {% if subscription.auto_renew %}
+                                        Disable Auto-renew
+                                        {% else %}
+                                        Enable Auto-renew
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-exclamation-circle fa-3x text-warning"></i>
+                                </div>
+                                <h5>No Active Subscription</h5>
+                                <p class="text-muted">Subscribe to a plan to enjoy seller benefits.</p>
+                                <a href="{% url 'seller_subscription_create' %}" class="btn btn-primary mt-2">Subscribe Now</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Information -->
+                    <div class="card mt-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Payment Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'seller_settings' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="form_type" value="payment_info">
+                                
+                                <div class="mb-3">
+                                    <label for="bank_name" class="form-label">Bank Name</label>
+                                    <input type="text" class="form-control" id="bank_name" name="bank_name" value="{{ seller.bank_name }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="account_number" class="form-label">Account Number</label>
+                                    <input type="text" class="form-control" id="account_number" name="account_number" value="{{ seller.account_number }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="mobile_money" class="form-label">Mobile Money Number</label>
+                                    <input type="text" class="form-control" id="mobile_money" name="mobile_money" value="{{ seller.mobile_money }}">
+                                    <div class="form-text">Phone number to receive mobile money payments.</div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">Save Payment Information</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Change Password -->
+                <div class="col-md-7">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Change Password</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'seller_settings' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="form_type" value="change_password">
+                                
+                                <div class="mb-3">
+                                    <label for="current_password" class="form-label">Current Password</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="current_password" name="current_password" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="current_password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="new_password" class="form-label">New Password</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="new_password" name="new_password" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="new_password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="confirm_password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">Change Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications Settings -->
+                <div class="col-md-5">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Notification Preferences</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'seller_settings' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="form_type" value="notifications">
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="email_notifications" name="email_notifications" {% if seller.email_notifications %}checked{% endif %}>
+                                    <label class="form-check-label" for="email_notifications">
+                                        Email Notifications
+                                    </label>
+                                    <div class="form-text">Receive notifications about new orders, payments, etc. via email.</div>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="sms_notifications" name="sms_notifications" {% if seller.sms_notifications %}checked{% endif %}>
+                                    <label class="form-check-label" for="sms_notifications">
+                                        SMS Notifications
+                                    </label>
+                                    <div class="form-text">Receive notifications via SMS (charges may apply).</div>
+                                </div>
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="whatsapp_notifications" name="whatsapp_notifications" {% if seller.whatsapp_notifications %}checked{% endif %}>
+                                    <label class="form-check-label" for="whatsapp_notifications">
+                                        WhatsApp Notifications
+                                    </label>
+                                    <div class="form-text">Receive notifications via WhatsApp.</div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">Save Preferences</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extrajs %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password visibility toggle
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const passwordInput = document.getElementById(targetId);
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                } else {
+                    passwordInput.type = 'password';
+                    this.innerHTML = '<i class="fas fa-eye"></i>';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

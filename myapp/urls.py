@@ -10,6 +10,8 @@ urlpatterns = [
     path('category/<str:category_name>/', views.filter_by_category, name='filter_by_category'),
     path('register_1/', views.seller_register, name='seller_register'),
     path('add-product/', views.addo_product, name='add_product'),
+    path('edit-product/<int:product_id>/', views.edit_product, name='edit_product'),
+    path('delete-product/<int:product_id>/', views.delete_product, name='delete_product'),
     path('product/<int:id>/', views.product_detail, name='product_detail'),
     path('login_1/', views.seller_login, name='seller_login'),
     path('logout_1/', views.seller_logout, name='logout'),
@@ -75,6 +77,13 @@ urlpatterns = [
     path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
     path('seller/payments/', views.seller_payment_list, name='seller_payment_list'),
     path('seller/payments/<int:payment_id>/', views.seller_payment_detail, name='seller_payment_detail'),
+    
+    # New Seller URLs
+    path('seller/products/', views.seller_products, name='seller_products'),
+    path('seller/orders/', views.seller_orders, name='seller_orders'),
+    path('seller/orders/<int:order_id>/', views.seller_order_detail, name='seller_order_detail'),
+    path('seller/reports/', views.seller_reports, name='seller_reports'),
+    path('seller/settings/', views.seller_settings, name='seller_settings'),
     
     # Product Interaction URLs
     path('product/<int:product_id>/interaction/', views.product_interaction, name='product_interaction'),
