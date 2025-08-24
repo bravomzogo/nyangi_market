@@ -796,18 +796,14 @@ def get_category_attributes(request):
     category_id = request.GET.get('category_id')
     product_id = request.GET.get('product_id')
     
-    product_attributes = {}
+    product_values = {}
     if product_id:
         try:
             product = Product.objects.get(id=product_id)
             # Get existing attribute values for this product
-            try:
-                from .models import ProductAttributeValue
-                attribute_values = ProductAttributeValue.objects.filter(product=product)
-                for attr_value in attribute_values:
-                    product_attributes[attr_value.attribute.id] = attr_value.value
-            except:
-                pass
+            if hasattr(product, 'attributes'):
+                for attr_value in product.attributes.all():
+                    product_values[attr_value.attribute.id] = attr_value.value
         except Product.DoesNotExist:
             pass
     
@@ -818,23 +814,15 @@ def get_category_attributes(request):
             group = attr.group or "General"
             if group not in grouped_attributes:
                 grouped_attributes[group] = []
-            
-            attr_dict = {
+            grouped_attributes[group].append({
                 'id': attr.id,
                 'name': attr.name,
                 'attribute_type': attr.attribute_type,
                 'required': attr.required,
                 'options': attr.options,
-            }
-            
-            # Add existing value if available
-            if attr.id in product_attributes:
-                attr_dict['value'] = product_attributes[attr.id]
-                
-            grouped_attributes[group].append(attr_dict)
-            
-        return JsonResponse({'attributes': grouped_attributes})
-    return JsonResponse({'attributes': {}})
+            })
+        return JsonResponse({'attributes': grouped_attributes, 'product_values': product_values})
+    return JsonResponse({'attributes': {}, 'product_values': product_values})
 
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404

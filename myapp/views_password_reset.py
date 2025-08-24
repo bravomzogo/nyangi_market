@@ -188,7 +188,159 @@ def password_reset_email_form(request):
     """
     Handle email-based password reset requests
     """
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        
+        if not email:
+            messages.error(request, 'Please enter your email address.')
+            return render(request, 'myapp/password_reset_email_form.html')
+        
+        try:
+            # Find user by email
+            user = User.objects.get(email=email)
+            
+            # Generate a reset code
+            code = ''.join(random.choices(string.digits + string.ascii_uppercase, k=8))
+            expires_at = timezone.now() + timedelta(hours=1)  # Code expires in 1 hour
+            
+            # Save the code
+            reset_code = PasswordResetCode.objects.create(
+                user=user,
+                code=code,
+                expires_at=expires_at
+            )
+            
+            # Send email with reset code
+            from django.core.mail import send_mail
+            from django.conf import settings
+            
+            subject = 'Password Reset Code - Nyangi Marketplace'
+            message = f"""
+Hello {user.username},
+
+You requested a password reset for your Nyangi Marketplace account.
+
+Your password reset code is: {code}
+
+This code will expire in 1 hour.
+
+If you didn't request this password reset, please ignore this email.
+
+Best regards,
+Nyangi Marketplace Team
+"""
+            
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=False,
+                )
+                
+                # Store email in session for the next step
+                request.session['reset_email'] = email
+                messages.success(request, f'A reset code has been sent to {email}')
+                return redirect('password_reset_email_verify')
+                
+            except Exception as e:
+                messages.error(request, 'Failed to send email. Please try again later.')
+                return render(request, 'myapp/password_reset_email_form.html')
+            
+        except User.DoesNotExist:
+            # Don't reveal that the email doesn't exist for security reasons
+            messages.info(request, f'If an account with email {email} exists, a reset code has been sent.')
+            return render(request, 'myapp/password_reset_email_form.html')
+    
     return render(request, 'myapp/password_reset_email_form.html')
+
+def password_reset_email_verify(request):
+    """
+    Handle email verification code input
+    """
+    email = request.session.get('reset_email')
+    if not email:
+        messages.error(request, 'Session expired. Please start the password reset process again.')
+        return redirect('password_reset_choice')
+    
+    if request.method == 'POST':
+        code = request.POST.get('code', '').strip().upper()
+        
+        if not code:
+            messages.error(request, 'Please enter the verification code.')
+            return render(request, 'myapp/password_reset_email_verify.html', {'email': email})
+        
+        try:
+            # Find the user and valid reset code
+            user = User.objects.get(email=email)
+            reset_code = PasswordResetCode.objects.filter(
+                user=user,
+                code=code,
+                expires_at__gt=timezone.now(),
+                used=False
+            ).first()
+            
+            if reset_code:
+                # Mark code as used and store user ID in session
+                reset_code.used = True
+                reset_code.save()
+                
+                request.session['reset_user_id'] = user.id
+                return redirect('password_reset_email_confirm')
+            else:
+                messages.error(request, 'Invalid or expired verification code.')
+                
+        except User.DoesNotExist:
+            messages.error(request, 'Invalid session. Please start over.')
+            return redirect('password_reset_choice')
+    
+    return render(request, 'myapp/password_reset_email_verify.html', {'email': email})
+
+def password_reset_email_confirm(request):
+    """
+    Handle new password confirmation for email reset
+    """
+    user_id = request.session.get('reset_user_id')
+    if not user_id:
+        messages.error(request, 'Session expired. Please start the password reset process again.')
+        return redirect('password_reset_choice')
+    
+    if request.method == 'POST':
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        
+        if not password1 or not password2:
+            messages.error(request, 'Please enter both password fields.')
+            return render(request, 'myapp/password_reset_email_confirm.html')
+        
+        if password1 != password2:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'myapp/password_reset_email_confirm.html')
+        
+        if len(password1) < 8:
+            messages.error(request, 'Password must be at least 8 characters long.')
+            return render(request, 'myapp/password_reset_email_confirm.html')
+        
+        try:
+            user = User.objects.get(id=user_id)
+            user.set_password(password1)
+            user.save()
+            
+            # Clean up session data
+            if 'reset_email' in request.session:
+                del request.session['reset_email']
+            if 'reset_user_id' in request.session:
+                del request.session['reset_user_id']
+            
+            messages.success(request, 'Your password has been reset successfully.')
+            return redirect('password_reset_complete')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'Invalid session. Please start over.')
+            return redirect('password_reset_choice')
+    
+    return render(request, 'myapp/password_reset_email_confirm.html')
 
 def password_reset_complete_view(request):
     """

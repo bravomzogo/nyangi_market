@@ -8,7 +8,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 import json
 
-from .models import Seller, Product, Order, OrderItem, Payment, Category, SellerSubscription, ProductInteraction, TANZANIA_REGIONS
+from .models import Seller, Product, Order, OrderItem, Payment, Category, SellerSubscription, ProductInteraction
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
@@ -356,7 +356,7 @@ def seller_settings(request):
     ).first()
     
     # Get Tanzania regions for location dropdown
-    regions = TANZANIA_REGIONS
+    regions = Seller.TANZANIA_REGIONS
     
     # Process form submissions
     if request.method == 'POST':
