@@ -278,12 +278,12 @@ def password_reset_email_verify(request):
                 user=user,
                 code=code,
                 expires_at__gt=timezone.now(),
-                used=False
+                is_used=False
             ).first()
             
             if reset_code:
                 # Mark code as used and store user ID in session
-                reset_code.used = True
+                reset_code.is_used = True
                 reset_code.save()
                 
                 request.session['reset_user_id'] = user.id

@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 
 class PasswordResetCode(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    code = models.CharField(max_length=6)
+    # Allow longer codes (e.g. 8 chars or more) to support alphanumeric codes
+    code = models.CharField(max_length=64)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
     is_used = models.BooleanField(default=False)
