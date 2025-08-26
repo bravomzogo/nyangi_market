@@ -154,6 +154,44 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Seller Contact Information (Only for logged-in users) -->
+                {% if user.is_authenticated %}
+                <div class="mt-4 seller-contact">
+                    <h5 class="section-title">Contact Seller</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ seller.shop_name }}</h6>
+                            {% if seller.whatsapp_number %}
+                            <div class="mb-2">
+                                <a href="https://wa.me/{{ seller.whatsapp_number|slice:'1:' }}?text=Hi,%20I'm%20interested%20in%20your%20product:%20{{ product.name|urlencode }}" target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm">
+                                    <i class="fab fa-whatsapp me-2"></i>Contact Seller via WhatsApp
+                                </a>
+                            </div>
+                            {% endif %}
+                            {% if seller.phone_number %}
+                            <div class="mb-2">
+                                <a href="tel:{{ seller.phone_number }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-phone me-2"></i>Call: {{ seller.phone_number }}
+                                </a>
+                            </div>
+                            {% endif %}
+                            {% if seller.location %}
+                            <div class="small text-muted">
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ seller.get_location_display }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="mt-4 seller-contact">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <a href="{% url 'login' %}" class="alert-link">Login</a> to view seller contact information.
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -359,6 +397,27 @@ document.addEventListener('DOMContentLoaded', function() {
         background-color: #dc3545;
         color: white;
         border-color: #dc3545;
+    }
+    
+    .seller-contact .card {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+    }
+    
+    .seller-contact .card-title {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .seller-contact .btn-success {
+        background-color: #25D366;
+        border-color: #25D366;
+    }
+    
+    .seller-contact .btn-success:hover {
+        background-color: #1e7e4f;
+        border-color: #1e7e4f;
     }
     
     @media (max-width: 768px) {

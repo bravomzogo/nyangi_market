@@ -46,9 +46,29 @@ class Seller(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     shop_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=15, default="N/A")  # NEW FIELD with default
-
+    
+    # Shop information fields
+    description = models.TextField(blank=True, help_text="Shop description and details")
+    phone_number = models.CharField(max_length=15, blank=True, help_text="Primary contact phone number")
+    whatsapp_number = models.CharField(max_length=15, blank=True, help_text="WhatsApp business number")
+    location = models.CharField(max_length=50, choices=TANZANIA_REGIONS, blank=True, help_text="Shop location")
+    
+    # Payment information fields
+    bank_name = models.CharField(max_length=100, blank=True, help_text="Bank name for payments")
+    account_number = models.CharField(max_length=50, blank=True, help_text="Bank account number")
+    mobile_money = models.CharField(max_length=15, blank=True, help_text="Mobile money number for payments")
+    
+    # Notification preferences
+    email_notifications = models.BooleanField(default=True, help_text="Receive email notifications")
+    sms_notifications = models.BooleanField(default=False, help_text="Receive SMS notifications")
+    whatsapp_notifications = models.BooleanField(default=True, help_text="Receive WhatsApp notifications")
+    
     def __str__(self):
         return self.shop_name
+    
+    def has_payment_details(self):
+        """Check if seller has entered payment details"""
+        return bool(self.bank_name and self.account_number) or bool(self.mobile_money)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')

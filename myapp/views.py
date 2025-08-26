@@ -112,6 +112,12 @@ def addo_product(request):
     if not request.user.is_authenticated or not hasattr(request.user, 'seller'):
         return redirect('seller_register')
 
+    # Check if seller has payment details
+    seller = request.user.seller
+    if not seller.has_payment_details():
+        messages.error(request, "You must enter your payment details before posting products. Please complete your payment information in seller settings.")
+        return redirect('seller_settings')
+
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
@@ -201,7 +207,8 @@ def product_detail(request, id):
     return render(request, 'myapp/product_detail.html', {
         'product': product,
         'user': user,
-        'user_interaction': user_interaction
+        'user_interaction': user_interaction,
+        'seller': product.seller,  # Include seller information for contact
     })
 
 
@@ -964,11 +971,39 @@ def payment_checkout(request):
                 price=cart_item.product.price
             )
     
+    # Get unique sellers from the order items for payment information
+    sellers_payment_info = []
+    if order_id:
+        # For existing orders, get sellers from order items
+        for item in cart_items:
+            seller = item.product.seller
+            if seller not in [info['seller'] for info in sellers_payment_info]:
+                sellers_payment_info.append({
+                    'seller': seller,
+                    'shop_name': seller.shop_name,
+                    'mobile_money': seller.mobile_money,
+                    'bank_name': seller.bank_name,
+                    'account_number': seller.account_number,
+                })
+    else:
+        # For cart items, get sellers
+        for item in cart_items:
+            seller = item.product.seller
+            if seller not in [info['seller'] for info in sellers_payment_info]:
+                sellers_payment_info.append({
+                    'seller': seller,
+                    'shop_name': seller.shop_name,
+                    'mobile_money': seller.mobile_money,
+                    'bank_name': seller.bank_name,
+                    'account_number': seller.account_number,
+                })
+    
     context = {
         'order': order,
         'cart_items': cart_items,
         'total_amount': total_amount,
-        'lipa_number': 'NYANGI-123456'  # Replace with your actual payment number
+        'sellers_payment_info': sellers_payment_info,
+        'lipa_number': 'NYANGI-123456'  # Fallback if no seller payment info
     }
     return render(request, 'myapp/payment_checkout.html', context)
 

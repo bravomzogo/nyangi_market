@@ -16,7 +16,8 @@
                         <h4>Payment Instructions</h4>
                         <p>Please follow these steps to complete your payment:</p>
                         <ol>
-                            <li>Send the total amount to our LIPA number</li>
+                            <li>Choose your preferred payment method from the seller's payment options below</li>
+                            <li>Send the total amount using the provided payment details</li>
                             <li>Take a screenshot or save the payment confirmation</li>
                             <li>Upload the proof of payment below</li>
                             <li>Wait for admin approval</li>
@@ -25,10 +26,46 @@
                     </div>
 
                     <div class="payment-details mt-4">
-                        <h4>LIPA Number</h4>
-                        <div class="lipa-number-box">
-                            <h2 class="text-center">{{ lipa_number }}</h2>
-                        </div>
+                        <h4>Payment Information</h4>
+                        {% if sellers_payment_info %}
+                            {% for seller_info in sellers_payment_info %}
+                            <div class="seller-payment-info mb-4 p-3 border rounded">
+                                <h5 class="text-primary">{{ seller_info.shop_name }}</h5>
+                                
+                                {% if seller_info.mobile_money %}
+                                <div class="payment-option mb-3">
+                                    <h6><i class="fas fa-mobile-alt me-2"></i>Mobile Money Payment</h6>
+                                    <div class="lipa-number-box">
+                                        <h3 class="text-center text-success">{{ seller_info.mobile_money }}</h3>
+                                        <p class="text-center text-muted">Send payment to this number</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if seller_info.bank_name and seller_info.account_number %}
+                                <div class="payment-option mb-3">
+                                    <h6><i class="fas fa-university me-2"></i>Bank Transfer</h6>
+                                    <div class="bank-details p-3 bg-light rounded">
+                                        <p><strong>Bank:</strong> {{ seller_info.bank_name }}</p>
+                                        <p><strong>Account Number:</strong> {{ seller_info.account_number }}</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if not seller_info.mobile_money and not seller_info.bank_name %}
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Payment details not available for this seller. Please contact seller directly.
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <!-- Fallback to static LIPA number if no seller payment info -->
+                            <div class="lipa-number-box">
+                                <h2 class="text-center">{{ lipa_number }}</h2>
+                            </div>
+                        {% endif %}
                         
                         <h4 class="mt-4">Order Summary</h4>
                         <table class="table">
@@ -59,12 +96,20 @@
                         <form method="POST" action="{% url 'submit_payment_proof' %}" enctype="multipart/form-data" class="mt-4">
                             {% csrf_token %}
                             <input type="hidden" name="order_id" value="{{ order.id }}">
-                            <input type="hidden" name="lipa_number" value="{{ lipa_number }}">
+                            {% if sellers_payment_info %}
+                                {% for seller_info in sellers_payment_info %}
+                                    <input type="hidden" name="seller_{{ forloop.counter }}_mobile_money" value="{{ seller_info.mobile_money }}">
+                                    <input type="hidden" name="seller_{{ forloop.counter }}_bank" value="{{ seller_info.bank_name }}">
+                                    <input type="hidden" name="seller_{{ forloop.counter }}_account" value="{{ seller_info.account_number }}">
+                                {% endfor %}
+                            {% else %}
+                                <input type="hidden" name="lipa_number" value="{{ lipa_number }}">
+                            {% endif %}
                             
                             <div class="form-group">
-                                <label for="reference_number">Payment Reference Number</label>
-                                <input type="text" class="form-control" id="reference_number" name="reference_number" required>
-                                <small class="form-text text-muted">Enter the reference number from your payment confirmation</small>
+                                <label for="reference_number">Payment Reference Number (Optional)</label>
+                                <input type="text" class="form-control" id="reference_number" name="reference_number">
+                                <small class="form-text text-muted">Enter the reference number from your payment confirmation (if available)</small>
                             </div>
 
                             <div class="form-group mt-3">
@@ -101,4 +146,44 @@
         </div>
     </div>
 </div>
+
+<style>
+.seller-payment-info {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef !important;
+}
+
+.seller-payment-info h5 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #007bff;
+}
+
+.payment-option {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.lipa-number-box {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 10px 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.bank-details {
+    border-left: 4px solid #007bff;
+}
+
+.bank-details p {
+    margin-bottom: 8px;
+}
+
+.bank-details p:last-child {
+    margin-bottom: 0;
+}
+</style>
 {% endblock %}
