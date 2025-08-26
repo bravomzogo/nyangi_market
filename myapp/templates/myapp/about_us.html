@@ -3,31 +3,6 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="row">
-        <div class="col-md-12 text-center mb-4">
-            <h2>About Us</h2>
-            <p class="lead">Meet our dedicated technical team</p>
-        </div>
-    </div>
-
-    <div class="row">
-        {% for member in technical_team %}
-        <div class="col-md-4 mb-4">
-            <div class="card team-member">
-                <div class="card-body text-center">
-                    <img src="{% static member.image %}" alt="{{ member.name }}" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                    <h4 class="card-title">{{ member.name }}</h4>
-                    <h6 class="text-muted">{{ member.position }}</h6>
-                    <div class="contact-info mt-3">
-                        <p><i class="fas fa-envelope"></i> {{ member.email }}</p>
-                        <p><i class="fas fa-phone"></i> {{ member.phone }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
     <div class="row mt-5">
         <div class="col-md-12">
             <div class="card">
@@ -36,7 +11,12 @@
                     <p class="card-text">If you're experiencing any issues with our platform, please don't hesitate to contact our technical support team. We're here to help!</p>
                     <div class="contact-methods mt-3">
                         <p><i class="fas fa-envelope"></i> Email: support@nyangiassetsmarketplace.co.tz</p>
-                        <p><i class="fas fa-phone"></i> Phone: +255 761 434 077</p>
+                        <p>
+                            <a href="https://wa.me/255761434077" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                                <i class="fab fa-whatsapp" style="color:#25D366;"></i>
+                                <span class="ms-2">+255 761 434 077</span>
+                            </a>
+                        </p>
                         <p><i class="fas fa-clock"></i> Support Hours: Monday - Friday, 9:00 AM - 5:00 PM</p>
                     </div>
                 </div>
