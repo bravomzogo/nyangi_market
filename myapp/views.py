@@ -747,7 +747,7 @@ def about_us(request):
             'name': 'John Doe',
             'position': 'Lead Developer',
             'email': 'john.doe@example.com',
-            'phone': '+255 123 456 789',
+            'phone': '+255 761 434 077',
             'image': 'team/john.jpg'
         },
         {
@@ -880,7 +880,7 @@ def process_fictional_payment(request):
             'company_name': 'Nyangi Marketplace',
             'company_email': settings.DEFAULT_FROM_EMAIL,
             'company_address': 'P.o.box 1282 TABORA',
-            'company_phone': '+255 123 456 789',
+            'company_phone': '+255 761 434 077',
             'transaction_id': receipt.transaction_id,
             'date': datetime.now().strftime('%Y-%m-%d'),
             'time': datetime.now().strftime('%H:%M:%S'),
