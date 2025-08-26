@@ -48,7 +48,7 @@
                 </form>
 
                 <div class="text-center text-muted small mt-3">
-                    <p><a href="#" id="forgotPasswordLink" class="text-decoration-none fw-medium">Forgot password?</a></p>
+                    <p><a href="{% url 'password_reset_choice' %}" id="forgotPasswordLink" class="text-decoration-none fw-medium">Forgot password?</a></p>
                     <p>Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none fw-medium">Register now</a></p>
                 </div>
                 
@@ -189,20 +189,14 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the modal
-    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-    const forgotPasswordModal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
-    
-    // Show the modal when the link is clicked
-    forgotPasswordLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        forgotPasswordModal.show();
-    });
-    
-    // Set the initial focus on the identifier input when the modal is shown
-    document.getElementById('forgotPasswordModal').addEventListener('shown.bs.modal', function() {
-        document.getElementById('identifier').focus();
-    });
+    // If the modal is used elsewhere, focus its input when shown (non-destructive)
+    const forgotModalEl = document.getElementById('forgotPasswordModal');
+    if (forgotModalEl) {
+        forgotModalEl.addEventListener('shown.bs.modal', function() {
+            const identifier = document.getElementById('identifier');
+            if (identifier) identifier.focus();
+        });
+    }
 });
 </script>
 
