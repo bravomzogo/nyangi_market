@@ -162,24 +162,84 @@
                     <div class="card">
                         <div class="card-body">
                             <h6 class="card-title">{{ seller.shop_name }}</h6>
+                            
+                            <!-- WhatsApp Contact Section -->
                             {% if seller.whatsapp_number %}
                             <div class="mb-2">
                                 <a href="https://wa.me/{{ seller.whatsapp_number|slice:'1:' }}?text=Hi,%20I'm%20interested%20in%20your%20product:%20{{ product.name|urlencode }}" target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm">
                                     <i class="fab fa-whatsapp me-2"></i>Contact Seller via WhatsApp
                                 </a>
                             </div>
+                            {% else %}
+                                <!-- No WhatsApp Contact Available -->
+                                {% if user == seller.user %}
+                                    <!-- If current user is the seller -->
+                                    <div class="mb-2">
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            You haven't added your WhatsApp contact details yet. 
+                                            <a href="{% url 'seller_settings' %}" class="alert-link">Add WhatsApp contact</a> to allow customers to reach you easily.
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <!-- If current user is a buyer -->
+                                    <div class="mb-2">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            This seller has not provided WhatsApp contact details yet.
+                                        </div>
+                                    </div>
+                                {% endif %}
                             {% endif %}
+                            
+                            <!-- Phone Contact Section -->
                             {% if seller.phone_number %}
                             <div class="mb-2">
                                 <a href="tel:{{ seller.phone_number }}" class="btn btn-outline-primary btn-sm">
                                     <i class="fas fa-phone me-2"></i>Call: {{ seller.phone_number }}
                                 </a>
                             </div>
+                            {% else %}
+                                <!-- No Phone Contact Available -->
+                                {% if user == seller.user %}
+                                    <div class="mb-2">
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            You haven't added your phone contact details yet. 
+                                            <a href="{% url 'seller_settings' %}" class="alert-link">Add phone contact</a> to allow customers to call you.
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="mb-2">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            This seller has not provided phone contact details yet.
+                                        </div>
+                                    </div>
+                                {% endif %}
                             {% endif %}
+                            
+                            <!-- Location Information -->
                             {% if seller.location %}
                             <div class="small text-muted">
                                 <i class="fas fa-map-marker-alt me-1"></i>{{ seller.get_location_display }}
                             </div>
+                            {% endif %}
+                            
+                            <!-- If no contact methods available at all -->
+                            {% if not seller.whatsapp_number and not seller.phone_number %}
+                                {% if user == seller.user %}
+                                    <div class="alert alert-danger">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        <strong>Action Required:</strong> You need to add contact details to your profile. 
+                                        <a href="{% url 'seller_settings' %}" class="alert-link">Go to Seller Settings</a> and add your WhatsApp and/or phone number so customers can contact you.
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-secondary">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        This seller has not provided any contact details yet. Please check back later or try contacting through our support team.
+                                    </div>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>

@@ -53,6 +53,28 @@
             </div>
             {% endif %}
             
+            <!-- Contact Information Warning -->
+            {% if not seller.whatsapp_number or not seller.phone_number %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Contact Information Needed</h5>
+                <p class="mb-2">
+                    {% if not seller.whatsapp_number and not seller.phone_number %}
+                        You haven't added any contact information! Customers won't be able to reach you.
+                    {% elif not seller.whatsapp_number %}
+                        You haven't added your WhatsApp number. Most customers prefer WhatsApp for quick communication.
+                    {% elif not seller.phone_number %}
+                        You haven't added your phone number. Some customers prefer direct calls.
+                    {% endif %}
+                </p>
+                <hr>
+                <p class="mb-0">
+                    <strong>Why is this important?</strong> Customers who can't contact you are less likely to buy your products. 
+                    Complete your contact information below to maximize your sales opportunities!
+                </p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+            
             <div class="row">
                 <!-- Shop Information Settings -->
                 <div class="col-md-7 mb-4">
@@ -77,14 +99,20 @@
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="phone_number" class="form-label">Phone Number</label>
+                                    <label for="phone_number" class="form-label">Phone Number <span class="text-danger">*</span></label>
                                     <input type="tel" class="form-control" id="phone_number" name="phone_number" value="{{ seller.phone_number }}" required>
+                                    <div class="form-text">Required. Customers will use this to contact you directly.</div>
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="whatsapp_number" class="form-label">WhatsApp Number</label>
-                                    <input type="tel" class="form-control" id="whatsapp_number" name="whatsapp_number" value="{{ seller.whatsapp_number }}">
-                                    <div class="form-text">Optional. Used for WhatsApp business inquiries.</div>
+                                    <label for="whatsapp_number" class="form-label">WhatsApp Number <span class="text-success">*Recommended</span></label>
+                                    <input type="tel" class="form-control" id="whatsapp_number" name="whatsapp_number" value="{{ seller.whatsapp_number }}" placeholder="+255XXXXXXXXX">
+                                    <div class="form-text">
+                                        <strong>Highly recommended!</strong> WhatsApp is the most popular way for customers to contact sellers in Tanzania. 
+                                        {% if not seller.whatsapp_number %}
+                                        <br><span class="text-warning"><i class="fas fa-exclamation-triangle"></i> Without WhatsApp contact, you may miss potential customers!</span>
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 
                                 <div class="mb-3">
