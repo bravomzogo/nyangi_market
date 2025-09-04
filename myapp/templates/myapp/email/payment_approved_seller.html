@@ -1,39 +1,146 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <title>Payment Received - Order Confirmation</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .details { margin: 20px 0; }
-        .footer { text-align: center; margin-top: 40px; font-style: italic; }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #28a745;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+        }
+        .money-icon {
+            font-size: 48px;
+            color: #28a745;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .order-summary {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dotted #ddd;
+        }
+        .order-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 18px;
+            color: #28a745;
+        }
+        .customer-info {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>New Payment Received!</h2>
+    <div class="header">
+        <h1>💰 Payment Received!</h1>
+        <p>A customer has paid for your product</p>
+    </div>
+    
+    <div class="content">
+        <div class="money-icon">💰</div>
+        
+        <h2>Hello {{ seller.shop_name|default:seller.user.username }}!</h2>
+        
+        <p>Great news! A payment has been approved for your product. You can now proceed with fulfilling this order.</p>
+        
+        <div class="order-summary">
+            <h3>Order Details</h3>
+            <div class="order-item">
+                <span>Product</span>
+                <span>{{ item.product.name }}</span>
+            </div>
+            <div class="order-item">
+                <span>Quantity</span>
+                <span>{{ item.quantity }}</span>
+            </div>
+            <div class="order-item">
+                <span>Unit Price</span>
+                <span>TZS {{ item.price|floatformat:2 }}</span>
+            </div>
+            <div class="order-item">
+                <span>Your Earnings</span>
+                <span>TZS {{ item.total_price|floatformat:2 }}</span>
+            </div>
         </div>
         
-        <p>Dear {{ seller.shop_name }},</p>
-        
-        <p>A payment for your product has been approved.</p>
-        
-        <div class="details">
-            <h3>Order Details:</h3>
-            <p>Order ID: {{ order.id }}</p>
-            <p>Product: {{ item.product.name }}</p>
-            <p>Quantity: {{ item.quantity }}</p>
-            <p>Price: {{ item.price }}</p>
-            <p>Total Amount: {{ payment.amount }}</p>
-            <p>Date: {{ payment.approved_at|date:"F j, Y" }}</p>
+        <div class="customer-info">
+            <h3>Customer Information</h3>
+            <p><strong>Name:</strong> {{ payment.user.first_name }} {{ payment.user.last_name }}</p>
+            <p><strong>Email:</strong> {{ payment.user.email }}</p>
+            <p><strong>Phone:</strong> {{ payment.user.profile.phone_number|default:"Not provided" }}</p>
+            <p><strong>Location:</strong> {{ payment.user.profile.area_of_residence|default:"Not provided" }}</p>
         </div>
         
-        <p>Please proceed with processing the order.</p>
-        
-        <div class="footer">
-            <p>Thank you for being a valued seller on Nyangi Marketplace!</p>
+        <div class="highlight">
+            <h4>📦 Next Steps:</h4>
+            <ul>
+                <li>Prepare the product for delivery/pickup</li>
+                <li>Contact the customer to arrange delivery</li>
+                <li>Update the order status in your seller dashboard</li>
+            </ul>
         </div>
+        
+        <p><strong>Payment Details:</strong></p>
+        <ul>
+            <li><strong>Order ID:</strong> {{ order.id }}</li>
+            <li><strong>Payment Date:</strong> {{ payment.approved_at|date:"F d, Y" }}</li>
+            <li><strong>Reference Number:</strong> {{ payment.reference_number }}</li>
+            {% if payment.lipa_number %}
+            <li><strong>LIPA Number:</strong> {{ payment.lipa_number }}</li>
+            {% endif %}
+        </ul>
+        
+        <p>📄 <strong>A detailed receipt is attached to this email for your records.</strong></p>
+        
+        <p>If you have any questions, please contact us at <a href="mailto:sales@nyangiassetsmarketplace.co.tz">sales@nyangiassetsmarketplace.co.tz</a>.</p>
+        
+        <p>Thank you for being a valued seller on our platform!</p>
+    </div>
+    
+    <div class="footer">
+        <p>This email was sent from Nyangi Assets Marketplace</p>
+        <p>Email: sales@nyangiassetsmarketplace.co.tz</p>
     </div>
 </body>
 </html>

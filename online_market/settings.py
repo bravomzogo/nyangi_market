@@ -140,6 +140,12 @@ else:
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
+# Custom authentication backends
+AUTHENTICATION_BACKENDS = [
+    'myapp.backends.EmailOrUsernameBackend',  # Our custom backend
+    'django.contrib.auth.backends.ModelBackend',  # Default backend as fallback
+]
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -221,6 +227,7 @@ if os.environ.get('SALES_EMAIL_HOST'):
     EMAIL_HOST_PASSWORD = os.environ.get('SALES_EMAIL_HOST_PASSWORD')
     EMAIL_USE_TLS = os.environ.get('SALES_EMAIL_USE_TLS', 'True').lower() == 'true'
     EMAIL_USE_SSL = os.environ.get('SALES_EMAIL_USE_SSL', 'False').lower() == 'true'
+    DEFAULT_FROM_EMAIL = os.environ.get('SALES_EMAIL_HOST_USER', 'sales@nyangiassetsmarketplace.co.tz')
 # Then try the generic email settings
 else:
     EMAIL_HOST = os.environ.get('EMAIL_HOST', 'nyangiassetsmarketplace.co.tz')
@@ -229,6 +236,7 @@ else:
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
     EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
     EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() == 'true'
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'sales@nyangiassetsmarketplace.co.tz')
 
 # Define default from email based on the host user
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)

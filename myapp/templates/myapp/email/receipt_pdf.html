@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Receipt - {{ receipt.transaction_id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+        }
+        .company-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .receipt-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .receipt-id {
+            color: #666;
+            font-size: 14px;
+        }
+        .info-section {
+            margin-bottom: 25px;
+        }
+        .info-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px dotted #ddd;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .info-value {
+            color: #333;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th,
+        .items-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .items-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .items-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .total-section {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .total-amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-approved {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-logo">Nyangi Assets Marketplace</div>
+        <div class="receipt-title">Payment Receipt</div>
+        <div class="receipt-id">Receipt ID: {{ receipt.transaction_id }}</div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-title">Customer Information</div>
+        <div class="info-row">
+            <span class="info-label">Customer Name:</span>
+            <span class="info-value">{{ payment.user.first_name }} {{ payment.user.last_name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ payment.user.email }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Order Date:</span>
+            <span class="info-value">{{ payment.order.created_at|date:"F d, Y" }}</span>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-title">Payment Information</div>
+        <div class="info-row">
+            <span class="info-label">Payment Status:</span>
+            <span class="info-value">
+                <span class="status-badge status-approved">{{ payment.status }}</span>
+            </span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Payment Date:</span>
+            <span class="info-value">{{ payment.approved_at|date:"F d, Y" }}</span>
+        </div>
+        {% if payment.lipa_number %}
+        <div class="info-row">
+            <span class="info-label">LIPA Number:</span>
+            <span class="info-value">{{ payment.lipa_number }}</span>
+        </div>
+        {% endif %}
+        <div class="info-row">
+            <span class="info-label">Reference Number:</span>
+            <span class="info-value">{{ payment.reference_number }}</span>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-title">Order Items</div>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Seller</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in payment.order.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.product.seller.shop_name|default:item.product.seller.user.username }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>TZS {{ item.price|floatformat:2 }}</td>
+                    <td>TZS {{ item.total_price|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="total-section">
+        <div style="font-size: 16px; margin-bottom: 10px;">Total Amount Paid</div>
+        <div class="total-amount">TZS {{ payment.amount|floatformat:2 }}</div>
+    </div>
+
+    <div class="footer">
+        <p>Thank you for your business!</p>
+        <p>Nyangi Assets Marketplace | Email: sales@nyangiassetsmarketplace.co.tz</p>
+        <p>This is an electronically generated receipt.</p>
+    </div>
+</body>
+</html>

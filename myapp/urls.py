@@ -28,16 +28,12 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('logout/', views.logout_view, name='logout'),
 
-    # Password Reset URLs - WhatsApp and Email
+    # Password Reset URLs - Email Only
     path('password-reset/', views_password_reset.password_reset_choice, name='password_reset_choice'),
-    path('password-reset/whatsapp/', views_password_reset.password_reset_whatsapp, name='password_reset_whatsapp'),
-    path('password-reset/whatsapp/verify/', views_password_reset.password_reset_whatsapp_verify, name='password_reset_whatsapp_verify'),
-    path('password-reset/whatsapp/confirm/', views_password_reset.password_reset_whatsapp_confirm, name='password_reset_whatsapp_confirm'),
-    path('password-reset/email/', views_password_reset.password_reset_email_form, name='password_reset_email'),
+    path('password-reset/email/', views_password_reset.password_reset_email_form, name='password_reset_email_form'),
     path('password-reset/email/verify/', views_password_reset.password_reset_email_verify, name='password_reset_email_verify'),
     path('password-reset/email/confirm/', views_password_reset.password_reset_email_confirm, name='password_reset_email_confirm'),
     path('password-reset/complete/', views_password_reset.password_reset_complete_view, name='password_reset_complete'),
-    path('password-reset/resend-code/', views_password_reset.resend_whatsapp_code, name='resend_whatsapp_code'),
     
     # Legacy password reset URLs (keeping for backwards compatibility)
     path('password-reset-old/', views.password_reset_request, name='password_reset_request'),

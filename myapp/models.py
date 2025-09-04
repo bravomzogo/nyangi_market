@@ -505,7 +505,7 @@ class Payment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_proof = models.FileField(upload_to='payment_proofs/')
-    lipa_number = models.CharField(max_length=50)  # The number where payment was sent to
+    lipa_number = models.CharField(max_length=50, blank=True, null=True)  # Optional: The number where payment was sent to
     reference_number = models.CharField(max_length=100)  # Payment reference provided by user
     status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)

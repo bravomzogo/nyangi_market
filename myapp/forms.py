@@ -1,23 +1,64 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate
 from .models import Seller, Product, WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription
 
 
+class EmailOrUsernameAuthenticationForm(AuthenticationForm):
+    """
+    Custom authentication form that allows login with email or username.
+    """
+    username = forms.CharField(
+        max_length=254,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Enter your email or username',
+            'class': 'form-control'
+        }),
+        label='Email or Username'
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Update the username field label and help text
+        self.fields['username'].label = 'Email or Username'
+        self.fields['username'].help_text = 'You can use either your email address or username to sign in.'
+
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username is not None and password:
+            self.user_cache = authenticate(
+                self.request,
+                username=username,
+                password=password
+            )
+            if self.user_cache is None:
+                raise self.get_invalid_login_error()
+            else:
+                self.confirm_login_allowed(self.user_cache)
+
+        return self.cleaned_data
+
+
 class CustomUserRegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=False, help_text="Optional. Enter your email address if you have one.")
+    email = forms.EmailField(
+        required=True, 
+        help_text="Required. We'll use this for account recovery and important notifications."
+    )
     phone_number = forms.CharField(max_length=15, required=True, help_text="Enter your WhatsApp number with country code.")
     area_of_residence = forms.CharField(max_length=100, required=True, help_text="Enter your area of residence.")
-    use_whatsapp_for_recovery = forms.BooleanField(
-        required=False, 
-        initial=True, 
-        label="Use WhatsApp for account recovery",
-        help_text="Recommended: Faster and more reliable than email recovery"
-    )
-
+    
     class Meta:
         model = User
-        fields = ['username', 'email', 'phone_number', 'area_of_residence', 'use_whatsapp_for_recovery', 'password1', 'password2']
+        fields = ['username', 'email', 'phone_number', 'area_of_residence', 'password1', 'password2']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("A user with this email already exists.")
+        return email
 
 
 class SellerRegistrationForm(forms.ModelForm):

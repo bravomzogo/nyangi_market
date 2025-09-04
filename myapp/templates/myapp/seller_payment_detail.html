@@ -47,7 +47,7 @@
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm-4 fw-bold">Lipa Number:</div>
-                        <div class="col-sm-8">{{ payment.lipa_number }}</div>
+                        <div class="col-sm-8">{{ payment.lipa_number|default:"Not provided" }}</div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-sm-4 fw-bold">Reference Number:</div>

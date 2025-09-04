@@ -11,34 +11,9 @@ from .models import Profile
 
 def password_reset_choice(request):
     """
-    Display the password reset method choice page (WhatsApp or Email)
-    If the user has a WhatsApp number and has WhatsApp recovery enabled,
-    automatically redirect to WhatsApp recovery.
+    Redirect directly to email password reset - WhatsApp recovery removed
     """
-    # Check if user provided their username or email in the query parameter
-    username_or_email = request.GET.get('identifier', '')
-    
-    if username_or_email:
-        # Try to find the user by username or email
-        try:
-            # First try to find by username
-            user = User.objects.filter(username=username_or_email).first()
-            
-            # If not found by username, try email
-            if not user:
-                user = User.objects.filter(email=username_or_email).first()
-                
-            # If user found and has WhatsApp recovery enabled with a phone number, redirect to WhatsApp recovery
-            if user and hasattr(user, 'profile') and user.profile.use_whatsapp_for_recovery and user.profile.phone_number:
-                # Store username in session for the WhatsApp flow
-                request.session['reset_username'] = user.username
-                return redirect('password_reset_whatsapp')
-                
-        except Exception:
-            # If any error occurs, just show the choice page
-            pass
-            
-    return render(request, 'myapp/password_reset_choose.html')
+    return redirect('password_reset_email_form')
 
 def password_reset_whatsapp(request):
     """

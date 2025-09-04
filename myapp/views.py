@@ -7,7 +7,10 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import SellerRegistrationForm, ProductForm, CustomUserRegistrationForm
+from .forms import SellerRegistrationForm, ProductForm, CustomUserRegistrationForm, EmailOrUsernameAuthenticationForm
+import logging
+
+logger = logging.getLogger(__name__)
 from .models import Product, Category, Seller, Cart, WorkerContract, ParentDetails, Referee, EducationRecord, SubscriptionPlan, SellerSubscription, Receipt, ProductAttribute, Order, Payment, OrderItem, ProductInteraction, AdminMessage
 from django.http import HttpResponse, FileResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -318,11 +321,17 @@ def seller_payment_detail(request, payment_id):
                 if action == 'approve':
                     payment.seller_approval = True
                     
-                    # Use the helper function to approve payment without sending emails
-                    from myapp.tasks import approve_payment_without_emails
+                    # Use the helper function to approve payment without sending emails first
+                    from myapp.tasks import approve_payment_without_emails, send_payment_approved_emails_with_pdf
                     approve_payment_without_emails(payment, request.user)
                     
-                    messages.success(request, "Payment has been approved successfully.")
+                    # Send emails with PDF receipts
+                    try:
+                        send_payment_approved_emails_with_pdf(payment.id)
+                        messages.success(request, "Payment has been approved successfully. Emails with receipts have been sent to both buyer and seller.")
+                    except Exception as e:
+                        logger.error(f"Error sending emails for payment {payment.id}: {str(e)}")
+                        messages.success(request, "Payment has been approved successfully, but there was an issue sending emails.")
                 else:
                     payment.seller_approval = False
                     
@@ -494,16 +503,16 @@ def process_payment_pin(request):
 
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = EmailOrUsernameAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            messages.success(request, f"Welcome back, {user.username}!")
+            messages.success(request, f"Welcome back, {user.first_name or user.username}!")
             return redirect(request.GET.get('next', 'home'))  # Redirect to 'next' if available
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, "Invalid email/username or password.")
     else:
-        form = AuthenticationForm()
+        form = EmailOrUsernameAuthenticationForm()
     
     return render(request, 'myapp/login.html', {'form': form})
 
@@ -521,15 +530,10 @@ def register_view(request):
             user = form.save()
             user.profile.phone_number = phone_number
             user.profile.area_of_residence = form.cleaned_data['area_of_residence']
-            user.profile.use_whatsapp_for_recovery = form.cleaned_data.get('use_whatsapp_for_recovery', True)
+            user.profile.use_whatsapp_for_recovery = False  # Email-only recovery
             user.profile.save()
             
-            # Display appropriate success message based on recovery preference
-            if user.profile.use_whatsapp_for_recovery:
-                messages.success(request, "Your account has been created successfully with WhatsApp recovery enabled!")
-            else:
-                messages.success(request, "Your account has been created successfully with email recovery enabled!")
-                
+            messages.success(request, "Your account has been created successfully! You can now log in with your email or username.")
             login(request, user)
             return redirect('home')
         else:
@@ -1016,13 +1020,18 @@ def submit_payment_proof(request):
         try:
             order = Order.objects.get(id=order_id, user=request.user)
             
+            # Get LIPA number (optional)
+            lipa_number = request.POST.get('lipa_number', '').strip()
+            if not lipa_number:
+                lipa_number = None
+            
             # Create payment record
             payment = Payment.objects.create(
                 order=order,
                 user=request.user,
                 amount=order.total_price,
                 payment_proof=payment_proof,
-                lipa_number=request.POST.get('lipa_number'),
+                lipa_number=lipa_number,
                 reference_number=reference_number
             )
             
