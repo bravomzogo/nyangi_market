@@ -903,9 +903,48 @@ def download_receipt(request, receipt_id):
         if pdf_bytes:
             receipt.pdf_file = f'receipts/{receipt.transaction_id}.pdf'
             receipt.save(update_fields=['pdf_file'])
-        receipt_path = pdf_path
+            receipt_path = pdf_path
+        else:
+            # Fallback: return HTML version if PDF cannot be generated
+            messages.error(request, 'PDF generation temporarily unavailable; showing HTML receipt instead.')
+            return HttpResponse(html_string)
     else:
         receipt_path = receipt.pdf_file.path
+
+    # Final safety: if file still missing, fallback to HTML
+    if not os.path.exists(receipt_path):
+        messages.error(request, 'Receipt PDF missing; displaying HTML version.')
+        # Reconstruct minimal context for HTML display
+        try:
+            order = receipt.order
+            items = []
+            if hasattr(order, 'items'):
+                for item in order.items.all():
+                    items.append({
+                        'name': getattr(item.product, 'name', 'Item'),
+                        'quantity': item.quantity,
+                        'price': item.price,
+                        'total': item.price * item.quantity,
+                    })
+            html_string = render_to_string('myapp/receipt_template.html', {
+                'receipt': {
+                    'transaction_id': receipt.transaction_id,
+                    'date': receipt.date_created.strftime('%Y-%m-%d'),
+                    'time': receipt.date_created.strftime('%H:%M:%S'),
+                    'username': getattr(order.user, 'username', ''),
+                    'user_email': getattr(order.user, 'email', ''),
+                    'items': items,
+                    'subtotal': sum(i['total'] for i in items) if items else getattr(order, 'total_price', 0),
+                    'total': sum(i['total'] for i in items) if items else getattr(order, 'total_price', 0),
+                    'company_address': 'P.o.box 1282 TABORA',
+                    'company_phone': '+255 761 434 077',
+                    'payment_method': 'Manual / Approved',
+                    'shop_name': items[0]['name'] if items else 'Nyangi Shop',
+                }
+            })
+            return HttpResponse(html_string)
+        except Exception:
+            raise Http404('Receipt file not found and HTML fallback failed.')
 
     return FileResponse(open(receipt_path, 'rb'), content_type='application/pdf')
 
