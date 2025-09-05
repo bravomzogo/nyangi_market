@@ -12,14 +12,29 @@
         <div class="card shadow-lg border-0 rounded-4">
             <div class="card-body p-5">
                 <h2 class="text-center mb-3 fw-bold text-dark">Create an Account 🚀</h2>
-                <form method="post">
+                <form method="post" novalidate>
                     {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-danger rounded-3 py-2 px-3">
+                        <strong>We couldn't create your account. Fix the issues below:</strong>
+                        <ul class="mb-0 small ps-3">
+                            {% for field in form.visible_fields %}
+                                {% for error in field.errors %}
+                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
 
                     <div class="mb-3">
                         <label for="id_username" class="form-label fw-medium">Username</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-person-fill"></i></span>
-                            <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required minlength="3" maxlength="30">
+                            <input type="text" name="username" id="id_username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" placeholder="Enter your username" required minlength="3" maxlength="30" value="{{ form.username.value|default_if_none:'' }}">
                         </div>
                         <div id="username-feedback" class="form-text mt-1"></div>
                         <div class="username-requirements small text-muted mt-1">
@@ -27,58 +42,88 @@
                             <div class="requirement" id="req-alphanumeric"><i class="bi bi-circle me-1"></i> Letters, numbers, and underscores only</div>
                             <div class="requirement" id="req-unique"><i class="bi bi-circle me-1"></i> Username must be unique</div>
                         </div>
+                        {% if form.username.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.username.errors %}{{ error }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
 
                     <div class="mb-3">
                         <label for="id_email" class="form-label fw-medium">Email <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-envelope-fill"></i></span>
-                            <input type="email" name="email" id="id_email" class="form-control" placeholder="Enter your email" required>
+                            <input type="email" name="email" id="id_email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" placeholder="Enter your email" required value="{{ form.email.value|default_if_none:'' }}">
                         </div>
                         <small class="form-text text-muted">
                             Required. We'll use this for account recovery and important notifications.
                         </small>
+                        {% if form.email.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.email.errors %}{{ error }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
 
                     <div class="mb-3">
                         <label for="id_phone_number" class="form-label fw-medium">WhatsApp Number <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-whatsapp text-success"></i></span>
-                            <input type="text" name="phone_number" id="id_phone_number" class="form-control" placeholder="Enter your WhatsApp number (e.g. +255XXXXXXXXX)" required>
+                            <input type="text" name="phone_number" id="id_phone_number" class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}" placeholder="Enter your WhatsApp number (e.g. +255XXXXXXXXX)" required value="{{ form.phone_number.value|default_if_none:'' }}">
                         </div>
                         <small class="form-text text-muted">
                             Enter your WhatsApp number with country code (e.g., +255XXXXXXXXX).
                         </small>
+                        {% if form.phone_number.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.phone_number.errors %}{{ error }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
 
                     <div class="mb-3">
                         <label for="id_area_of_residence" class="form-label fw-medium">Area of Residence</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-geo-alt-fill"></i></span>
-                            <input type="text" name="area_of_residence" id="id_area_of_residence" class="form-control" placeholder="Enter your area of residence" required>
+                            <input type="text" name="area_of_residence" id="id_area_of_residence" class="form-control {% if form.area_of_residence.errors %}is-invalid{% endif %}" placeholder="Enter your area of residence" required value="{{ form.area_of_residence.value|default_if_none:'' }}">
                         </div>
+                        {% if form.area_of_residence.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.area_of_residence.errors %}{{ error }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
 
                     <div class="mb-3">
                         <label for="id_password1" class="form-label fw-medium">Password</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
-                            <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Enter your password" required>
+                            <input type="password" name="password1" id="id_password1" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" placeholder="Enter your password" required>
                             <button class="btn btn-outline-secondary toggle-password" type="button" tabindex="-1">
                                 <i class="bi bi-eye-slash"></i>
                             </button>
                         </div>
+                        {% if form.password1.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.password1.errors %}{{ error }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
 
                     <div class="mb-4">
                         <label for="id_password2" class="form-label fw-medium">Confirm Password</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
-                            <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirm your password" required>
+                            <input type="password" name="password2" id="id_password2" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" placeholder="Confirm your password" required>
                             <button class="btn btn-outline-secondary toggle-password" type="button" tabindex="-1">
                                 <i class="bi bi-eye-slash"></i>
                             </button>
                         </div>
+                        {% if form.password2.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.password2.errors %}{{ error }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Register</button>

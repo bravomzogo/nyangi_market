@@ -524,7 +524,7 @@ def register_view(request):
             phone_number = form.cleaned_data['phone_number']
             if not phone_number.startswith('+'):
                 form.add_error('phone_number', 'WhatsApp number must include country code (e.g., +255XXXXXXXXX)')
-                messages.error(request, "Please enter a valid WhatsApp number with country code.")
+                messages.error(request, "Registration failed. Please correct the highlighted errors below.")
                 return render(request, 'myapp/register.html', {'form': form})
                 
             user = form.save()
@@ -544,7 +544,8 @@ def register_view(request):
                 login(request, user)
             return redirect('home')
         else:
-            messages.error(request, "Registration failed. Please correct the errors below.")
+            # Provide a clearer generic message while detailed errors render inline
+            messages.error(request, "Registration failed. Please correct the highlighted errors below.")
     else:
         form = CustomUserRegistrationForm()
     
