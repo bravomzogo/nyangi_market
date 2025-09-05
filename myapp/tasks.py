@@ -3,7 +3,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 import logging
 import io
-from weasyprint import HTML
+from .pdf_utils import generate_pdf
 from django.template.loader import get_template
 
 logger = logging.getLogger(__name__)
@@ -25,10 +25,10 @@ def generate_receipt_pdf(payment, receipt):
         html_string = template.render(context)
         
         # Generate PDF
-        pdf_file = io.BytesIO()
-        HTML(string=html_string).write_pdf(pdf_file)
-        pdf_file.seek(0)
-        
+        pdf_bytes = generate_pdf(html_string)
+        if not pdf_bytes:
+            return None
+        pdf_file = io.BytesIO(pdf_bytes)
         return pdf_file
     except Exception as e:
         logger.error(f"Error generating PDF receipt for payment {payment.id}: {str(e)}")

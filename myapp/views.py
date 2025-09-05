@@ -35,7 +35,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
-from weasyprint import HTML
+from .pdf_utils import generate_pdf
 import os
 
 def buy_page(request):
@@ -798,17 +798,12 @@ def generate_receipt(order):
     }
     
     html_string = render_to_string('myapp/receipt.html', context)
-    html = HTML(string=html_string)
-    pdf_file = html.write_pdf()
-    
-    # Save PDF
-    receipt_path = f'receipts/{receipt.transaction_id}.pdf'
-    with open(os.path.join(settings.MEDIA_ROOT, receipt_path), 'wb') as f:
-        f.write(pdf_file)
-    
-    receipt.pdf_file = receipt_path
-    receipt.save()
-    
+    relative_path = f'receipts/{receipt.transaction_id}.pdf'
+    absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+    pdf_bytes = generate_pdf(html_string, absolute_path)
+    if pdf_bytes:
+        receipt.pdf_file = relative_path
+        receipt.save(update_fields=['pdf_file'])
     return receipt
 
 def get_category_attributes(request):
@@ -903,12 +898,11 @@ def download_receipt(request, receipt_id):
             'logo_url': os.path.join(settings.STATIC_URL, 'images/logo.png')
         }
         html_string = render_to_string('myapp/receipt_template.html', {'receipt': receipt_data})
-        html = HTML(string=html_string)
-        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'receipts'), exist_ok=True)
         pdf_path = os.path.join(settings.MEDIA_ROOT, 'receipts', f'{receipt.transaction_id}.pdf')
-        html.write_pdf(pdf_path)
-        receipt.pdf_file = f'receipts/{receipt.transaction_id}.pdf'
-        receipt.save(update_fields=['pdf_file'])
+        pdf_bytes = generate_pdf(html_string, pdf_path)
+        if pdf_bytes:
+            receipt.pdf_file = f'receipts/{receipt.transaction_id}.pdf'
+            receipt.save(update_fields=['pdf_file'])
         receipt_path = pdf_path
     else:
         receipt_path = receipt.pdf_file.path
@@ -980,18 +974,11 @@ def process_fictional_payment(request):
         
         # Generate PDF receipt
         html_string = render_to_string('myapp/receipt_template.html', {'receipt': receipt_data})
-        html = HTML(string=html_string)
-        
-        # Ensure receipts directory exists
-        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'receipts'), exist_ok=True)
-        
-        # Save PDF
         pdf_path = os.path.join(settings.MEDIA_ROOT, 'receipts', f'{receipt.transaction_id}.pdf')
-        html.write_pdf(pdf_path)
-        
-        # Update receipt with PDF path
-        receipt.pdf_file = f'receipts/{receipt.transaction_id}.pdf'
-        receipt.save()
+        pdf_bytes = generate_pdf(html_string, pdf_path)
+        if pdf_bytes:
+            receipt.pdf_file = f'receipts/{receipt.transaction_id}.pdf'
+            receipt.save(update_fields=['pdf_file'])
         
         # Clear the cart
         cart_items.delete()
