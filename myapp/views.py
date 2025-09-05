@@ -850,12 +850,70 @@ import os
 
 def download_receipt(request, receipt_id):
     receipt = get_object_or_404(Receipt, id=receipt_id)
+    # If no PDF associated yet or file missing, regenerate it on the fly
+    regenerate = False
+    if not receipt.pdf_file or not getattr(receipt.pdf_file, 'name', None):
+        regenerate = True
+    else:
+        try:
+            receipt_path = receipt.pdf_file.path
+            if not os.path.exists(receipt_path):
+                regenerate = True
+        except (ValueError, FileNotFoundError):
+            regenerate = True
 
-    try:
-        receipt_path = receipt.pdf_file.path  # ✅ Correct access
-        return FileResponse(open(receipt_path, 'rb'), content_type='application/pdf')
-    except FileNotFoundError:
-        raise Http404("Receipt file not found.")
+    if regenerate:
+        # Build minimal data for regeneration (fallback values if some data missing)
+        order = receipt.order
+        items = []
+        if hasattr(order, 'items'):
+            for item in order.items.all():
+                items.append({
+                    'name': getattr(item.product, 'name', 'Item'),
+                    'quantity': item.quantity,
+                    'price': item.price,
+                    'total': item.price * item.quantity,
+                })
+        elif getattr(order, 'product', None):
+            # Legacy single-product order structure
+            items.append({
+                'name': getattr(order.product, 'name', 'Item'),
+                'quantity': getattr(order, 'quantity', 1),
+                'price': getattr(order.product, 'price', 0),
+                'total': getattr(order.product, 'price', 0) * getattr(order, 'quantity', 1),
+            })
+
+        total_price = sum(i['total'] for i in items) if items else getattr(order, 'total_price', 0)
+        from datetime import datetime
+        receipt_data = {
+            'company_name': 'Nyangi Marketplace',
+            'company_email': getattr(settings, 'DEFAULT_FROM_EMAIL', 'support@nyangiassetsmarketplace.co.tz'),
+            'company_address': 'P.o.box 1282 TABORA',
+            'company_phone': '+255 761 434 077',
+            'transaction_id': receipt.transaction_id,
+            'date': datetime.now().strftime('%Y-%m-%d'),
+            'time': datetime.now().strftime('%H:%M:%S'),
+            'username': getattr(order.user, 'username', ''),
+            'user_email': getattr(order.user, 'email', ''),
+            'payment_method': 'Manual / Approved',
+            'shop_name': items[0]['name'] if items else 'Nyangi Shop',
+            'items': items,
+            'subtotal': total_price,
+            'total': total_price,
+            'logo_url': os.path.join(settings.STATIC_URL, 'images/logo.png')
+        }
+        html_string = render_to_string('myapp/receipt_template.html', {'receipt': receipt_data})
+        html = HTML(string=html_string)
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'receipts'), exist_ok=True)
+        pdf_path = os.path.join(settings.MEDIA_ROOT, 'receipts', f'{receipt.transaction_id}.pdf')
+        html.write_pdf(pdf_path)
+        receipt.pdf_file = f'receipts/{receipt.transaction_id}.pdf'
+        receipt.save(update_fields=['pdf_file'])
+        receipt_path = pdf_path
+    else:
+        receipt_path = receipt.pdf_file.path
+
+    return FileResponse(open(receipt_path, 'rb'), content_type='application/pdf')
 
 
 
