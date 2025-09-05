@@ -534,7 +534,14 @@ def register_view(request):
             user.profile.save()
             
             messages.success(request, "Your account has been created successfully! You can now log in with your email or username.")
-            login(request, user)
+            # Re-authenticate to obtain the backend path safely
+            auth_user = authenticate(request, username=user.username, password=form.cleaned_data.get('password1'))
+            if auth_user is not None:
+                login(request, auth_user)
+            else:
+                # Fallback: explicitly set backend (should rarely happen)
+                user.backend = 'myapp.backends.EmailOrUsernameBackend'
+                login(request, user)
             return redirect('home')
         else:
             messages.error(request, "Registration failed. Please correct the errors below.")
