@@ -1,4 +1,5 @@
 import logging, os
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ except Exception as e:
     logger.warning(f"pdfkit import failed: {e}")
     _PDFKIT_AVAILABLE = False
 
-def generate_pdf(html_string: str, output_path: str | None = None) -> bytes | None:
+def generate_pdf(html_string: str, output_path: Optional[str] = None) -> Optional[bytes]:
     """Generate PDF bytes from HTML using WeasyPrint first, fallback to pdfkit.
 
     Returns bytes or None. Writes to output_path if provided.
@@ -49,5 +50,5 @@ def generate_pdf(html_string: str, output_path: str | None = None) -> bytes | No
 
     return None
 
-def weasyprint_supported() -> bool:
+def weasyprint_supported():
     return _WEASYPRINT_AVAILABLE
