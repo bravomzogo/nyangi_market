@@ -879,6 +879,22 @@ def download_receipt(request, receipt_id):
             })
 
         total_price = sum(i['total'] for i in items) if items else getattr(order, 'total_price', 0)
+        
+        # Get shop name accurately from the order
+        shop_name = 'Nyangi Shop'  # Default fallback
+        try:
+            if hasattr(order, 'items') and order.items.exists():
+                # For orders with multiple items, get the shop name from the first item
+                first_item = order.items.first()
+                if first_item and first_item.product and first_item.product.seller:
+                    shop_name = first_item.product.seller.shop_name
+            elif hasattr(order, 'product') and order.product and order.product.seller:
+                # For legacy single-product orders
+                shop_name = order.product.seller.shop_name
+        except Exception:
+            # Keep default if any error occurs
+            pass
+        
         from datetime import datetime
         receipt_data = {
             'company_name': 'Nyangi Marketplace',
@@ -891,7 +907,7 @@ def download_receipt(request, receipt_id):
             'username': getattr(order.user, 'username', ''),
             'user_email': getattr(order.user, 'email', ''),
             'payment_method': 'Manual / Approved',
-            'shop_name': items[0]['name'] if items else 'Nyangi Shop',
+            'shop_name': shop_name,
             'items': items,
             'subtotal': total_price,
             'total': total_price,
@@ -918,6 +934,8 @@ def download_receipt(request, receipt_id):
         try:
             order = receipt.order
             items = []
+            shop_name = 'Nyangi Shop'  # Default fallback
+            
             if hasattr(order, 'items'):
                 for item in order.items.all():
                     items.append({
@@ -926,6 +944,11 @@ def download_receipt(request, receipt_id):
                         'price': item.price,
                         'total': item.price * item.quantity,
                     })
+                # Get shop name from first item
+                first_item = order.items.first()
+                if first_item and first_item.product and first_item.product.seller:
+                    shop_name = first_item.product.seller.shop_name
+            
             html_string = render_to_string('myapp/receipt_template.html', {
                 'receipt': {
                     'transaction_id': receipt.transaction_id,
@@ -939,7 +962,7 @@ def download_receipt(request, receipt_id):
                     'company_address': 'P.o.box 1282 TABORA',
                     'company_phone': '+255 761 434 077',
                     'payment_method': 'Manual / Approved',
-                    'shop_name': items[0]['name'] if items else 'Nyangi Shop',
+                    'shop_name': shop_name,
                 }
             })
             return HttpResponse(html_string)

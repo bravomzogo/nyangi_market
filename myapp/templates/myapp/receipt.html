@@ -63,7 +63,7 @@
             <p><strong>Username:</strong> {{ order.user.username }}</p>
             <p><strong>Address:</strong> {{ order.shipping_address }}</p>
             <p><strong>Payment via:</strong> {{ order.payment_method }}</p>
-            <p><strong>Shop Name:</strong> {{ order.seller.shop_name }}</p>
+            <p><strong>Shop Name:</strong> {% if order.items.first %}{{ order.items.first.product.seller.shop_name }}{% else %}Nyangi Shop{% endif %}</p>
         </div>
 
         <table>
