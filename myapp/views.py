@@ -145,7 +145,11 @@ def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
     # Check if the logged-in user is the seller of this product
-    if not hasattr(request.user, 'seller') or product.seller != request.user.seller:
+    if not hasattr(request.user, 'seller'):
+        messages.error(request, "You don't have seller privileges. Please register as a seller first.")
+        return redirect('home')
+    
+    if product.seller != request.user.seller:
         messages.error(request, "You don't have permission to edit this product.")
         return redirect('seller_products')
     
@@ -161,6 +165,8 @@ def edit_product(request, product_id):
             updated_product.save()
             messages.success(request, "Product updated successfully!")
             return redirect('seller_products')
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         form = ProductForm(instance=product)
     
@@ -177,7 +183,11 @@ def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
     # Check if the logged-in user is the seller of this product
-    if not hasattr(request.user, 'seller') or product.seller != request.user.seller:
+    if not hasattr(request.user, 'seller'):
+        messages.error(request, "You don't have seller privileges. Please register as a seller first.")
+        return redirect('home')
+    
+    if product.seller != request.user.seller:
         messages.error(request, "You don't have permission to delete this product.")
         return redirect('seller_products')
     
@@ -185,7 +195,7 @@ def delete_product(request, product_id):
     product_name = product.name
     product.delete()
     
-    messages.success(request, f"Product '{product_name}' has been deleted.")
+    messages.success(request, f"Product '{product_name}' has been deleted successfully.")
     return redirect('seller_products')
 
 
@@ -921,16 +931,22 @@ def download_receipt(request, receipt_id):
             receipt.save(update_fields=['pdf_file'])
             receipt_path = pdf_path
         else:
-            # Fallback: return HTML version if PDF cannot be generated
-            messages.error(request, 'PDF generation temporarily unavailable; showing HTML receipt instead.')
-            return HttpResponse(html_string)
+            # Try in-memory PDF (even if writing to disk failed)
+            pdf_bytes_stream = generate_pdf(html_string)
+            if pdf_bytes_stream:
+                response = HttpResponse(pdf_bytes_stream, content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="receipt_{receipt.transaction_id}.pdf"'
+                return response
+            # As absolute last resort, fall back to HTML (should rarely happen)
+            response = HttpResponse(html_string, content_type='text/html')
+            response['Content-Disposition'] = f'attachment; filename="receipt_{receipt.transaction_id}.html"'
+            return response
     else:
         receipt_path = receipt.pdf_file.path
 
-    # Final safety: if file still missing, fallback to HTML
+    # Final safety: if file still missing, fallback to HTML download
     if not os.path.exists(receipt_path):
-        messages.error(request, 'Receipt PDF missing; displaying HTML version.')
-        # Reconstruct minimal context for HTML display
+        # Reconstruct minimal context for PDF rendering
         try:
             order = receipt.order
             items = []
@@ -965,7 +981,16 @@ def download_receipt(request, receipt_id):
                     'shop_name': shop_name,
                 }
             })
-            return HttpResponse(html_string)
+            # Attempt in-memory PDF generation
+            pdf_bytes_stream = generate_pdf(html_string)
+            if pdf_bytes_stream:
+                response = HttpResponse(pdf_bytes_stream, content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="receipt_{receipt.transaction_id}.pdf"'
+                return response
+            # As absolute last resort, return HTML download
+            response = HttpResponse(html_string, content_type='text/html')
+            response['Content-Disposition'] = f'attachment; filename="receipt_{receipt.transaction_id}.html"'
+            return response
         except Exception:
             raise Http404('Receipt file not found and HTML fallback failed.')
 
@@ -977,7 +1002,6 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.conf import settings
-from weasyprint import HTML
 import os
 import random
 import string

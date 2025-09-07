@@ -1,3 +1,9 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Product
+from .forms import ProductForm
+
 @login_required
 def edit_product(request, product_id):
     # Get the product
