@@ -19,7 +19,7 @@ pdfkit==1.0.0
 phonenumberslite==9.0.3
 pillow==8.4.0
 # Additional PDF fallback
-xhtml2pdf==0.2.5
+# xhtml2pdf==0.2.5  # Removed due to reportlab dependency issues on production
 # psycopg2-binary==2.9.8
 pycparser==2.21
 pydyf==0.1.2
