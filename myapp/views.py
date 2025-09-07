@@ -931,16 +931,8 @@ def download_receipt(request, receipt_id):
             receipt.save(update_fields=['pdf_file'])
             receipt_path = pdf_path
         else:
-            # Try in-memory PDF (even if writing to disk failed)
-            pdf_bytes_stream = generate_pdf(html_string)
-            if pdf_bytes_stream:
-                response = HttpResponse(pdf_bytes_stream, content_type='application/pdf')
-                response['Content-Disposition'] = f'attachment; filename="receipt_{receipt.transaction_id}.pdf"'
-                return response
-            # As absolute last resort, fall back to HTML (should rarely happen)
-            response = HttpResponse(html_string, content_type='text/html')
-            response['Content-Disposition'] = f'attachment; filename="receipt_{receipt.transaction_id}.html"'
-            return response
+            # PDF generation failed - display HTML receipt in browser instead of downloading
+            return render(request, 'myapp/receipt_template.html', {'receipt': receipt_data})
     else:
         receipt_path = receipt.pdf_file.path
 
@@ -989,7 +981,6 @@ def download_receipt(request, receipt_id):
                 return response
             # As absolute last resort, return HTML download
             response = HttpResponse(html_string, content_type='text/html')
-            response['Content-Disposition'] = f'attachment; filename="receipt_{receipt.transaction_id}.html"'
             return response
         except Exception:
             raise Http404('Receipt file not found and HTML fallback failed.')
